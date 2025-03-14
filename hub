@@ -451,8 +451,8 @@ if game.PlaceId == 258258996 then
         if v.Name == plr.Name or v.Name == plr.DisplayName then
             print(v.DisplayName.Username.Text, v.DisplayName.Data.Text, v.Rank.Text, v.Parent.Parent.Top.TextLabel.Text)
             OrionLib:MakeNotification({
-                Name = "Leaderboard Alert",
-                Content = "Check Console",
+                Name = "Leaderboard Alert: " ..v.DisplayName.Username.Text, v.DisplayName.Data.Text, v.Rank.Text, v.Parent.Parent.Top.TextLabel.Text,
+                Content = "",
                 Image = 0,
                 Time = 60
             })
@@ -619,8 +619,8 @@ if game.PlaceId == 258258996 then
         if getgenv().ShinyTrack then
             if notif.Name == "ItemTemplate" and string.match(notif.Title.Text, "⭐") then
                 OrionLib:MakeNotification({
-                    Name = "Shiny Acquired",
-                    Content = notif.Title.Text,
+                    Name = "Shiny Acquired: " ..notif.Title.Text,
+                    Content = "",
                     Image = notif.Icon.Image,
                     Time = 180
                 })
