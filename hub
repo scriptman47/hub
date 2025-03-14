@@ -452,9 +452,9 @@ if game.PlaceId == 258258996 then
             print(v.DisplayName.Username.Text, v.DisplayName.Data.Text, v.Rank.Text, v.Parent.Parent.Top.TextLabel.Text)
             OrionLib:MakeNotification({
                 Name = "Leaderboard Alert",
-                Content = tostring(v.DisplayName.Username.Text, v.DisplayName.Data.Text, v.Rank.Text, v.Parent.Parent.Top.TextLabel.Text),
+                Content = "Check Console",
                 Image = 0,
-                Time = 999
+                Time = 60
             })
         end
     end
@@ -622,7 +622,7 @@ if game.PlaceId == 258258996 then
                     Name = "Shiny Acquired",
                     Content = notif.Title.Text,
                     Image = notif.Icon.Image,
-                    Time = 999
+                    Time = 180
                 })
                 shinyWin:AddLabel("Shiny Acquired: " ..notif.Title.Text)
             end
