@@ -405,6 +405,11 @@ if game.PlaceId == 258258996 then
         end
     })
 
+    local shinyWin = Window:MakeTab({
+		Name = "Shinys",
+        Icon = "rbxassetid://5506273563",
+        PremiumOnly = false
+	})
 
     local setWin = Window:MakeTab({
 		Name = "Settings",
@@ -449,7 +454,7 @@ if game.PlaceId == 258258996 then
                 Name = "Leaderboard Alert",
                 Content = tostring(v.DisplayName.Username.Text, v.DisplayName.Data.Text, v.Rank.Text, v.Parent.Parent.Top.TextLabel.Text),
                 Image = 0,
-                Time = 1e+999
+                Time = 999
             })
         end
     end
@@ -617,8 +622,9 @@ if game.PlaceId == 258258996 then
                     Name = "Shiny Acquired",
                     Content = notif.Title.Text,
                     Image = notif.Icon.Image,
-                    Time = 1e+999
+                    Time = 999
                 })
+                shinyWin:AddLabel("Shiny Acquired: " ..notif.Title.Text)
             end
         end
     end)
