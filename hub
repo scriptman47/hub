@@ -516,13 +516,13 @@ if game.PlaceId == 258258996 then
                     for i, v in pairs(myfac:GetChildren()) do
                         if v:IsA("Model") then
                             if v:FindFirstChild("Model") then
-                                if string.match(v.Parent.Parent.Name, "Teleport") then
-                                elseif string.match(ore.Name, "Coal") and string.match(v.Parent.Parent.Name, "Industrial") then
-                                    ore.Position = v.Position + Vector3.new(0,0.5,0)
-                                    furnace = v
+                                if string.match(v.Name, "Teleport") then
+                                elseif string.match(ore.Name, "Coal") and string.match(v.Name, "Industrial") then
+                                    ore.Position = v.Model.Lava.Position + Vector3.new(0,0.5,0)
+                                    furnace = v.Model.Lava
                                 else
-                                    ore.Position = v.Position + Vector3.new(0,0.5,0)
-                                    furnace = v
+                                    ore.Position = v.Model.Lava.Position + Vector3.new(0,0.5,0)
+                                    furnace = v.Model.Lava
                                 end
                             end
                         end
@@ -1110,13 +1110,13 @@ elseif game.PlaceId == 432041175 then
                     for i, v in pairs(myfac:GetChildren()) do
                         if v:IsA("Model") then
                             if v:FindFirstChild("Model") then
-                                if string.match(v.Parent.Parent.Name, "Teleport") then
-                                elseif string.match(ore.Name, "Coal") and string.match(v.Parent.Parent.Name, "Industrial") then
-                                    ore.Position = v.Position + Vector3.new(0,0.5,0)
-                                    furnace = v
+                                if string.match(v.Name, "Teleport") then
+                                elseif string.match(ore.Name, "Coal") and string.match(v.Name, "Industrial") then
+                                    ore.Position = v.Model.Lava.Position + Vector3.new(0,0.5,0)
+                                    furnace = v.Model.Lava
                                 else
-                                    ore.Position = v.Position + Vector3.new(0,0.5,0)
-                                    furnace = v
+                                    ore.Position = v.Model.Lava.Position + Vector3.new(0,0.5,0)
+                                    furnace = v.Model.Lava
                                 end
                             end
                         end
@@ -1622,13 +1622,13 @@ elseif game.Workspace:FindFirstChild("Tycoons") then
                     for i, v in pairs(myfac:GetChildren()) do
                         if v:IsA("Model") then
                             if v:FindFirstChild("Model") then
-                                if string.match(v.Parent.Parent.Name, "Teleport") then
-                                elseif string.match(ore.Name, "Coal") and string.match(v.Parent.Parent.Name, "Industrial") then
-                                    ore.Position = v.Position + Vector3.new(0,0.5,0)
-                                    furnace = v
+                                if string.match(v.Name, "Teleport") then
+                                elseif string.match(ore.Name, "Coal") and string.match(v.Name, "Industrial") then
+                                    ore.Position = v.Model.Lava.Position + Vector3.new(0,0.5,0)
+                                    furnace = v.Model.Lava
                                 else
-                                    ore.Position = v.Position + Vector3.new(0,0.5,0)
-                                    furnace = v
+                                    ore.Position = v.Model.Lava.Position + Vector3.new(0,0.5,0)
+                                    furnace = v.Model.Lava
                                 end
                             end
                         end
