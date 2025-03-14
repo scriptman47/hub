@@ -510,13 +510,15 @@ if game.PlaceId == 258258996 then
         end
         if getgenv().OreFurnace then
             task.spawn(function()
-                for i, v in pairs(myfac:GetDescendants()) do
-                    if v.Name == "Lava" and v:IsA("Part") then
-                        if string.match(v.Parent.Parent.Name, "Teleport") then
-                        elseif string.match(ore.Name, "Coal") and string.match(v.Parent.Parent.Name, "Industrial") then
-                            ore.Position = v.Position + Vector3.new(0,0.5,0)
-                        else
-                            ore.Position = v.Position + Vector3.new(0,0.5,0)
+                for i, v in pairs(myfac:GetChildren()) do
+                    if v:IsA("Model") then
+                        if v:FindFirstChild("Model") then
+                            if string.match(v.Parent.Parent.Name, "Teleport") then
+                            elseif string.match(ore.Name, "Coal") and string.match(v.Parent.Parent.Name, "Industrial") then
+                                ore.Position = v.Position + Vector3.new(0,0.5,0)
+                            else
+                                ore.Position = v.Position + Vector3.new(0,0.5,0)
+                            end
                         end
                     end
                 end
@@ -1096,13 +1098,15 @@ elseif game.PlaceId == 432041175 then
         end
         if getgenv().OreFurnace then
             task.spawn(function()
-                for i, v in pairs(myfac:GetDescendants()) do
-                    if v.Name == "Lava" and v:IsA("Part") then
-                        if string.match(v.Parent.Parent.Name, "Teleport") then
-                        elseif string.match(ore.Name, "Coal") and string.match(v.Parent.Parent.Name, "Industrial") then
-                            ore.Position = v.Position + Vector3.new(0,0.5,0)
-                        else
-                            ore.Position = v.Position + Vector3.new(0,0.5,0)
+                for i, v in pairs(myfac:GetChildren()) do
+                    if v:IsA("Model") then
+                        if v:FindFirstChild("Model") then
+                            if string.match(v.Parent.Parent.Name, "Teleport") then
+                            elseif string.match(ore.Name, "Coal") and string.match(v.Parent.Parent.Name, "Industrial") then
+                                ore.Position = v.Position + Vector3.new(0,0.5,0)
+                            else
+                                ore.Position = v.Position + Vector3.new(0,0.5,0)
+                            end
                         end
                     end
                 end
@@ -1600,13 +1604,15 @@ elseif game.Workspace:FindFirstChild("Tycoons") then
         end
         if getgenv().OreFurnace then
             task.spawn(function()
-                for i, v in pairs(myfac:GetDescendants()) do
-                    if v.Name == "Lava" and v:IsA("Part") then
-                        if string.match(v.Parent.Parent.Name, "Teleport") then
-                        elseif string.match(ore.Name, "Coal") and string.match(v.Parent.Parent.Name, "Industrial") then
-                            ore.Position = v.Position + Vector3.new(0,0.5,0)
-                        else
-                            ore.Position = v.Position + Vector3.new(0,0.5,0)
+                for i, v in pairs(myfac:GetChildren()) do
+                    if v:IsA("Model") then
+                        if v:FindFirstChild("Model") then
+                            if string.match(v.Parent.Parent.Name, "Teleport") then
+                            elseif string.match(ore.Name, "Coal") and string.match(v.Parent.Parent.Name, "Industrial") then
+                                ore.Position = v.Position + Vector3.new(0,0.5,0)
+                            else
+                                ore.Position = v.Position + Vector3.new(0,0.5,0)
+                            end
                         end
                     end
                 end
