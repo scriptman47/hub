@@ -81,12 +81,6 @@ if game.PlaceId == 258258996 then
             Resetters[1].Position = Base.Position + Vector3.new(0,125,0)
         end 
     end
-    function Upgrade(ore)
-        ore.Position = Base.Position + Vector3.new(0,102,0)
-        wait()
-        ore.Position = Base.Position + Vector3.new(0,102,0)
-        wait()
-    end
     function autoRemote()
         while getgenv().AutoRemote == true do
             for i, v in pairs(myfac:GetDescendants()) do
@@ -410,6 +404,15 @@ if game.PlaceId == 258258996 then
         Icon = "rbxassetid://5506273563",
         PremiumOnly = false
 	})
+    local shinySection = shinyWin:AddSection({Name = "Recently Acquired Shinies (Bottom to Top)"})
+    local shinyDropdown = shinySection:AddDropdown({
+        Name = "Shinys",
+        Default = "Shinys",
+        Options = {},
+        Callback = function(v)
+            --
+        end
+    })
 
     local setWin = Window:MakeTab({
 		Name = "Settings",
@@ -475,42 +478,52 @@ if game.PlaceId == 258258996 then
                     return
                 end
                 getUpgraders()
-                Upgrade(ore)
+                ore.Position = Base.Position + Vector3.new(0,102,0)
+                task.wait()
+                ore.Position = Base.Position + Vector3.new(0,102,0)
                 if resetCount == 1 then
                     ore.Position = Base.Position + Vector3.new(0,127,0)
                     task.wait()
-                    Upgrade(ore)
+                    ore.Position = Base.Position + Vector3.new(0,102,0)
+                    task.wait()
+                    ore.Position = Base.Position + Vector3.new(0,102,0)
                 end
                 if resetCount == 2 then
                     ore.Position = Base.Position + Vector3.new(0,152,0)
                     task.wait()
-                    Upgrade(ore)
+                    ore.Position = Base.Position + Vector3.new(0,102,0)
+                    task.wait()
+                    ore.Position = Base.Position + Vector3.new(0,102,0)
                 end
                 if resetCount == 3 then
                     ore.Position = Base.Position + Vector3.new(0,177,0)
                     task.wait()
-                    Upgrade(ore)
+                    ore.Position = Base.Position + Vector3.new(0,102,0)
+                    task.wait()
+                    ore.Position = Base.Position + Vector3.new(0,102,0)
                 end
                 if resetCount == 4 then
                     ore.Position = Base.Position + Vector3.new(0,202,0)
                     task.wait()
-                    Upgrade(ore)
+                    ore.Position = Base.Position + Vector3.new(0,102,0)
+                    task.wait()
+                    ore.Position = Base.Position + Vector3.new(0,102,0)
                 end
-                for i, v in pairs(myfac:GetDescendants()) do
-                    if v.Name == "Lava" and v:IsA("Part") then
-                        if v.Parent.Parent.Name:match("Dreamer") or v.Parent.Parent.Name:match("Teleport") or v.Parent.Parent.Name:match("Industrial") then
-                            if v.Parent.Parent.Name == "Dreamer's Might" then
-                                ore.Position = v.Position + Vector3.new(0,3,0)
-                                ore.Velocity = Vector3.new(0,0,0)
-                                task.wait()
+                if furnace then
+                    ore.Position = furnace.Position + Vector3.new(0,0.5,0)
+                else
+                    for i, v in pairs(myfac:GetChildren()) do
+                        if v:IsA("Model") then
+                            if v:FindFirstChild("Model") then
+                                if string.match(v.Name, "Teleport") or string.match(v.Name, "Industrial") or v.Name == "Vulcan's Wrath" or string.match(v.Name, "Dreamer") then
+                                else
+                                    ore.Position = v.Model.Lava.Position + Vector3.new(0,0.5,0)
+                                    furnace = v.Model.Lava
+                                end
                             end
-                        else
-                            ore.Position = v.Position + Vector3.new(0,3,0)
-                            ore.Velocity = Vector3.new(0,0,0)
-                            task.wait()
                         end
-                    end
-                end		
+                    end	
+                end
             end)
         end
         if getgenv().OreFurnace then
@@ -549,23 +562,27 @@ if game.PlaceId == 258258996 then
 
     game.Players.LocalPlayer.Rebirths:GetPropertyChangedSignal("Value"):Connect(function()
         if getgenv().AutoLayout then
-            local layoutarg = {
-                [1] = "Load",
-                [2] = layoutNum
-            }
-            repeat wait() until #myfac:GetChildren() < 6
-            repeat
-            wait(.75)
-            game:GetService("ReplicatedStorage").Layouts:InvokeServer(unpack(layoutarg))
-            until #myfac:GetChildren() > 6
+            task.spawn(function()
+                local layoutarg = {
+                    [1] = "Load",
+                    [2] = layoutNum
+                }
+                repeat wait() until #myfac:GetChildren() < 6
+                repeat
+                wait(.75)
+                game:GetService("ReplicatedStorage").Layouts:InvokeServer(unpack(layoutarg))
+                until #myfac:GetChildren() > 6
+            end)
         end
     end)
 
     game.Players.LocalPlayer.leaderstats.Cash:GetPropertyChangedSignal("Value"):Connect(function()
         if getgenv().AutoReborn then
-            if string.match(game:GetService("Players").LocalPlayer.PlayerGui.Rebirth.Frame.Rebirth_Content.Content.Rebirth.Frame.Top.SkipBox.Label.Text, "Skip") then
-                game:GetService("ReplicatedStorage").Rebirth:InvokeServer()
-            end
+            task.spawn(function()
+                if string.match(game:GetService("Players").LocalPlayer.PlayerGui.Rebirth.Frame.Rebirth_Content.Content.Rebirth.Frame.Top.SkipBox.Label.Text, "Skip") then
+                    game:GetService("ReplicatedStorage").Rebirth:InvokeServer()
+                end
+            end)
         end
     end)
 
@@ -617,15 +634,18 @@ if game.PlaceId == 258258996 then
 
     game.Players.LocalPlayer.PlayerGui.GUI.Notifications.ChildAdded:Connect(function(notif)
         if getgenv().ShinyTrack then
-            if notif.Name == "ItemTemplate" and string.match(notif.Title.Text, "⭐") then
-                OrionLib:MakeNotification({
-                    Name = "Shiny Acquired: " ..notif.Title.Text,
-                    Content = "",
-                    Image = notif.Icon.Image,
-                    Time = 180
-                })
-                shinyWin:AddLabel("Shiny Acquired: " ..notif.Title.Text)
-            end
+            task.spawn(function()
+                if notif.Name == "ItemTemplate" and string.match(notif.Title.Text, "⭐") then
+                    OrionLib:MakeNotification({
+                        Name = notif.Title.Text,
+                        Content = "",
+                        Image = notif.Icon.Image,
+                        Time = 180
+                    })
+                    shinySection:AddLabel("Shiny Acquired: " ..notif.Title.Text)
+                    shinyDropdown:Refresh(notif.Title.Text,false)
+                end
+            end)
         end
     end)
 
