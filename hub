@@ -1966,7 +1966,6 @@ elseif game.PlaceId == 15055025587 then
         end,
     })
     
-    Rayfield:LoadConfiguration()
     --[[
     game.Workspace.CollectionRangePart:GetPropertyChangedSignal("Size"):Connect(function()
        if getgenv().AutoCollectEggs then
@@ -1998,4 +1997,6 @@ elseif game.PlaceId == 15055025587 then
            end)
        end
     end)
+
+    Rayfield:LoadConfiguration()
 end
