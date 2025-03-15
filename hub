@@ -405,14 +405,6 @@ if game.PlaceId == 258258996 then
         PremiumOnly = false
 	})
     local shinySection = shinyWin:AddSection({Name = "Recently Acquired Shinies (Bottom to Top)"})
-    local shinyDropdown = shinySection:AddDropdown({
-        Name = "Shinys",
-        Default = "Shinys",
-        Options = {},
-        Callback = function(v)
-            --
-        end
-    })
 
     local setWin = Window:MakeTab({
 		Name = "Settings",
@@ -642,8 +634,9 @@ if game.PlaceId == 258258996 then
                         Image = notif.Icon.Image,
                         Time = 180
                     })
-                    shinySection:AddLabel("Shiny Acquired: " ..notif.Title.Text)
-                    shinyDropdown:Refresh(notif.Title.Text,false)
+                    shinySection:AddLabel("" ..notif.Title.Text.. " - ID - " ..notif.Icon.Image)
+                    game:GetService("ReplicatedFirst").Ambiance.Rooster:Play()
+                    game:GetService("ReplicatedFirst").Ambiance.WolfHowl:Play()
                 end
             end)
         end
