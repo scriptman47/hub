@@ -704,8 +704,12 @@ if game.PlaceId == 258258996 then
                             count = count+1
                         end
                     end
-                    table.insert(shinytable,count+1,notif.Title.Text)
-                    table.insert(shinyIDtable,count+1,notif.Icon.Image)
+                    shinytable = nil
+                    shinyIDtable = nil
+                    shinytable = {}
+                    shinyIDtable = {}
+                    table.insert(shinytable,notif.Title.Text)
+                    table.insert(shinyIDtable,notif.Icon.Image)
                 end
             end)
         end
@@ -1855,7 +1859,9 @@ elseif game.PlaceId == 15055025587 then
        CurrentValue = false,
        Flag = "eggcollect",
        Callback = function(v)
-          getgenv().AutoCollectEggs = v
+          --getgenv().AutoCollectEggs = v
+          workspace.CollectionRangePart.Size = Vector3.new(1000,0.25,1000)
+          workspace.CollectionRangePart.Anchored = v
        end,
     })
     
@@ -1879,10 +1885,8 @@ elseif game.PlaceId == 15055025587 then
                     end
                     for i, v in pairs(game.Workspace.Crates:GetChildren()) do
                         plr.Character.HumanoidRootPart.CFrame = v:WaitForChild("Primary").CFrame * CFrame.new(0,3,0)
-                        plr.Character.HumanoidRootPart.Velocity = Vector3.new(0,0,0)
                         task.wait(.5)
                         plr.Character.HumanoidRootPart.CFrame = game.Workspace.BoxMachine.DelieveryZone.CFrame * CFrame.new(0,5,0)
-                        plr.Character.HumanoidRootPart.Velocity = Vector3.new(0,0,0)
                         task.wait(.5)
                     end
                     returnPlayer()
@@ -1912,10 +1916,8 @@ elseif game.PlaceId == 15055025587 then
                     end
                     for i, v in pairs(game.Workspace.Crates:GetChildren()) do
                         plr.Character.HumanoidRootPart.CFrame = v:WaitForChild("Primary").CFrame * CFrame.new(0,3,0)
-                        plr.Character.HumanoidRootPart.Velocity = Vector3.new(0,0,0)
                         task.wait(.5)
                         plr.Character.HumanoidRootPart.CFrame = game.Workspace.BoxMachine.DelieveryZone.CFrame * CFrame.new(0,5,0)
-                        plr.Character.HumanoidRootPart.Velocity = Vector3.new(0,0,0)
                         task.wait(.5)
                     end
                     returnPlayer()
@@ -1965,15 +1967,16 @@ elseif game.PlaceId == 15055025587 then
     })
     
     Rayfield:LoadConfiguration()
-    
+    --[[
     game.Workspace.CollectionRangePart:GetPropertyChangedSignal("Size"):Connect(function()
        if getgenv().AutoCollectEggs then
            workspace.CollectionRangePart.Size = Vector3.new(1000,0.25,1000)
        end
     end)
+    --]]
     
     game.Workspace.Crates.ChildAdded:Connect(function(crate)
-       wait(1)
+       local primary = crate:WaitForChild("Primary")
        if getgenv().AutoCollectCrate or getgenv().Fishing then
            task.spawn(function()
                local originalPosition = plr.Character.HumanoidRootPart.CFrame
@@ -1986,10 +1989,9 @@ elseif game.PlaceId == 15055025587 then
                         plr.Character.HumanoidRootPart.Velocity = Vector3.new(0,0,0)
                     end
                end
-               plr.Character.HumanoidRootPart.CFrame = crate:WaitForChild("Primary").CFrame * CFrame.new(0,5,0)
+               plr.Character.HumanoidRootPart.CFrame = primary.CFrame * CFrame.new(0,5,0)
                task.wait(.2)
                plr.Character.HumanoidRootPart.CFrame = game.Workspace.BoxMachine.DelieveryZone.CFrame * CFrame.new(0,3,0)
-               plr.Character.HumanoidRootPart.Velocity = Vector3.new(0,0,0)
                task.wait(.2)
                returnPlayer()
                task.wait(.2)
