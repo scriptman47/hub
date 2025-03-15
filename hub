@@ -34,6 +34,10 @@ if game.PlaceId == 258258996 then
     local Base = plr.PlayerTycoon.Value.Base
     local myfac = Players.LocalPlayer.PlayerTycoon.Value
     myfacName = tostring(myfac)
+    local shinyid = 0
+    local shinytable = {}
+    local shinyIDtable = {}
+    local notification;
 
     -------------------------- Functions
     function getUpgraders()
@@ -391,7 +395,15 @@ if game.PlaceId == 258258996 then
         end
     })
 
-    plrSection2:AddToggle({
+    local shinyWin = Window:MakeTab({
+		Name = "Shinys",
+        Icon = "rbxassetid://5506273563",
+        PremiumOnly = false
+	})
+
+    local trackSection = shinyWin:AddSection({Name = ""})
+
+    trackSection:AddToggle({
         Name = "Shiny Tracker",
         Default = false,
         Callback = function(v)
@@ -399,11 +411,60 @@ if game.PlaceId == 258258996 then
         end
     })
 
-    local shinyWin = Window:MakeTab({
-		Name = "Shinys",
-        Icon = "rbxassetid://5506273563",
-        PremiumOnly = false
-	})
+    local notifSection = shinyWin:AddSection({Name = "Notification Fabrication"})
+
+    notifSection:AddButton({
+        Name = "Fabricate Shiny Notification",
+        Callback = function()
+            if shinyid ~= 0 and shinyname then
+                notification = plr.PlayerGui.GUI.Notifications.ItemTemplate:Clone()
+                notification.Parent = plr.PlayerGui.GUI.Notifications
+                notification.BackgroundColor3 = Color3.fromRGB(180,239,255)
+                notification.Icon.Image = shinyid
+                notification.Title.Text = shinyname
+                notification.Icon.Amount.Text = "x1"
+                notification.Tier.Text = "Shiny Reborn"
+                notification.Size = UDim2.new(1,0,0,100)
+                notification.BackgroundTransparency = 0.1
+                notification.Visible = true
+            end
+        end
+    })
+
+    notifSection:AddButton({
+        Name = "Remove Shiny Notification",
+        Callback = function()
+            notification:Destroy()
+            local notification;
+        end
+    })
+    
+    local shinyDropdown = notifSection:AddDropdown({
+        Name = "Shiny List",
+        Default = "⭐ Foxy Cancer Cell ⭐",
+        Options = {"⭐ Foxy Cancer Cell ⭐"},
+        Callback = function(v)
+            shinyname = v
+        end
+    })
+
+    local shinyIDdropdown = notifSection:AddDropdown({
+        Name = "Shiny ID List",
+        Default = "0",
+        Options = {"0"},
+        Callback = function(v)
+            shinyid = v
+        end
+    })
+
+    notifSection:AddButton({
+        Name = "Add Recent Shiny to List",
+        Callback = function()
+            shinyDropdown:Refresh(shinytable,true)
+            shinyIDdropdown:Refresh(shinyIDtable,true)
+        end
+    })
+
     local shinySection = shinyWin:AddSection({Name = "Recently Acquired Shinies (Bottom to Top)"})
 
     local setWin = Window:MakeTab({
@@ -637,6 +698,14 @@ if game.PlaceId == 258258996 then
                     shinySection:AddLabel("" ..notif.Title.Text.. " - ID - " ..notif.Icon.Image)
                     game:GetService("ReplicatedFirst").Ambiance.Rooster:Play()
                     game:GetService("ReplicatedFirst").Ambiance.WolfHowl:Play()
+                    count = 0
+                    if shinytable[1] then
+                        for i=1, #shinytable do
+                            count = count+1
+                        end
+                    end
+                    table.insert(shinytable,count+1,notif.Title.Text)
+                    table.insert(shinyIDtable,count+1,notif.Icon.Image)
                 end
             end)
         end
