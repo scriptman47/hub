@@ -1472,7 +1472,6 @@ elseif game.Workspace:FindFirstChild("Tycoons") then
                     staramount = v.Icon.Amount.Text
                 end
             end
-            game:GetService("Players").LocalPlayer.PlayerGui.GUI.Inventory.YYLeft.Inventory
             if getgenv().AutoCata then
                 task.spawn(function()
                     local star = {
