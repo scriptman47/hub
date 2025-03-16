@@ -1467,9 +1467,10 @@ elseif game.Workspace:FindFirstChild("Tycoons") then
             getgenv().AutoCata = v
             local inv = plr.PlayerGui.GUI.Inventory.YYLeft.Inventory
             inv.Search.TextBox.Text = "star"
-            for i, v in pairs(inv.Items:GetChildren()) do
+            for i, v in pairs(inv.Items.Scroll:GetChildren()) do
                 if v:FindFirstChild("ItemId") and v.ItemId.Value == "324" then
                     staramount = v.Icon.Amount.Text
+                    print(staramount)
                 end
             end
             if getgenv().AutoCata then
