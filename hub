@@ -551,23 +551,43 @@ if game.PlaceId == 258258996 then
                     if v.Rank.Text == "#100" then
                         if lbName == "Top Lives" then
                             local amount = string.gsub(v.DisplayName.Data.Text,"%D","") - plr.Rebirths.Value
+                            if v.DisplayName.Text == plr.DisplayName then
+                                lbSection:AddLabel("You are " ..amount.. " lives away from #100  ⭐")
+                            else
                             lbSection:AddLabel("You are " ..amount.. " lives away from #100")
+                            end
                         end
-                        if lbName == "Top RP" then
+                        if leaderboard == "LeaderboardRPAllTimeV0" then
                             local amount = string.gsub(v.DisplayName.Data.Text,"%D","") - plr.Points.Value
+                            if v.DisplayName.Text == plr.DisplayName then
+                                lbSection:AddLabel("You are " ..amount.. " RP away from #100  ⭐")
+                            else
                             lbSection:AddLabel("You are " ..amount.. " RP away from #100")
+                            end
                         end
-                        if lbName == "Top Gift Streak" then
+                        if leaderboard == "LeaderboardTopGiftV0" then
                             local amount = string.gsub(v.DisplayName.Data.Text,"%D","") - plr.LoginStreak.Value
+                            if v.DisplayName.Text == plr.DisplayName then
+                                lbSection:AddLabel("You are " ..amount.. " days away from #100  ⭐")
+                            else
                             lbSection:AddLabel("You are " ..amount.. " days away from #100")
+                            end
                         end
-                        if lbName == "Top uC" then
+                        if leaderboard == "" then
                             local amount = string.gsub(v.DisplayName.Data.Text,"%D","") - plr.Crystals.Value
+                            if v.DisplayName.Text == plr.DisplayName then
+                                lbSection:AddLabel("You are " ..amount.. " uC away from #100  ⭐")
+                            else
                             lbSection:AddLabel("You are " ..amount.. " uC away from #100")
+                            end
                         end
                         if lbName == "Top Boxes" then
                             local amount = string.gsub(v.DisplayName.Data.Text,"%D","") - plr.Crates.Value
+                            if v.DisplayName.Text == plr.DisplayName then
+                                lbSection:AddLabel("You are " ..amount.. " boxes away from #100  ⭐")
+                            else
                             lbSection:AddLabel("You are " ..amount.. " boxes away from #100")
+                            end
                         end
                     end
                 end
