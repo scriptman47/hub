@@ -1580,6 +1580,14 @@ elseif game.Workspace:FindFirstChild("Tycoons") then
                     repeat
                         game:GetService("ReplicatedStorage").PlaceItem:InvokeServer(unpack(furnace))
                     until #myfac:GetChildren() >= staramount+5
+                    for i, v in pairs(myfac.Parent:GetChildren()) do
+                        for i, v in pairs(v:GetChildren()) do
+                            if v:IsA("Model") and v.Name == "Catalyzed Star" then
+                                v.Model.Upgrade.Position = myfac["Catalyzed Star"].Model.Upgrade.Position
+                                v.Model.Rotation = myfac["Catalyzed Star"].Model.Upgrade.Position
+                            end
+                        end
+                    end
                     local ore = game.Workspace.DroppedParts[myfacName]:WaitForChild("DroppedPart")
                     repeat
                         ore.Position = myfac["Catalyzed Star"].Model.Upgrade.Position
@@ -1853,6 +1861,14 @@ elseif game.Workspace:FindFirstChild("Tycoons") then
                 repeat
                     game:GetService("ReplicatedStorage").PlaceItem:InvokeServer(unpack(furnace))
                 until #myfac:GetChildren() >= staramount+5
+                for i, v in pairs(myfac.Parent:GetChildren()) do
+                    for i, v in pairs(v:GetChildren()) do
+                        if v:IsA("Model") and v.Name == "Catalyzed Star" then
+                            v.Model.Upgrade.Position = myfac["Catalyzed Star"].Model.Upgrade.Position
+                            v.Model.Rotation = myfac["Catalyzed Star"].Model.Upgrade.Position
+                        end
+                    end
+                end
                 local ore = game.Workspace.DroppedParts[myfacName]:WaitForChild("DroppedPart")
                 repeat
                     ore.Position = myfac["Catalyzed Star"].Model.Upgrade.Position
