@@ -38,6 +38,8 @@ if game.PlaceId == 258258996 then
     local shinytable = {}
     local shinyIDtable = {}
     local notification;
+    local leaderboard = "highestLifeV5"
+    local lbName = "Top Lives"
 
     -------------------------- Functions
     function getUpgraders()
@@ -467,6 +469,112 @@ if game.PlaceId == 258258996 then
 
     local shinySection = shinyWin:AddSection({Name = "Recently Acquired Shinies (Bottom to Top)"})
 
+    local lbWin = Window:MakeTab({
+		Name = "Leaderboards",
+        Icon = "rbxassetid://5506273563",
+        PremiumOnly = false
+	})
+
+    local lbSection1 = lbWin:AddSection({Name = "All Leaderboards"})
+
+    lbSection1:AddDropdown({
+        Name = "Leaderboards",
+        Default = "Top Lives",
+        Options = {"Top Lives","Daily Top Lives","Top RP","Top Gift Streak","Top uC","Top Boxes","Recent Shinies"},
+        Callback = function(v)
+            if v == "Top Lives" then
+                leaderboard = "highestLifeV5"
+                lbName = v
+            elseif v == "Daily Top Lives" then
+                leaderboard = "LifeSkippedV4"
+                lbName = v
+            elseif v == "Top RP" then
+                leaderboard = "LeaderboardRPAllTimeV0"
+                lbName = v
+            elseif v == "Top Gift Streak" then
+                leaderboard = "LeaderboardTopGiftV0"
+                lbName = v
+            elseif v == "Top uC" then
+                leaderboard = "LeaderboardUCV2"
+                lbName = v
+            elseif v == "Top Boxes" then
+                leaderboard = "LeaderboardBoxesAllTime"
+                lbName = v
+            elseif v == "Recent Shinies" then
+                leaderboard = "RecentShinyItems"
+                lbName = v
+            end
+        end
+    })
+
+    lbSection1:AddButton({
+        Name = "Show Leaderboard",
+        Callback = function()
+            if lbSection then
+                for i, v in pairs(game.CoreGui.HiddenUI.Orion:GetDescendants()) do
+                    if v:IsA("TextLabel") then
+                        if v.Text == "Leaderboard" or v.Text == "Distance from Leaderboard" then
+                            v.Parent:Destroy()
+                        end
+                    end
+                end
+            end
+            lbSection = lbWin:AddSection({Name = "Leaderboard"})
+            lbSection:AddLabel(lbName)
+            for i, v in pairs(game.Workspace.LeaderboardModels[leaderboard].Gui.Contents.Scrolling:GetChildren()) do
+                if v:IsA("Frame") then
+                    if lbName ~= "Recent Shinies" then
+                        lbSection:AddLabel("" ..v.Rank.Text.. " " ..v.DisplayName.Username.Text.. " " ..v.DisplayName.Data.Text)
+                    else
+                        lbSection:AddLabel("" ..v.DisplayName.Text.. " " ..v.DisplayName.Data.Text)
+                    end
+                end
+            end
+        end
+    })
+
+    lbSection1:AddButton({
+        Name = "Distance from #100",
+        Callback = function()
+            if lbSection then
+                for i, v in pairs(game.CoreGui.HiddenUI.Orion:GetDescendants()) do
+                    if v:IsA("TextLabel") then
+                        if v.Text == "Leaderboard" or v.Text == "Distance from Leaderboard" then
+                            v.Parent:Destroy()
+                        end
+                    end
+                end
+            end
+            lbSection = lbWin:AddSection({Name = "Distance from Leaderboard"})
+            for i, v in pairs(game.Workspace.LeaderboardModels[leaderboard].Gui.Contents.Scrolling:GetChildren()) do
+                if v:IsA("Frame") then
+                    if v.Rank.Text == "#100" then
+                        if lbName == "Top Lives" then
+                            local amount = string.gsub(v.DisplayName.Data.Text,"%D","") - plr.Rebirths.Value
+                            lbSection:AddLabel("You are " ..amount.. " lives away from #100")
+                        end
+                        if lbName == "Top RP" then
+                            local amount = string.gsub(v.DisplayName.Data.Text,"%D","") - plr.Points.Value
+                            lbSection:AddLabel("You are " ..amount.. " RP away from #100")
+                        end
+                        if lbName == "Top Gift Streak" then
+                            local amount = string.gsub(v.DisplayName.Data.Text,"%D","") - plr.LoginStreak.Value
+                            lbSection:AddLabel("You are " ..amount.. " days away from #100")
+                        end
+                        if lbName == "Top uC" then
+                            local amount = string.gsub(v.DisplayName.Data.Text,"%D","") - plr.Crystals.Value
+                            lbSection:AddLabel("You are " ..amount.. " uC away from #100")
+                        end
+                        if lbName == "Top Boxes" then
+                            local amount = string.gsub(v.DisplayName.Data.Text,"%D","") - plr.Crates.Value
+                            lbSection:AddLabel("You are " ..amount.. " boxes away from #100")
+                        end
+                    end
+                end
+            end
+        end
+    })
+
     local setWin = Window:MakeTab({
 		Name = "Settings",
         Icon = "rbxassetid://5506279557",
@@ -714,8 +822,8 @@ if game.PlaceId == 258258996 then
             end)
         end
     end)
-
     OrionLib:Init()
+    --END OF NORMAL MINERS HAVEN
 elseif game.PlaceId == 432041175 then
     local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/jensonhirst/Orion/main/source')))()
 	local Window = OrionLib:MakeWindow({Name = "MH FKR v" ..version, HidePremium = true, SaveConfig = true, ConfigFolder = "hub/MHfkr2", IntroEnabled = true, IntroText = "Welcome to MH FKR v"..version..", "..plr.Name, IntroIcon = "rbxassetid://5670621915", Icon = "rbxassetid://5670621915"})
