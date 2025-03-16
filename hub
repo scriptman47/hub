@@ -1496,9 +1496,11 @@ elseif game.Workspace:FindFirstChild("Tycoons") then
                     }
                     for i=1, staramount do
                         game:GetService("ReplicatedStorage").PlaceItem:InvokeServer(unpack(star))
-                        task.wait()
+                        task.wait(.1)
                     end
+                    task.wait(.1)
                     game:GetService("ReplicatedStorage").PlaceItem:InvokeServer(unpack(mine))
+                    task.wait(.1)
                     game:GetService("ReplicatedStorage").PlaceItem:InvokeServer(unpack(furnace))
                     local ore = game.Workspace.DroppedParts[myfacName]:WaitForChild("DroppedPart")
                     repeat
@@ -2086,6 +2088,5 @@ elseif game.PlaceId == 15055025587 then
            end)
        end
     end)
-
     Rayfield:LoadConfiguration()
 end
