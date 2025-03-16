@@ -1575,8 +1575,10 @@ elseif game.Workspace:FindFirstChild("Tycoons") then
                         game:GetService("ReplicatedStorage").PlaceItem:InvokeServer(unpack(star))
                     until #myfac:GetChildren() >= staramount+3
                     repeat
-                    game:GetService("ReplicatedStorage").PlaceItem:InvokeServer(unpack(mine))
-                    game:GetService("ReplicatedStorage").PlaceItem:InvokeServer(unpack(furnace))
+                        game:GetService("ReplicatedStorage").PlaceItem:InvokeServer(unpack(mine))
+                    until #myfac:GetChildren() >= staramount+4
+                    repeat
+                        game:GetService("ReplicatedStorage").PlaceItem:InvokeServer(unpack(furnace))
                     until #myfac:GetChildren() >= staramount+5
                     local ore = game.Workspace.DroppedParts[myfacName]:WaitForChild("DroppedPart")
                     repeat
@@ -1846,8 +1848,10 @@ elseif game.Workspace:FindFirstChild("Tycoons") then
                     game:GetService("ReplicatedStorage").PlaceItem:InvokeServer(unpack(star))
                 until #myfac:GetChildren() >= staramount+3
                 repeat
-                game:GetService("ReplicatedStorage").PlaceItem:InvokeServer(unpack(mine))
-                game:GetService("ReplicatedStorage").PlaceItem:InvokeServer(unpack(furnace))
+                    game:GetService("ReplicatedStorage").PlaceItem:InvokeServer(unpack(mine))
+                until #myfac:GetChildren() >= staramount+4
+                repeat
+                    game:GetService("ReplicatedStorage").PlaceItem:InvokeServer(unpack(furnace))
                 until #myfac:GetChildren() >= staramount+5
                 local ore = game.Workspace.DroppedParts[myfacName]:WaitForChild("DroppedPart")
                 repeat
