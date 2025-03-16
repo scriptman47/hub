@@ -1469,7 +1469,11 @@ elseif game.Workspace:FindFirstChild("Tycoons") then
             inv.Search.TextBox.Text = "star"
             for i, v in pairs(inv.Items.Scroll:GetChildren()) do
                 if v:FindFirstChild("ItemId") and v.ItemId.Value == 324 then
-                    staramount = v.Icon.Amount.Text
+                    if v.Icon.Amount.Text > 15 then
+                        staramount = 15
+                    else
+                        staramount = v.Icon.Amount.Text
+                    end
                 end
             end
             if getgenv().AutoCata then
