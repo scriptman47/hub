@@ -471,7 +471,7 @@ if game.PlaceId == 258258996 then
 
     local lbWin = Window:MakeTab({
 		Name = "Leaderboards",
-        Icon = "rbxassetid://5506273563",
+        Icon = "rbxassetid://5506274466",
         PremiumOnly = false
 	})
 
