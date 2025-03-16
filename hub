@@ -1470,7 +1470,6 @@ elseif game.Workspace:FindFirstChild("Tycoons") then
             for i, v in pairs(inv.Items.Scroll:GetChildren()) do
                 if v:FindFirstChild("ItemId") and v.ItemId.Value == 324 then
                     staramount = v.Icon.Amount.Text
-                    print(staramount)
                 end
             end
             if getgenv().AutoCata then
@@ -1493,14 +1492,19 @@ elseif game.Workspace:FindFirstChild("Tycoons") then
                         [3] = CFrame.new(myfac.Base.Position + Vector3.new(0,6,10))*CFrame.Angles(0,0,0),
                         [4] = 0
                     }
-                    for i=1, staramount do
+                    repeat
                         game:GetService("ReplicatedStorage").PlaceItem:InvokeServer(unpack(star))
-                        task.wait(.1)
+                        task.wait()
+                    until #myfac:GetChildren() > staramount+3
+                    local count = 0
+                    for i, v in pairs(myfac:GetChildren()) do
+                        count = count+1
                     end
-                    task.wait(.1)
+                    repeat
                     game:GetService("ReplicatedStorage").PlaceItem:InvokeServer(unpack(mine))
-                    task.wait(.1)
                     game:GetService("ReplicatedStorage").PlaceItem:InvokeServer(unpack(furnace))
+                    task.wait()
+                    until #myfac:GetChildren() > count+2
                     local ore = game.Workspace.DroppedParts[myfacName]:WaitForChild("DroppedPart")
                     repeat
                         ore.Position = myfac["Catalyzed Star"].Model.Upgrade.Position
@@ -1830,14 +1834,19 @@ elseif game.Workspace:FindFirstChild("Tycoons") then
                     [3] = CFrame.new(myfac.Base.Position + Vector3.new(0,6,10))*CFrame.Angles(0,0,0),
                     [4] = 0
                 }
-                for i=1, staramount do
+                repeat
                     game:GetService("ReplicatedStorage").PlaceItem:InvokeServer(unpack(star))
                     task.wait()
+                until #myfac:GetChildren() > staramount+3
+                local count = 0
+                for i, v in pairs(myfac:GetChildren()) do
+                    count = count+1
                 end
-                task.wait()
+                repeat
                 game:GetService("ReplicatedStorage").PlaceItem:InvokeServer(unpack(mine))
-                task.wait()
                 game:GetService("ReplicatedStorage").PlaceItem:InvokeServer(unpack(furnace))
+                task.wait()
+                until #myfac:GetChildren() > count+2
                 local ore = game.Workspace.DroppedParts[myfacName]:WaitForChild("DroppedPart")
                 repeat
                     ore.Position = myfac["Catalyzed Star"].Model.Upgrade.Position
