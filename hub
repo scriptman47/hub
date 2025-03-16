@@ -1460,20 +1460,19 @@ elseif game.Workspace:FindFirstChild("Tycoons") then
         end
     })
 
-    oreSection:AddTextbox({
-        Name = "Amount of Stars",
-        Default = "1",
-        TextDisappear = false,
-        Callback = function(v)
-            staramount = v
-        end
-    })
-
     oreSection:AddToggle({
         Name = "Auto Cata Star",
         Default = false,
         Callback = function(v)
             getgenv().AutoCata = v
+            local inv = plr.PlayerGui.GUI.Inventory.YYLeft.Inventory
+            inv.Search.TextBox.Text = "star"
+            for i, v in pairs(inv.Items:GetChildren()) do
+                if v:FindFirstChild("ItemId") and v.ItemId.Value == "324" then
+                    staramount = v.Icon.Amount.Text
+                end
+            end
+            game:GetService("Players").LocalPlayer.PlayerGui.GUI.Inventory.YYLeft.Inventory
             if getgenv().AutoCata then
                 task.spawn(function()
                     local star = {
@@ -2088,5 +2087,6 @@ elseif game.PlaceId == 15055025587 then
            end)
        end
     end)
+
     Rayfield:LoadConfiguration()
 end
