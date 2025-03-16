@@ -488,7 +488,7 @@ if game.PlaceId == 258258996 then
         Hold = false,
         Callback = function()
             for i, v in pairs(game.CoreGui.HiddenUI.Orion:GetDescendants()) do
-                if v:IsA("TextLabel") and v.Text == "MH FKR v1.9" then
+                if v:IsA("TextLabel") and v.Text == "MH FKR " ..version then
                     frame = v.Parent.Parent
                 end
             end
@@ -1062,7 +1062,7 @@ elseif game.PlaceId == 432041175 then
         Hold = false,
         Callback = function()
             for i, v in pairs(game.CoreGui.HiddenUI.Orion:GetDescendants()) do
-                if v:IsA("TextLabel") and v.Text == "MH FKR v1.9" then
+                if v:IsA("TextLabel") and v.Text == "MH FKR " ..version then
                     frame = v.Parent.Parent
                 end
             end
@@ -1667,7 +1667,7 @@ elseif game.Workspace:FindFirstChild("Tycoons") then
         Hold = false,
         Callback = function()
             for i, v in pairs(game.CoreGui.HiddenUI.Orion:GetDescendants()) do
-                if v:IsA("TextLabel") and v.Text == "MH FKR v1.9" then
+                if v:IsA("TextLabel") and v.Text == "MH FKR " ..version then
                     frame = v.Parent.Parent
                 end
             end
