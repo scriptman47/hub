@@ -1582,7 +1582,7 @@ elseif game.Workspace:FindFirstChild("Tycoons") then
                     until #myfac:GetChildren() >= staramount+5
                     for i, v in pairs(myfac.Parent:GetChildren()) do
                         for i, v in pairs(v:GetChildren()) do
-                            if v:IsA("Model") and v.Name == "Catalyzed Star" then
+                            if v:IsA("Model") and v.Name == "Catalyzed Star" and v.Model.Upgrade.Position then
                                 v.Model.Upgrade.Position = myfac["Catalyzed Star"].Model.Upgrade.Position
                             end
                         end
@@ -1862,7 +1862,7 @@ elseif game.Workspace:FindFirstChild("Tycoons") then
                 until #myfac:GetChildren() >= staramount+5
                 for i, v in pairs(myfac.Parent:GetChildren()) do
                     for i, v in pairs(v:GetChildren()) do
-                        if v:IsA("Model") and v.Name == "Catalyzed Star" then
+                        if v:IsA("Model") and v.Name == "Catalyzed Star" and v.Model.Upgrade.Position then
                             v.Model.Upgrade.Position = myfac["Catalyzed Star"].Model.Upgrade.Position
                         end
                     end
