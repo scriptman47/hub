@@ -1527,11 +1527,11 @@ elseif game.Workspace:FindFirstChild("Tycoons") then
 
     local TM = Window:MakeTab({
 		Name = "Time Machine",
-        Icon = "rbxassetid://5506574548",
+        Icon = "rbxassetid://260153760",
         PremiumOnly = false
 	})
 
-    local tmSection = Main:AddSection({Name = "Stars"})
+    local tmSection = TM:AddSection({Name = "Stars"})
 
     tmSection:AddSlider({
         Name = "Amount of Stars",
