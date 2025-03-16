@@ -1584,7 +1584,7 @@ elseif game.Workspace:FindFirstChild("Tycoons") then
                         for i, v in pairs(v:GetChildren()) do
                             if v:IsA("Model") and v.Name == "Catalyzed Star" then
                                 v.Model.Upgrade.Position = myfac["Catalyzed Star"].Model.Upgrade.Position
-                                v.Model.Rotation = myfac["Catalyzed Star"].Model.Upgrade.Position
+                                v.Model.Upgrade.Rotation = myfac["Catalyzed Star"].Model.Upgrade.Position
                             end
                         end
                     end
@@ -1865,7 +1865,7 @@ elseif game.Workspace:FindFirstChild("Tycoons") then
                     for i, v in pairs(v:GetChildren()) do
                         if v:IsA("Model") and v.Name == "Catalyzed Star" then
                             v.Model.Upgrade.Position = myfac["Catalyzed Star"].Model.Upgrade.Position
-                            v.Model.Rotation = myfac["Catalyzed Star"].Model.Upgrade.Position
+                            v.Model.Upgrade.Rotation = myfac["Catalyzed Star"].Model.Upgrade.Position
                         end
                     end
                 end
