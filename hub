@@ -607,6 +607,76 @@ if game.PlaceId == 258258996 then
                 leaderboard = "RecentShinyItems"
                 lbName = v
             end
+            if lbSection then
+                for i, v in pairs(game.CoreGui.HiddenUI.Orion:GetDescendants()) do
+                    if v:IsA("TextLabel") then
+                        if v.Text == "Leaderboard" then
+                            v.Parent:Destroy()
+                        end
+                    end
+                end
+                lbSection = lbWin:AddSection({Name = "Leaderboard"})
+                label:Set(lbName)
+            else
+                lbSection = lbWin:AddSection({Name = "Leaderboard"})
+                local label = lbSection:AddLabel(lbName)
+            end
+            for i, v in pairs(game.Workspace.LeaderboardModels[leaderboard].Gui.Contents.Scrolling:GetChildren()) do
+                if v:IsA("Frame") then
+                    if lbName ~= "Recent Shinies" then
+                        lbSection:AddLabel("" ..v.Rank.Text.. " " ..v.DisplayName.Username.Text.. " " ..v.DisplayName.Data.Text)
+                    else
+                        lbSection:AddLabel("" ..v.DisplayName.Text.. " " ..v.DisplayName.Data.Text)
+                    end
+                end
+            end
+            local plrnames = nil
+            local plrnames = {}
+            local amount = nil
+            local rank = nil
+            local num = nil
+            for i, v in pairs(game.Workspace.LeaderboardModels[leaderboard].Gui.Contents.Scrolling:GetChildren()) do
+                if v:IsA("Frame") then
+                    if v:FindFirstChild("Rank") and v.Rank.Text == "#100" then
+                        rank = string.gsub(v.Rank.Text,"%D","")
+                        num = string.gsub(v.DisplayName.Data.Text,"%D","")
+                        if lbName == "Top Lives" then
+                            amount = num-plr.Rebirths.Value
+                            table.insert(plrnames,rank,v.DisplayName.Text)
+                        end
+                        if lbName == "Daily Top Lives" then
+                            table.insert(plrnames,rank,v.DisplayName.Text)
+                        end
+                        if lbName == "Top RP" then
+                            amount = num-plr.Points.Value
+                            table.insert(plrnames,rank,v.DisplayName.Text)
+                        end
+                        if lbName == "Top Gift Streak" then
+                            amount = num-plr.LoginStreak.Value
+                            table.insert(plrnames,rank,v.DisplayName.Text)
+                        end
+                        if lbName == "Top uC" then
+                            amount = num-plr.Crystals.Value
+                            table.insert(plrnames,rank,v.DisplayName.Text)
+                        end
+                        if lbName == "Top Boxes" then
+                            amount = num-plr.Crates.Value
+                            table.insert(plrnames,rank,v.DisplayName.Text)
+                        end
+                    end
+                end
+            end
+            local count = 0
+            for i=1, #plrnames do
+                count = count+1
+                local current = game.Workspace.LeaderboardModels[leaderboard].Gui.Contents.Scrolling:WaitForChild(plrnames[count])
+                lbSection:AddLabel("" ..current.Rank.Text.. " - " ..current.DisplayName.Text.. "    " ..current.DisplayName.Data.Text)
+            end
+            if amount then
+                if lbName ~= "Daily Top Lives" then
+                    lbSection:AddLabel("You are " ..amount.. " away from #100")
+                end
+            end
         end
     })
 
@@ -682,95 +752,7 @@ if game.PlaceId == 258258996 then
             end
         end
     })
---[[
-    lbSection1:AddButton({
-        Name = "Show Leaderboard",
-        Callback = function()
-            if lbSection then
-                for i, v in pairs(game.CoreGui.HiddenUI.Orion:GetDescendants()) do
-                    if v:IsA("TextLabel") then
-                        if v.Text == "Leaderboard" or v.Text == "Distance from Leaderboard" then
-                            v.Parent:Destroy()
-                        end
-                    end
-                end
-            end
-            lbSection = lbWin:AddSection({Name = "Leaderboard"})
-            lbSection:AddLabel(lbName)
-            for i, v in pairs(game.Workspace.LeaderboardModels[leaderboard].Gui.Contents.Scrolling:GetChildren()) do
-                if v:IsA("Frame") then
-                    if lbName ~= "Recent Shinies" then
-                        lbSection:AddLabel("" ..v.Rank.Text.. " " ..v.DisplayName.Username.Text.. " " ..v.DisplayName.Data.Text)
-                    else
-                        lbSection:AddLabel("" ..v.DisplayName.Text.. " " ..v.DisplayName.Data.Text)
-                    end
-                end
-            end
-        end
-    })
 
-    lbSection1:AddButton({
-        Name = "Distance from #100",
-        Callback = function()
-            if lbSection then
-                for i, v in pairs(game.CoreGui.HiddenUI.Orion:GetDescendants()) do
-                    if v:IsA("TextLabel") then
-                        if v.Text == "Leaderboard" or v.Text == "Distance from Leaderboard" then
-                            v.Parent:Destroy()
-                        end
-                    end
-                end
-            end
-            lbSection = lbWin:AddSection({Name = "Distance from Leaderboard"})
-            for i, v in pairs(game.Workspace.LeaderboardModels[leaderboard].Gui.Contents.Scrolling:GetChildren()) do
-                if v:IsA("Frame") then
-                    if v.Rank.Text == "#100" then
-                        if lbName == "Top Lives" then
-                            local amount = string.gsub(v.DisplayName.Data.Text,"%D","") - plr.Rebirths.Value
-                            if v.DisplayName.Text == plr.DisplayName then
-                                lbSection:AddLabel("You are " ..amount.. " lives away from #100  ⭐")
-                            else
-                            lbSection:AddLabel("You are " ..amount.. " lives away from #100")
-                            end
-                        end
-                        if leaderboard == "LeaderboardRPAllTimeV0" then
-                            local amount = string.gsub(v.DisplayName.Data.Text,"%D","") - plr.Points.Value
-                            if v.DisplayName.Text == plr.DisplayName then
-                                lbSection:AddLabel("You are " ..amount.. " RP away from #100  ⭐")
-                            else
-                            lbSection:AddLabel("You are " ..amount.. " RP away from #100")
-                            end
-                        end
-                        if leaderboard == "LeaderboardTopGiftV0" then
-                            local amount = string.gsub(v.DisplayName.Data.Text,"%D","") - plr.LoginStreak.Value
-                            if v.DisplayName.Text == plr.DisplayName then
-                                lbSection:AddLabel("You are " ..amount.. " days away from #100  ⭐")
-                            else
-                            lbSection:AddLabel("You are " ..amount.. " days away from #100")
-                            end
-                        end
-                        if leaderboard == "" then
-                            local amount = string.gsub(v.DisplayName.Data.Text,"%D","") - plr.Crystals.Value
-                            if v.DisplayName.Text == plr.DisplayName then
-                                lbSection:AddLabel("You are " ..amount.. " uC away from #100  ⭐")
-                            else
-                            lbSection:AddLabel("You are " ..amount.. " uC away from #100")
-                            end
-                        end
-                        if lbName == "Top Boxes" then
-                            local amount = string.gsub(v.DisplayName.Data.Text,"%D","") - plr.Crates.Value
-                            if v.DisplayName.Text == plr.DisplayName then
-                                lbSection:AddLabel("You are " ..amount.. " boxes away from #100  ⭐")
-                            else
-                            lbSection:AddLabel("You are " ..amount.. " boxes away from #100")
-                            end
-                        end
-                    end
-                end
-            end
-        end
-    })
---]]
     local setWin = Window:MakeTab({
 		Name = "Settings",
         Icon = "rbxassetid://5506279557",
@@ -940,7 +922,15 @@ if game.PlaceId == 258258996 then
         if getgenv().AutoReborn then
             task.spawn(function()
                 if string.match(game:GetService("Players").LocalPlayer.PlayerGui.Rebirth.Frame.Rebirth_Content.Content.Rebirth.Frame.Top.SkipBox.Label.Text, "Skip") then
-                    game:GetService("ReplicatedStorage").Rebirth:InvokeServer()
+                    if rebornDelay ~= 0 and delayVariance ~= 0 then
+                        wait(math.random(rebornDelay+math.random(rebornDelay,rebornDelay+delayVariance)))
+                        game:GetService("ReplicatedStorage").Rebirth:InvokeServer()
+                    elseif rebornDelay ~= 0 and delayVariance == 0 then
+                        wait(rebornDelay)
+                        game:GetService("ReplicatedStorage").Rebirth:InvokeServer()
+                    else
+                        game:GetService("ReplicatedStorage").Rebirth:InvokeServer()
+                    end
                 end
             end)
         end
