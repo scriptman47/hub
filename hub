@@ -1,6 +1,6 @@
 local Players = game:GetService("Players")
 local plr = game.Players.LocalPlayer
-local version = "2.0"
+local version = "2.1"
 local loopList = {
     [1] = "Way-Up-High Upgrader",
     [2] = "Freon-Blast Upgrader",
@@ -40,6 +40,17 @@ if game.PlaceId == 258258996 then
     local notification;
     local leaderboard = "highestLifeV5"
     local lbName = "Top Lives"
+    local layout2 = false
+    local layoutNum = "Layout1"
+    local layoutNum2 = "Layout2"
+    local layoutarg = {
+        [1] = "Load",
+        [2] = layoutNum
+    }
+    local layoutarg2 = {
+        [1] = "Load",
+        [2] = layoutNum2
+    }
 
     -------------------------- Functions
     function getUpgraders()
@@ -127,28 +138,6 @@ if game.PlaceId == 258258996 then
             end
         end
     end
-    function cloverfarm()
-        local function collect(clover)
-            plr.Character.HumanoidRootPart.CFrame = clover.CFrame * CFrame.new(0,0,0)
-            fireproximityprompt(clover)
-        end
-        while getgenv().CloverFarm == true do
-            for i, v in pairs(game.Workspace.Clovers:GetChildren()) do
-                if v.Name == "Rainbow" then
-                    collect(v)
-                elseif v.Name == "Diamond" then
-                    collect(v)
-                elseif v.Name == "Gold" then
-                    collect(v)
-                elseif v.Name == "Regular" then
-                    collect(v)
-                end
-            end
-            task.wait()
-            wait()
-        end
-    end
-
 
     ---------------------------
 
@@ -165,6 +154,9 @@ if game.PlaceId == 258258996 then
         Default = false,
         Callback = function(v)
             getgenv().AutoReborn = v
+            if v == true then
+                game:GetService("ReplicatedStorage").Rebirth:InvokeServer()
+            end
         end
     })
     
@@ -204,6 +196,14 @@ if game.PlaceId == 258258996 then
         end
     })
 
+    laySection:AddToggle({
+        Name = "Auto 2nd Layout",
+        Default = false,
+        Callback = function(v)
+            layout2 = v
+        end
+    })
+
     laySection:AddDropdown({
         Name = "Auto Layout",
         Default = "One",
@@ -217,6 +217,31 @@ if game.PlaceId == 258258996 then
                 layoutNum = "Layout3"
             elseif v == "Four" then
                 layoutNum = "Layout4"
+            end
+            if v == true then
+                if #myfac:GetChildren() < 6 then
+                    game:GetService("ReplicatedStorage").Layouts:InvokeServer(unpack(layoutarg))
+                end
+            end
+        end
+    })
+
+    laySection:AddDropdown({
+        Name = "Auto 2nd Layout",
+        Default = "Two",
+        Options = {"One", "Two", "Three", "Four"},
+        Callback = function(v)
+            if v == "One" then
+                layoutNum2 = "Layout1"
+            elseif v == "Two" then
+                layoutNum2 = "Layout2"
+            elseif v == "Three" then
+                layoutNum2 = "Layout3"
+            elseif v == "Four" then
+                layoutNum2 = "Layout4"
+            end
+            if v == true then
+                game:GetService("ReplicatedStorage").Layouts:InvokeServer(unpack(layoutarg2))
             end
         end
     })
@@ -286,8 +311,35 @@ if game.PlaceId == 258258996 then
         Name = "Clover Farm",
         Default = false,
         Callback = function(v)
+            local tog = v
+            if v == true then
+                task.spawn(function()
+                    local originalPosition = plr.Character.HumanoidRootPart.CFrame
+                    local function teleportBack()
+                        plr.Character.HumanoidRootPart.CFrame = originalPosition * CFrame.new(0,0,0)
+                    end
+                    repeat
+                        for i,v in pairs(game.Workspace.Clovers:GetChildren()) do
+                            if v:IsA("MeshPart") and v.CFrame then
+                                plr.Character.HumanoidRootPart.CFrame = v.CFrame * CFrame.new(0,0,0)
+                                local prompt = v:WaitForChild("ProximityPrompt")
+                                repeat
+                                    fireproximityprompt(prompt, 2)
+                                    fireproximityprompt(prompt, 2)
+                                    fireproximityprompt(prompt, 2)
+                                    task.wait()
+                                until v == nil or tog == false
+                            end
+                        end
+                        if tog == false then
+                            teleportBack()
+                        end
+                        task.wait()
+                    until #game.Workspace.Clovers:GetChildren() == 0 or tog == false
+                    teleportBack()
+                end)
+            end
             getgenv().CloverFarm = v
-            cloverfarm()
         end
     })
 
@@ -737,12 +789,6 @@ if game.PlaceId == 258258996 then
     for i, v in pairs(game.Workspace.LeaderboardModels:GetDescendants()) do
         if v.Name == plr.Name or v.Name == plr.DisplayName then
             print(v.DisplayName.Username.Text, v.DisplayName.Data.Text, v.Rank.Text, v.Parent.Parent.Top.TextLabel.Text)
-            OrionLib:MakeNotification({
-                Name = "Leaderboard Alert: " ..v.DisplayName.Username.Text, v.DisplayName.Data.Text, v.Rank.Text, v.Parent.Parent.Top.TextLabel.Text,
-                Content = "",
-                Image = 0,
-                Time = 60
-            })
         end
     end
 
@@ -847,15 +893,22 @@ if game.PlaceId == 258258996 then
     game.Players.LocalPlayer.Rebirths:GetPropertyChangedSignal("Value"):Connect(function()
         if getgenv().AutoLayout then
             task.spawn(function()
-                local layoutarg = {
-                    [1] = "Load",
-                    [2] = layoutNum
-                }
                 repeat wait() until #myfac:GetChildren() < 6
                 repeat
                 wait(.75)
                 game:GetService("ReplicatedStorage").Layouts:InvokeServer(unpack(layoutarg))
                 until #myfac:GetChildren() > 6
+                if layout2 == true then
+                    local count = 0
+                    for i, v in pairs(myfac:GetChildren()) do
+                        count = count+1
+                    end
+                    local target = count+1
+                    repeat
+                    game:GetService("ReplicatedStorage").Layouts:InvokeServer(unpack(layoutarg2))
+                    wait(.75)
+                    until #myfac:GetChildren () >= target
+                end
             end)
         end
     end)
@@ -945,6 +998,31 @@ if game.PlaceId == 258258996 then
             end)
         end
     end)
+
+    game.Workspace.Clovers.ChildAdded:Connect(function(clover)
+        if getgenv().CloverFarm then
+            task.spawn(function()
+                local originalPosition = plr.Character.HumanoidRootPart.CFrame
+                local function teleportBack()
+                    plr.Character.HumanoidRootPart.CFrame = originalPosition * CFrame.new(0,0,0)
+                end
+                for i,v in pairs(game.Workspace.Clovers:GetChildren()) do
+                    if v.CFrame then
+                        plr.Character.HumanoidRootPart.CFrame = v.CFrame * CFrame.new(0,0,0)
+                    end
+                    local prompt = v:WaitForChild("ProximityPrompt")
+                    repeat
+                        fireproximityprompt(prompt, 2)
+                        fireproximityprompt(prompt, 2)
+                        fireproximityprompt(prompt, 2)
+                        task.wait()
+                    until v == nil 
+                end
+                teleportBack()
+            end)
+        end
+    end)
+
     OrionLib:Init()
     --END OF NORMAL MINERS HAVEN
 elseif game.PlaceId == 432041175 then
