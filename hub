@@ -64,6 +64,8 @@ if game.PlaceId == 258258996 then
     local layoutNum = "Layout1"
     local layoutNum2 = "Layout2"
     local itemCount = 0
+    local rebornDelay = 0
+    local delayVariance = 0
     local layoutarg = {
         [1] = "Load",
         [2] = layoutNum
@@ -928,7 +930,7 @@ if game.PlaceId == 258258996 then
                     elseif rebornDelay ~= 0 and delayVariance == 0 then
                         wait(rebornDelay)
                         game:GetService("ReplicatedStorage").Rebirth:InvokeServer()
-                    else
+                    elseif rebornDelay == 0 and delayVariance == 0 then
                         game:GetService("ReplicatedStorage").Rebirth:InvokeServer()
                     end
                 end
