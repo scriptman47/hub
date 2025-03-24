@@ -6,14 +6,34 @@ local loopList = {
     [2] = "Freon-Blast Upgrader",
     [3] = "Large Ore Upgrader",
     [4] = "Solar Large Upgrader",
-    [5] = "Ore Purifier Machine"
+    [5] = "Ore Purifier Machine",
+    [6] = "Serpentine Upgrader",
+    [7] = "Portable Macrowave",
+    [8] = "Suspended Refiner",
+    [9] = "Molten Upgrader",
+    [10] = "Advanced Ore Atomizer",
+    [11] = "Freon Supressor",
+    [12] = "Horizon Centrifuge",
+    [13] = "Ore Thermocrusher",
+    [14] = "Suspended Lava Refiner",
+    [15] = "Ore Transistor"
 }
 local capList = {
     [1] = 4e+5,
     [2] = 5e+7,
     [3] = 5000,
     [4] = 5000,
-    [5] = 1000
+    [5] = 1000,
+    [6] = 10e+12,
+    [7] = 1e+18,
+    [8] = 1e+18,
+    [9] = 50e+18,
+    [10] = 1e+21,
+    [11] = 100e+21,
+    [12] = 1e+24,
+    [13] = 10e+24,
+    [14] = 1e+27,
+    [15] = 1e+30
 }
 if game.PlaceId == 258258996 then
     local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/jensonhirst/Orion/main/source')))()
@@ -43,6 +63,7 @@ if game.PlaceId == 258258996 then
     local layout2 = false
     local layoutNum = "Layout1"
     local layoutNum2 = "Layout2"
+    local itemCount = 0
     local layoutarg = {
         [1] = "Load",
         [2] = layoutNum
@@ -770,8 +791,9 @@ if game.PlaceId == 258258996 then
         Default = Enum.KeyCode.V,
         Hold = false,
         Callback = function()
+            local string = "MH FKR v"..version
             for i, v in pairs(game.CoreGui.HiddenUI.Orion:GetDescendants()) do
-                if v:IsA("TextLabel") and v.Text == "MH FKR v2.0" then
+                if v:IsA("TextLabel") and v.Text == string then
                     frame = v.Parent.Parent
                 end
             end
@@ -899,11 +921,12 @@ if game.PlaceId == 258258996 then
                 game:GetService("ReplicatedStorage").Layouts:InvokeServer(unpack(layoutarg))
                 until #myfac:GetChildren() > 6
                 if layout2 == true then
-                    local count = 0
-                    for i, v in pairs(myfac:GetChildren()) do
-                        count = count+1
+                    if itemCount == 0 then
+                        for i, v in pairs(myfac:GetChildren()) do
+                            itemCount = itemCount+1
+                        end
+                        local target = itemCount+1
                     end
-                    local target = count+1
                     repeat
                     game:GetService("ReplicatedStorage").Layouts:InvokeServer(unpack(layoutarg2))
                     wait(.75)
@@ -1370,8 +1393,9 @@ elseif game.PlaceId == 432041175 then
         Default = Enum.KeyCode.V,
         Hold = false,
         Callback = function()
+            local string = "MH FKR v"..version
             for i, v in pairs(game.CoreGui.HiddenUI.Orion:GetDescendants()) do
-                if v:IsA("TextLabel") and v.Text == "MH FKR v2.0" then
+                if v:IsA("TextLabel") and v.Text == string then
                     frame = v.Parent.Parent
                 end
             end
@@ -1984,8 +2008,9 @@ elseif game.Workspace:FindFirstChild("Tycoons") then
         Default = Enum.KeyCode.V,
         Hold = false,
         Callback = function()
+            local string = "MH FKR v"..version
             for i, v in pairs(game.CoreGui.HiddenUI.Orion:GetDescendants()) do
-                if v:IsA("TextLabel") and v.Text == "MH FKR v2.0" then
+                if v:IsA("TextLabel") and v.Text == string then
                     frame = v.Parent.Parent
                 end
             end
@@ -2016,6 +2041,28 @@ elseif game.Workspace:FindFirstChild("Tycoons") then
                         end
                     end
                     return
+                end
+                local loop = false
+                local target;
+                local upgr;
+                for i, v in pairs(myfac:GetChildren()) do
+                    if v:IsA("Model") and v:FindFirstChild("Model") then
+                        for i=1, #loopList do
+                            if v.Name == loopList[i] then
+                                target = capList[i] - 1
+                                upgr = myfac[loopList[i]].Model.Upgrade
+                                loop = true
+                            end
+                        end
+                        if loop == true then
+                            repeat
+                                ore.Position = upgr.Position
+                                task.wait()
+                                ore.Position = Base.Position + Vector3.new(0,100,0)
+                                task.wait()
+                            until ore.Cash.Value >= target
+                        end
+                    end
                 end
                 local rCount = 0
                 local upgraders = nil
