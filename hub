@@ -345,11 +345,10 @@ if game.PlaceId == 258258996 then
                                 plr.Character.HumanoidRootPart.CFrame = v.CFrame * CFrame.new(0,0,0)
                                 local prompt = v:WaitForChild("ProximityPrompt")
                                 repeat
-                                    fireproximityprompt(prompt, 2)
-                                    fireproximityprompt(prompt, 2)
-                                    fireproximityprompt(prompt, 2)
-                                    task.wait()
-                                until v == nil or tog == false
+                                    fireproximityprompt(prompt)
+                                    fireproximityprompt(prompt)
+                                    fireproximityprompt(prompt)
+                                until prompt == nil or tog == false
                             end
                         end
                         if tog == false then
