@@ -56,7 +56,6 @@ if game.PlaceId == 258258996 then
     myfacName = tostring(myfac)
     local shinyid = 0
     local shinytable = {}
-    local shinyIDtable = {}
     local notification;
     local leaderboard = "highestLifeV5"
     local lbName = "Top Lives"
@@ -339,23 +338,11 @@ if game.PlaceId == 258258996 then
                     local function teleportBack()
                         plr.Character.HumanoidRootPart.CFrame = originalPosition * CFrame.new(0,0,0)
                     end
-                    repeat
-                        for i,v in pairs(game.Workspace.Clovers:GetChildren()) do
-                            if v:IsA("MeshPart") and v.CFrame then
-                                plr.Character.HumanoidRootPart.CFrame = v.CFrame * CFrame.new(0,0,0)
-                                local prompt = v:WaitForChild("ProximityPrompt")
-                                repeat
-                                    fireproximityprompt(prompt)
-                                    fireproximityprompt(prompt)
-                                    fireproximityprompt(prompt)
-                                until prompt == nil or tog == false
-                            end
-                        end
-                        if tog == false then
-                            teleportBack()
-                        end
-                        task.wait()
-                    until #game.Workspace.Clovers:GetChildren() == 0 or tog == false
+                    for i, v in pairs(game.Workspace.Clovers:GetChildren()) do
+                        plr.Character.HumanoidRootPart.CFrame = v.CFrame * CFrame.new(0,0,0)
+                        repeat fireproximityprompt(v.ProximityPrompt) until v.Parent == nil or tog == false
+                        wait()
+                    end
                     teleportBack()
                 end)
             end
@@ -531,15 +518,11 @@ if game.PlaceId == 258258996 then
                 notification.Size = UDim2.new(1,0,0,100)
                 notification.BackgroundTransparency = 0.1
                 notification.Visible = true
+                wait(10)
+                notification.Title.Text = "Destroying.."
+                wait(1)
+                notification:Destroy()
             end
-        end
-    })
-
-    notifSection:AddButton({
-        Name = "Remove Shiny Notification",
-        Callback = function()
-            notification:Destroy()
-            local notification;
         end
     })
     
@@ -548,24 +531,25 @@ if game.PlaceId == 258258996 then
         Default = "⭐ Foxy Cancer Cell ⭐",
         Options = {"⭐ Foxy Cancer Cell ⭐"},
         Callback = function(v)
-            shinyname = v
-        end
-    })
-
-    local shinyIDdropdown = notifSection:AddDropdown({
-        Name = "Shiny ID List",
-        Default = "0",
-        Options = {"0"},
-        Callback = function(v)
-            shinyid = v
+            shinyname = v.Text
+            for i=1, #shinytable do
+                if shinytable[i].Parent.Parent.Name == v then
+                    shinyid = shinytable[i].Parent.Parent.Icon.Image
+                end
+            end
         end
     })
 
     notifSection:AddButton({
-        Name = "Add Recent Shiny to List",
+        Name = "Refresh List",
         Callback = function()
-            shinyDropdown:Refresh(shinytable,true)
-            shinyIDdropdown:Refresh(shinyIDtable,true)
+            local table1 = {}
+            if shinytable[1] ~= nil then
+                for i=1, #shinytable do
+                    table.insert(table1,shinytable[i].Text)
+                end
+                shinyDropdown:Refresh(table1,true)
+            end 
         end
     })
 
@@ -995,23 +979,19 @@ if game.PlaceId == 258258996 then
                         Name = notif.Title.Text,
                         Content = "",
                         Image = notif.Icon.Image,
-                        Time = 180
+                        Time = 30
                     })
                     shinySection:AddLabel("" ..notif.Title.Text.. " - ID - " ..notif.Icon.Image)
                     game:GetService("ReplicatedFirst").Ambiance.Rooster:Play()
                     game:GetService("ReplicatedFirst").Ambiance.WolfHowl:Play()
-                    count = 0
-                    if shinytable[1] then
+                    local count = 1
+                    if shinytable[1] ~= nil then
+                        local count = 0
                         for i=1, #shinytable do
-                            count = count+1
+                            count=count+1
                         end
                     end
-                    shinytable = nil
-                    shinyIDtable = nil
-                    shinytable = {}
-                    shinyIDtable = {}
-                    table.insert(shinytable,notif.Title.Text)
-                    table.insert(shinyIDtable,notif.Icon.Image)
+                    table.insert(shinytable,count,notif.Title)
                 end
             end)
         end
@@ -1024,20 +1004,12 @@ if game.PlaceId == 258258996 then
                 local function teleportBack()
                     plr.Character.HumanoidRootPart.CFrame = originalPosition * CFrame.new(0,0,0)
                 end
-                for i,v in pairs(game.Workspace.Clovers:GetChildren()) do
-                    if v.CFrame then
-                        plr.Character.HumanoidRootPart.CFrame = v.CFrame * CFrame.new(0,0,0)
-                    end
-                    local prompt = v:WaitForChild("ProximityPrompt")
-                    repeat
-                        fireproximityprompt(prompt)
-                        fireproximityprompt(prompt)
-                        fireproximityprompt(prompt)
-                    until prompt == nil
+                for i, v in pairs(game.Workspace.Clovers:GetChildren()) do
+                    plr.Character.HumanoidRootPart.CFrame = v.CFrame * CFrame.new(0,0,0)
+                    repeat fireproximityprompt(v.ProximityPrompt) until v.Parent == nil
+                    wait()
                 end
-                task.wait(.5)
                 teleportBack()
-                task.wait(.5)
                 if getgenv().AutoReborn then
                     if string.match(game:GetService("Players").LocalPlayer.PlayerGui.Rebirth.Frame.Rebirth_Content.Content.Rebirth.Frame.Top.SkipBox.Label.Text, "Skip") then
                         game:GetService("ReplicatedStorage").Rebirth:InvokeServer()
