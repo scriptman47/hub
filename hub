@@ -332,17 +332,22 @@ if game.PlaceId == 258258996 then
         Default = false,
         Callback = function(v)
             local tog = v
-            if v == true then
+            if tog == true then
                 task.spawn(function()
                     local originalPosition = plr.Character.HumanoidRootPart.CFrame
                     local function teleportBack()
                         plr.Character.HumanoidRootPart.CFrame = originalPosition * CFrame.new(0,0,0)
                     end
                     for i, v in pairs(game.Workspace.Clovers:GetChildren()) do
-                        plr.Character.HumanoidRootPart.CFrame = v.CFrame * CFrame.new(0,0,0)
-                        repeat fireproximityprompt(v.ProximityPrompt) until v.Parent == nil or tog == false
-                        wait()
+                        if v:FindFirstChild("ProximityPrompt") and tog == true then
+                            plr.Character.HumanoidRootPart.CFrame = v.CFrame * CFrame.new(0,0,0)
+                            repeat fireproximityprompt(v.ProximityPrompt) until v.Parent == nil
+                            wait()
+                        elseif tog == false then
+                            break
+                        end
                     end
+                    task.wait(.5)
                     teleportBack()
                 end)
             end
