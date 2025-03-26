@@ -152,6 +152,19 @@ if game.PlaceId == 258258996 then
             end
         end
     end
+    function upgradeshow()
+        while getgenv().UpgradeShow do
+            for i, v in pairs(myfac:GetDescendants()) do
+                if string.match(v.Name, "Upgrade") and v.Name ~= "UpgraderShip" then
+                    v.Transparency = 0.5
+                    local outline = Instance.new("SelectionBox",v)
+                    outline.Adornee = v
+                    outline.Color3 = Color3.fromRGB(255,5,255)
+                end
+            end
+            wait(1)
+        end
+    end
 
     ---------------------------
 
@@ -262,6 +275,23 @@ if game.PlaceId == 258258996 then
             }
             if getgenv().AutoLayout == true then
                 game:GetService("ReplicatedStorage").Layouts:InvokeServer(unpack(layoutarg2))
+            end
+        end
+    })
+
+    laySection:AddToggle({
+        Name = "Show Upgraders",
+        Default = false,
+        Callback = function(v)
+            getgenv().UpgradeShow = v
+            if v then
+                upgradeshow()
+            else
+                for i, v in pairs(myfac:GetDescendants()) do
+                    if string.match(v.Name,"Upgrade") and v.Name ~= "UpgraderShip" and v:FindFirstChild("SelectionBox") then
+                        v.SelectionBox:Destroy()
+                    end
+                end
             end
         end
     })
@@ -1002,7 +1032,7 @@ if game.PlaceId == 258258996 then
         end
     end)
 
-    game.Workspace.Clovers.ChildAdded:Connect(function(clover)
+    game.Workspace.Clovers.ChildAdded:Connect(function()
         if getgenv().CloverFarm then
             task.spawn(function()
                 local originalPosition = plr.Character.HumanoidRootPart.CFrame
@@ -1011,7 +1041,7 @@ if game.PlaceId == 258258996 then
                 end
                 repeat
                     for i, v in pairs(game.Workspace.Clovers:GetChildren()) do
-                        if v:FindFirstChild("ProximityPrompt") and tog == true then
+                        if v:FindFirstChild("ProximityPrompt") then
                             plr.Character.HumanoidRootPart.CFrame = v.CFrame * CFrame.new(0,0,0)
                             repeat fireproximityprompt(v.ProximityPrompt) until v.Parent == nil
                             task.wait()
@@ -1020,36 +1050,12 @@ if game.PlaceId == 258258996 then
                     task.wait()
                 until #game.Workspace.Clovers:GetChildren() == 0
                 teleportBack()
-                if getgenv().AutoReborn then
-                    if string.match(game:GetService("Players").LocalPlayer.PlayerGui.Rebirth.Frame.Rebirth_Content.Content.Rebirth.Frame.Top.SkipBox.Label.Text, "Skip") then
-                        game:GetService("ReplicatedStorage").Rebirth:InvokeServer()
-                    end
-                end
-                if getgenv().AutoLayout then
-                    task.spawn(function()
-                        repeat wait() until #myfac:GetChildren() < 6
-                        repeat
-                        wait(.75)
-                        game:GetService("ReplicatedStorage").Layouts:InvokeServer(unpack(layoutarg))
-                        until #myfac:GetChildren() > 6
-                        if layout2 == true then
-                            if itemCount == 0 then
-                                for i, v in pairs(myfac:GetChildren()) do
-                                    itemCount = itemCount+1
-                                end
-                            end
-                            repeat
-                            game:GetService("ReplicatedStorage").Layouts:InvokeServer(unpack(layoutarg2))
-                            wait(.75)
-                            until #myfac:GetChildren() > itemCount
-                        end
-                    end)
-                end
             end)
         end
     end)
 
     OrionLib:Init()
+
     --END OF NORMAL MINERS HAVEN
 elseif game.PlaceId == 432041175 then
     local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/jensonhirst/Orion/main/source')))()
