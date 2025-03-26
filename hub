@@ -338,13 +338,16 @@ if game.PlaceId == 258258996 then
                     local function teleportBack()
                         plr.Character.HumanoidRootPart.CFrame = originalPosition * CFrame.new(0,0,0)
                     end
-                    for i, v in pairs(game.Workspace.Clovers:GetChildren()) do
-                        if v:FindFirstChild("ProximityPrompt") and tog == true then
-                            plr.Character.HumanoidRootPart.CFrame = v.CFrame * CFrame.new(0,0,0)
-                            repeat fireproximityprompt(v.ProximityPrompt) until v.Parent == nil
-                            wait()
+                    repeat
+                        for i, v in pairs(game.Workspace.Clovers:GetChildren()) do
+                            if v:FindFirstChild("ProximityPrompt") and tog == true then
+                                plr.Character.HumanoidRootPart.CFrame = v.CFrame * CFrame.new(0,0,0)
+                                repeat fireproximityprompt(v.ProximityPrompt) until v.Parent == nil
+                                task.wait()
+                            end
                         end
-                    end
+                        task.wait()
+                    until #game.Workspace.Clovers:GetChildren() == 0
                     teleportBack()
                 end)
             end
@@ -1006,13 +1009,16 @@ if game.PlaceId == 258258996 then
                 local function teleportBack()
                     plr.Character.HumanoidRootPart.CFrame = originalPosition * CFrame.new(0,0,0)
                 end
-                for i, v in pairs(game.Workspace.Clovers:GetChildren()) do
-                    if v:FindFirstChild("ProximityPrompt") and tog == true then
-                        plr.Character.HumanoidRootPart.CFrame = v.CFrame * CFrame.new(0,0,0)
-                        repeat fireproximityprompt(v.ProximityPrompt) until v.Parent == nil
-                        wait()
+                repeat
+                    for i, v in pairs(game.Workspace.Clovers:GetChildren()) do
+                        if v:FindFirstChild("ProximityPrompt") and tog == true then
+                            plr.Character.HumanoidRootPart.CFrame = v.CFrame * CFrame.new(0,0,0)
+                            repeat fireproximityprompt(v.ProximityPrompt) until v.Parent == nil
+                            task.wait()
+                        end
                     end
-                end
+                    task.wait()
+                until #game.Workspace.Clovers:GetChildren() == 0
                 teleportBack()
                 if getgenv().AutoReborn then
                     if string.match(game:GetService("Players").LocalPlayer.PlayerGui.Rebirth.Frame.Rebirth_Content.Content.Rebirth.Frame.Top.SkipBox.Label.Text, "Skip") then
