@@ -155,7 +155,7 @@ if game.PlaceId == 258258996 then
     function upgradeshow()
         while getgenv().UpgradeShow do
             for i, v in pairs(myfac:GetDescendants()) do
-                if string.match(v.Name, "Upgrade") and v.Name ~= "UpgraderShip" and v.Name ~= "UpgradeShip" and v.Name ~= "The Darkest Upgrader" then
+                if string.match(v.Name, "Upgrade") and v.Name ~= "UpgraderShip" and v.Name ~= "UpgradeShip" and v.Name ~= "The Darkest Upgrader" and v.Name ~= "The Final Upgrader" then
                     v.Transparency = 0.5
                     local outline = Instance.new("SelectionBox",v)
                     outline.Adornee = v
