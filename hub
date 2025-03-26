@@ -286,10 +286,12 @@ if game.PlaceId == 258258996 then
             getgenv().UpgradeShow = v
             if v then
                 upgradeshow()
-            else
+            elseif getgenv().UpgradeShow == false then
                 for i, v in pairs(myfac:GetDescendants()) do
-                    if string.match(v.Name,"Upgrade") and v.Name ~= "UpgraderShip" and v:FindFirstChild("SelectionBox") then
-                        v.SelectionBox:Destroy()
+                    if v.Name == "SelectionBox" then
+                        if string.match(v.Parent.Name,"Upgrade") then
+                            v:Destroy()
+                        end
                     end
                 end
             end
