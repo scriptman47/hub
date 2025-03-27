@@ -65,6 +65,7 @@ if game.PlaceId == 258258996 then
     local itemCount = 0
     local rebornDelay = 0
     local delayVariance = 0
+    local boxoption = "Regular"
 
     -------------------------- Functions
     function getUpgraders()
@@ -130,7 +131,7 @@ if game.PlaceId == 258258996 then
                 [1] = boxoption
             }
             game:GetService("ReplicatedStorage"):WaitForChild("MysteryBox"):InvokeServer(unpack(box))
-            wait(5)
+            wait(.5)
         end
     end
     function currentBoxes()
@@ -376,12 +377,12 @@ if game.PlaceId == 258258996 then
                         for i, v in pairs(game.Workspace.Clovers:GetChildren()) do
                             if v:FindFirstChild("ProximityPrompt") and tog == true then
                                 plr.Character.HumanoidRootPart.CFrame = v.CFrame * CFrame.new(0,0,0)
-                                repeat fireproximityprompt(v.ProximityPrompt) until v.Parent == nil
+                                repeat fireproximityprompt(v.ProximityPrompt) until v.Parent == nil or tog == false
                                 task.wait()
                             end
                         end
                         task.wait()
-                    until #game.Workspace.Clovers:GetChildren() == 0
+                    until #game.Workspace.Clovers:GetChildren() == 0 or tog == false
                     teleportBack()
                 end)
             end
@@ -403,7 +404,7 @@ if game.PlaceId == 258258996 then
         Default = "Regular",
         Options = {"Regular", "Unreal", "Inferno", "Easter", "Festive", "Pumpkin", "Spectral"},
         Callback = function(v)
-            BoxOption = v
+            boxoption = v
         end
     })
     --[[
@@ -530,7 +531,7 @@ if game.PlaceId == 258258996 then
         Icon = "rbxassetid://5506273563",
         PremiumOnly = false
 	})
-
+--[[
     local trackSection = shinyWin:AddSection({Name = ""})
 
     trackSection:AddToggle({
@@ -591,7 +592,7 @@ if game.PlaceId == 258258996 then
             end 
         end
     })
-
+--]]
     local shinySection = shinyWin:AddSection({Name = "Recently Acquired Shinies (Bottom to Top)"})
 
     local lbWin = Window:MakeTab({
@@ -629,82 +630,6 @@ if game.PlaceId == 258258996 then
                 leaderboard = "RecentShinyItems"
                 lbName = v
             end
-            if lbSection then
-                for i, v in pairs(game.CoreGui.HiddenUI.Orion:GetDescendants()) do
-                    if v:IsA("TextLabel") then
-                        if v.Text == "Leaderboard" then
-                            v.Parent:Destroy()
-                        end
-                    end
-                end
-                lbSection = lbWin:AddSection({Name = "Leaderboard"})
-                label:Set(lbName)
-            else
-                lbSection = lbWin:AddSection({Name = "Leaderboard"})
-                local label = lbSection:AddLabel(lbName)
-            end
-            for i, v in pairs(game.Workspace.LeaderboardModels[leaderboard].Gui.Contents.Scrolling:GetChildren()) do
-                if v:IsA("Frame") then
-                    if lbName ~= "Recent Shinies" then
-                        lbSection:AddLabel("" ..v.Rank.Text.. " " ..v.DisplayName.Username.Text.. " " ..v.DisplayName.Data.Text)
-                    else
-                        lbSection:AddLabel("" ..v.DisplayName.Text.. " " ..v.DisplayName.Data.Text)
-                    end
-                end
-            end
-            local plrnames = nil
-            local plrnames = {}
-            local amount = nil
-            local rank = nil
-            local num = nil
-            for i, v in pairs(game.Workspace.LeaderboardModels[leaderboard].Gui.Contents.Scrolling:GetChildren()) do
-                if v:IsA("Frame") then
-                    if v:FindFirstChild("Rank") and v.Rank.Text == "#100" then
-                        rank = string.gsub(v.Rank.Text,"%D","")
-                        num = string.gsub(v.DisplayName.Data.Text,"%D","")
-                        if lbName == "Top Lives" then
-                            amount = num-plr.Rebirths.Value
-                            table.insert(plrnames,rank,v.DisplayName.Text)
-                        end
-                        if lbName == "Daily Top Lives" then
-                            table.insert(plrnames,rank,v.DisplayName.Text)
-                        end
-                        if lbName == "Top RP" then
-                            amount = num-plr.Points.Value
-                            table.insert(plrnames,rank,v.DisplayName.Text)
-                        end
-                        if lbName == "Top Gift Streak" then
-                            amount = num-plr.LoginStreak.Value
-                            table.insert(plrnames,rank,v.DisplayName.Text)
-                        end
-                        if lbName == "Top uC" then
-                            amount = num-plr.Crystals.Value
-                            table.insert(plrnames,rank,v.DisplayName.Text)
-                        end
-                        if lbName == "Top Boxes" then
-                            amount = num-plr.Crates.Value
-                            table.insert(plrnames,rank,v.DisplayName.Text)
-                        end
-                    end
-                end
-            end
-            local count = 0
-            for i=1, #plrnames do
-                count = count+1
-                local current = game.Workspace.LeaderboardModels[leaderboard].Gui.Contents.Scrolling:WaitForChild(plrnames[count])
-                lbSection:AddLabel("" ..current.Rank.Text.. " - " ..current.DisplayName.Text.. "    " ..current.DisplayName.Data.Text)
-            end
-            if amount then
-                if lbName ~= "Daily Top Lives" then
-                    lbSection:AddLabel("You are " ..amount.. " away from #100")
-                end
-            end
-        end
-    })
-
-    lbSection1:AddButton({
-        Name = "Show Leaderboard",
-        Callback = function()
             if lbSection then
                 for i, v in pairs(game.CoreGui.HiddenUI.Orion:GetDescendants()) do
                     if v:IsA("TextLabel") then
@@ -1011,29 +936,21 @@ if game.PlaceId == 258258996 then
     end)
 
     game.Players.LocalPlayer.PlayerGui.GUI.Notifications.ChildAdded:Connect(function(notif)
-        if getgenv().ShinyTrack then
-            task.spawn(function()
-                if notif.Name == "ItemTemplate" and string.match(notif.Title.Text, "⭐") then
-                    OrionLib:MakeNotification({
-                        Name = notif.Title.Text,
-                        Content = "",
-                        Image = notif.Icon.Image,
-                        Time = 30
-                    })
-                    shinySection:AddLabel("" ..notif.Title.Text.. " - ID - " ..notif.Icon.Image)
-                    game:GetService("ReplicatedFirst").Ambiance.Rooster:Play()
-                    game:GetService("ReplicatedFirst").Ambiance.WolfHowl:Play()
-                    local count = 1
-                    if shinytable[1] ~= nil then
-                        local count = 0
-                        for i=1, #shinytable do
-                            count=count+1
-                        end
+        task.spawn(function()
+            if notif.Name == "ItemTemplate" and string.match(notif.Title.Text,"⭐") then
+                shinySection:AddLabel(notif.Title.Text)
+                local label;
+                for i, v in pairs(game.CoreGui.HiddenUI.Orion:GetDescendants()) do
+                    if v:IsA("TextLabel") and v.Text == notif.Title.Text then
+                        label = v
                     end
-                    table.insert(shinytable,count,notif.Title)
                 end
-            end)
-        end
+                local pic = Instance.new("ImageLabel",label)
+                pic.Image = notif.Icon.Image
+                pic.Position = UDim2.new(.915,0,.05,0)
+                pic.Size = UDim2.new(.08,0,.9,0)
+            end
+        end)
     end)
 
     game.Workspace.Clovers.ChildAdded:Connect(function()
@@ -1071,6 +988,7 @@ elseif game.PlaceId == 432041175 then
 
     local itemNames = {}
     local itemPositions = {}
+    local boxoption = "Regular"
 
     -------------------------- Functions
     function autoRemote()
@@ -1306,7 +1224,7 @@ elseif game.PlaceId == 432041175 then
         Default = "Regular",
         Options = {"Regular", "Unreal", "Inferno"},
         Callback = function(v)
-            BoxOption = v
+            boxoption = v
         end
     })
 
@@ -1652,6 +1570,7 @@ elseif game.Workspace:FindFirstChild("Tycoons") then
     local myfac = Players.LocalPlayer.PlayerTycoon.Value
     myfacName = tostring(myfac)
     local staramount = 1
+    local boxoption = "Regular"
 
     -------------------------- Functions
     function autoRemote()
@@ -1845,7 +1764,7 @@ elseif game.Workspace:FindFirstChild("Tycoons") then
         Default = "Regular",
         Options = {"Regular", "Unreal", "Inferno"},
         Callback = function(v)
-            BoxOption = v
+            boxoption = v
         end
     })
 
