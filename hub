@@ -1,6 +1,6 @@
 local Players = game:GetService("Players")
 local plr = game.Players.LocalPlayer
-local version = "2.1"
+local version = "2.2"
 local loopList = {
     [1] = "Way-Up-High Upgrader",
     [2] = "Freon-Blast Upgrader",
@@ -155,11 +155,13 @@ if game.PlaceId == 258258996 then
     function upgradeshow()
         while getgenv().UpgradeShow do
             for i, v in pairs(myfac:GetDescendants()) do
-                if string.match(v.Name, "Upgrade") and v.Name ~= "UpgraderShip" and v.Name ~= "UpgradeShip" and v.Name ~= "The Darkest Upgrader" and v.Name ~= "The Final Upgrader" then
-                    v.Transparency = 0.5
-                    local outline = Instance.new("SelectionBox",v)
-                    outline.Adornee = v
-                    outline.Color3 = Color3.fromRGB(255,5,255)
+                if string.match(v.Name, "Upgrade") and v.Name ~= "UpgraderShip" and v.Name ~= "UpgradeShip" and v.Name ~= "The Darkest Upgrader" and v.Name ~= "The Final Upgrader" and v.Name ~= "Rainbow Upgrader" and v.Name ~= "FakeUpgrade" and v.Name ~= "FakeUpgrader" and v.Name ~= "Professional Upgrader" and v.Name ~= "Birthday Upgrader" and v.Name ~= "Banana Split Upgrader" and v.Name ~= "Three Years Upgrader" and v.Name ~= "Golden Bell Upgrader" and v.Name ~= "Shiny Red Upgrader" and v.Name ~= "Macaroon Upgrader" and v.Name ~= "Inflatable Party Upgrader" then                    v.Transparency = 0.5
+                    if v:FindFirstChild("SelectionBox") then
+                    else
+                        local outline = Instance.new("SelectionBox",v)
+                        outline.Adornee = v
+                        outline.Color3 = Color3.fromRGB(255,5,255)
+                    end
                 end
             end
             wait(1)
