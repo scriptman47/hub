@@ -1,40 +1,22 @@
 local Players = game:GetService("Players")
 local plr = game.Players.LocalPlayer
 local version = "2.2"
-local loopList = {
-    [1] = "Way-Up-High Upgrader",
-    [2] = "Freon-Blast Upgrader",
-    [3] = "Large Ore Upgrader",
-    [4] = "Solar Large Upgrader",
-    [5] = "Ore Purifier Machine",
-    [6] = "Serpentine Upgrader",
-    [7] = "Portable Macrowave",
-    [8] = "Suspended Refiner",
-    [9] = "Molten Upgrader",
-    [10] = "Advanced Ore Atomizer",
-    [11] = "Freon Supressor",
-    [12] = "Horizon Centrifuge",
-    [13] = "Ore Thermocrusher",
-    [14] = "Suspended Lava Refiner",
-    [15] = "Ore Transistor"
-}
-local capList = {
-    [1] = 4e+5,
-    [2] = 5e+7,
-    [3] = 5000,
-    [4] = 5000,
-    [5] = 1000,
-    [6] = 10e+12,
-    [7] = 1e+18,
-    [8] = 1e+18,
-    [9] = 50e+18,
-    [10] = 1e+21,
-    [11] = 100e+21,
-    [12] = 1e+24,
-    [13] = 10e+24,
-    [14] = 1e+27,
-    [15] = 1e+30
-}
+loopList = {}
+loopList[#loopList + 1] = {NAME = "Way-Up-High Upgrader",CAP = 4e+5}
+loopList[#loopList + 1] = {NAME = "Freon-Blast Upgrader",CAP = 5e+7}
+loopList[#loopList + 1] = {NAME = "Large Ore Upgrader",CAP = 5000}
+loopList[#loopList + 1] = {NAME = "Solar Large Upgrader",CAP = 5000}
+loopList[#loopList + 1] = {NAME = "Ore Purifier Machine",CAP = 1000}
+loopList[#loopList + 1] = {NAME = "Serpentine Upgrader",CAP = 10e+12}
+loopList[#loopList + 1] = {NAME = "Portable Macrowave",CAP = 1e+18}
+loopList[#loopList + 1] = {NAME = "Suspended Refiner",CAP = 1e+18}
+loopList[#loopList + 1] = {NAME = "Molten Upgrader",CAP = 50e+18}
+loopList[#loopList + 1] = {NAME = "Advanced Ore Atomizer",CAP = 1e+21}
+loopList[#loopList + 1] = {NAME = "Freon Supressor",CAP = 100e+21}
+loopList[#loopList + 1] = {NAME = "Horizon Centrifuge",CAP = 1e+24}
+loopList[#loopList + 1] = {NAME = "Ore Thermocrusher",CAP = 10e+24}
+loopList[#loopList + 1] = {NAME = "Suspended Lava Refiner",CAP = 1e+27}
+loopList[#loopList + 1] = {NAME = "Ore Transistor",CAP = 1e+30}
 if game.PlaceId == 258258996 then
     local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/jensonhirst/Orion/main/source')))()
 	local Window = OrionLib:MakeWindow({
@@ -785,6 +767,31 @@ if game.PlaceId == 258258996 then
                     end
                     return
                 end
+                local upgr;
+                local cap;
+                local loop = false
+                for i, v in pairs(myfac:GetChildren()) do
+                    if v:IsA("Model") and v:FindFirstChild("Model") then
+                        for i=1, #loopList do
+                            if v.Name == loopList[i].NAME then
+                                upgr = myfac[loopList[i]].Model.Upgrade
+                                cap = loopList[i].CAP
+                            end
+                        end
+                    end
+                end
+                if cap then
+                    repeat
+                        ore.Position = upgr.Position
+                        ore.Velocity = Vector3.new(0,0,0)
+                        ore.Rotation = ore.Rotation * 1.1
+                        task.wait()
+                        ore.Position = Base.Position + Vector3.new(0,100,0)
+                        ore.Velocity = Vector3.new(0,0,0)
+                        ore.Rotation = ore.Rotation * 1.1
+                        task.wait()
+                    until ore.Cash.Value >= cap
+                end
                 getUpgraders()
                 ore.Position = Base.Position + Vector3.new(0,102,0)
                 task.wait()
@@ -972,10 +979,27 @@ if game.PlaceId == 258258996 then
                         label = v
                     end
                 end
-                local pic = Instance.new("ImageLabel",label)
+                local pic = Instance.new("ImageButton",label)
                 pic.Image = notif.Icon.Image
                 pic.Position = UDim2.new(.915,0,.05,0)
                 pic.Size = UDim2.new(.08,0,.9,0)
+                pic.MouseButton1Click:Connect(function()
+                    local notification = plr.PlayerGui.GUI.Notifications.ItemTemplate:Clone()
+                    notification.Parent = plr.PlayerGui.GUI.Notifications
+                    notification.BackgroundColor3 = Color3.fromRGB(180,239,255)
+                    notification.Icon.Image = pic.Image
+                    notification.Title.Text = label.Text
+                    notification.Icon.Amount.Text = "x1"
+                    notification.Tier.Text = "Shiny Reborn"
+                    notification.BackgroundTransparency = 0.1
+                    notification.Visible = true
+                    notification:TweenSize(UDim2.new(1,0,0,100), Enum.EasingDirection.In, Enum.EasingStyle.Linear, 0.2, true)
+                    wait(10)
+                    notification.Title.Text = "Destroying.."
+                    notification:TweenSize(UDim2.new(0, 0, 0, 0), Enum.EasingDirection.In, Enum.EasingStyle.Linear, 0.2, true)
+                    wait(.2)
+                    notification:Destroy()
+                end)
             end
         end)
     end)
@@ -1409,27 +1433,30 @@ elseif game.PlaceId == 432041175 then
                     end
                     return
                 end
-                local loop = false
-                local target;
                 local upgr;
+                local cap;
+                local loop = false
                 for i, v in pairs(myfac:GetChildren()) do
                     if v:IsA("Model") and v:FindFirstChild("Model") then
                         for i=1, #loopList do
-                            if v.Name == loopList[i] then
-                                target = capList[i] - 1
+                            if v.Name == loopList[i].NAME then
                                 upgr = myfac[loopList[i]].Model.Upgrade
-                                loop = true
+                                cap = loopList[i].CAP
                             end
                         end
-                        if loop == true then
-                            repeat
-                                ore.Position = upgr.Position
-                                task.wait()
-                                ore.Position = Base.Position + Vector3.new(0,100,0)
-                                task.wait()
-                            until ore.Cash.Value >= target
-                        end
                     end
+                end
+                if cap then
+                    repeat
+                        ore.Position = upgr.Position
+                        ore.Velocity = Vector3.new(0,0,0)
+                        ore.Rotation = ore.Rotation * 1.1
+                        task.wait()
+                        ore.Position = Base.Position + Vector3.new(0,100,0)
+                        ore.Velocity = Vector3.new(0,0,0)
+                        ore.Rotation = ore.Rotation * 1.1
+                        task.wait()
+                    until ore.Cash.Value >= cap
                 end
                 local rCount = 0
                 local upgraders = nil
@@ -2049,27 +2076,30 @@ elseif game.Workspace:FindFirstChild("Tycoons") then
                     end
                     return
                 end
-                local loop = false
-                local target;
                 local upgr;
+                local cap;
+                local loop = false
                 for i, v in pairs(myfac:GetChildren()) do
                     if v:IsA("Model") and v:FindFirstChild("Model") then
                         for i=1, #loopList do
-                            if v.Name == loopList[i] then
-                                target = capList[i] - 1
+                            if v.Name == loopList[i].NAME then
                                 upgr = myfac[loopList[i]].Model.Upgrade
-                                loop = true
+                                cap = loopList[i].CAP
                             end
                         end
-                        if loop == true then
-                            repeat
-                                ore.Position = upgr.Position
-                                task.wait()
-                                ore.Position = Base.Position + Vector3.new(0,100,0)
-                                task.wait()
-                            until ore.Cash.Value >= target
-                        end
                     end
+                end
+                if cap then
+                    repeat
+                        ore.Position = upgr.Position
+                        ore.Velocity = Vector3.new(0,0,0)
+                        ore.Rotation = ore.Rotation * 1.1
+                        task.wait()
+                        ore.Position = Base.Position + Vector3.new(0,100,0)
+                        ore.Velocity = Vector3.new(0,0,0)
+                        ore.Rotation = ore.Rotation * 1.1
+                        task.wait()
+                    until ore.Cash.Value >= cap
                 end
                 local rCount = 0
                 local upgraders = nil
