@@ -767,31 +767,6 @@ if game.PlaceId == 258258996 then
                     end
                     return
                 end
-                local upgr;
-                local cap;
-                local loop = false
-                for i, v in pairs(myfac:GetChildren()) do
-                    if v:IsA("Model") and v:FindFirstChild("Model") then
-                        for i=1, #loopList do
-                            if v.Name == loopList[i].NAME then
-                                upgr = myfac[loopList[i]].Model.Upgrade
-                                cap = loopList[i].CAP
-                            end
-                        end
-                    end
-                end
-                if cap then
-                    repeat
-                        ore.Position = upgr.Position
-                        ore.Velocity = Vector3.new(0,0,0)
-                        ore.Rotation = ore.Rotation * 1.1
-                        task.wait()
-                        ore.Position = Base.Position + Vector3.new(0,100,0)
-                        ore.Velocity = Vector3.new(0,0,0)
-                        ore.Rotation = ore.Rotation * 1.1
-                        task.wait()
-                    until ore.Cash.Value >= cap
-                end
                 getUpgraders()
                 ore.Position = Base.Position + Vector3.new(0,102,0)
                 task.wait()
@@ -1440,7 +1415,7 @@ elseif game.PlaceId == 432041175 then
                     if v:IsA("Model") and v:FindFirstChild("Model") then
                         for i=1, #loopList do
                             if v.Name == loopList[i].NAME then
-                                upgr = myfac[loopList[i]].Model.Upgrade
+                                upgr = v.Model.Upgrade
                                 cap = loopList[i].CAP
                             end
                         end
@@ -2083,7 +2058,7 @@ elseif game.Workspace:FindFirstChild("Tycoons") then
                     if v:IsA("Model") and v:FindFirstChild("Model") then
                         for i=1, #loopList do
                             if v.Name == loopList[i].NAME then
-                                upgr = myfac[loopList[i]].Model.Upgrade
+                                upgr = v.Model.Upgrade
                                 cap = loopList[i].CAP
                             end
                         end
