@@ -1,0 +1,2489 @@
+local Players = game:GetService("Players")
+local plr = game.Players.LocalPlayer
+local version = "2.2"
+local loopList = {
+    [1] = "Way-Up-High Upgrader",
+    [2] = "Freon-Blast Upgrader",
+    [3] = "Large Ore Upgrader",
+    [4] = "Solar Large Upgrader",
+    [5] = "Ore Purifier Machine",
+    [6] = "Serpentine Upgrader",
+    [7] = "Portable Macrowave",
+    [8] = "Suspended Refiner",
+    [9] = "Molten Upgrader",
+    [10] = "Advanced Ore Atomizer",
+    [11] = "Freon Supressor",
+    [12] = "Horizon Centrifuge",
+    [13] = "Ore Thermocrusher",
+    [14] = "Suspended Lava Refiner",
+    [15] = "Ore Transistor"
+}
+local capList = {
+    [1] = 4e+5,
+    [2] = 5e+7,
+    [3] = 5000,
+    [4] = 5000,
+    [5] = 1000,
+    [6] = 10e+12,
+    [7] = 1e+18,
+    [8] = 1e+18,
+    [9] = 50e+18,
+    [10] = 1e+21,
+    [11] = 100e+21,
+    [12] = 1e+24,
+    [13] = 10e+24,
+    [14] = 1e+27,
+    [15] = 1e+30
+}
+if game.PlaceId == 258258996 then
+    local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/jensonhirst/Orion/main/source')))()
+	local Window = OrionLib:MakeWindow({
+        Name = "MH FKR v" ..version,
+        HidePremium = true, 
+        SaveConfig = true, 
+        ConfigFolder = "hub/MHfkr", 
+        IntroEnabled = true, 
+        IntroText = "Welcome to MH FKR v"..version..", "..plr.Name, 
+        IntroIcon = "rbxassetid://5670621915", 
+        Icon = "rbxassetid://5670621915",
+        CloseCallback = function()
+            game.CoreGui.HiddenUI.Orion.Enabled = false
+        end
+    })
+	
+    local Base = plr.PlayerTycoon.Value.Base
+    local myfac = Players.LocalPlayer.PlayerTycoon.Value
+    myfacName = tostring(myfac)
+    local shinyid = 0
+    local shinytable = {}
+    local notification;
+    local leaderboard = "highestLifeV5"
+    local lbName = "Top Lives"
+    local layout2 = false
+    local layoutNum = "Layout1"
+    local layoutNum2 = "Layout2"
+    local itemCount = 0
+    local rebornDelay = 0
+    local delayVariance = 0
+    local boxoption = "Regular"
+
+    -------------------------- Functions
+    function getUpgraders()
+        local Upgraders = nil
+        local Resetters = nil
+        local Upgraders = {}
+        local Resetters = {}
+        local resetCount = 0
+        for i, v in pairs(myfac:GetChildren()) do
+            if string.match(v.Name, "Tesla") or string.match(v.Name, "Void Star") or string.match(v.Name, "Black Dwarf") or v.Name == "The Final Upgrader" or v.Name == "The Ultimate Sacrifice" or v.Name == "Daestrophe" then
+                table.insert(Resetters, v.Model.Upgrade)
+            elseif v:FindFirstChild("Model") and v.Model:FindFirstChild("Upgrade2") then
+                table.insert(Upgraders, v.Model.Upgrade2)
+            elseif v:FindFirstChild("Model") and v.Model:FindFirstChild("Upgrade") then
+                table.insert(Upgraders, v.Model.Upgrade)
+            elseif v:FindFirstChild("Model") and v.Model:FindFirstChild("Upgrader") then
+                table.insert(Upgraders, v.Model.Upgrader)
+            end
+        end
+        for i=1, #Upgraders do
+            Upgraders[i].Position = Base.Position + Vector3.new(0,100,0)
+            Upgraders[i].Size = Vector3.new(1,1,1)
+            Upgraders[i].Rotation = Vector3.new(0,0,0)
+            Upgraders[i].Transparency = 1
+        end
+        for i=1, #Resetters do
+            resetCount = resetCount + 1
+            Resetters[i].Size = Vector3.new(1,1,1)
+            Resetters[i].Rotation = Vector3.new(0,0,0)
+            Resetters[i].Transparency = 1
+        end
+        if resetCount == 4 then
+            Resetters[4].Position = Base.Position + Vector3.new(0,200,0)
+            Resetters[3].Position = Base.Position + Vector3.new(0,175,0)
+            Resetters[2].Position = Base.Position + Vector3.new(0,150,0)
+            Resetters[1].Position = Base.Position + Vector3.new(0,125,0)
+        elseif resetCount == 3 then
+            Resetters[3].Position = Base.Position + Vector3.new(0,175,0)
+            Resetters[2].Position = Base.Position + Vector3.new(0,150,0)
+            Resetters[1].Position = Base.Position + Vector3.new(0,125,0)
+        elseif resetCount == 2 then
+            Resetters[2].Position = Base.Position + Vector3.new(0,150,0)
+            Resetters[1].Position = Base.Position + Vector3.new(0,125,0)
+        elseif resetCount == 1 then
+            Resetters[1].Position = Base.Position + Vector3.new(0,125,0)
+        end 
+    end
+    function autoRemote()
+        while getgenv().AutoRemote == true do
+            for i, v in pairs(myfac:GetDescendants()) do
+                if v.Name == "DropRate" then
+                    if v.Value == "Manual" then
+                        game:GetService("ReplicatedStorage"):WaitForChild("RemoteDrop"):FireServer()
+                    end
+                end
+            end
+            wait(.01)
+        end
+    end
+    function openBoxes()
+        while getgenv().BoxOpen == true do
+            local box = {
+                [1] = boxoption
+            }
+            game:GetService("ReplicatedStorage"):WaitForChild("MysteryBox"):InvokeServer(unpack(box))
+            wait(.5)
+        end
+    end
+    function currentBoxes()
+        if getgenv().BoxFarm then
+            local originalPosition = plr.Character.HumanoidRootPart.CFrame
+            local function teleportBack()
+                plr.Character.HumanoidRootPart.CFrame = originalPosition * CFrame.new(0,0,0)
+            end
+            for _,v in pairs(game.Workspace.Boxes:GetChildren()) do
+                plr.Character.HumanoidRootPart.CFrame = v.CFrame * CFrame.new(0,0,0)
+                wait(.2)
+            end
+            wait(.2)
+            teleportBack()
+            if getgenv().AutoReborn then
+                if string.match(game:GetService("Players").LocalPlayer.PlayerGui.Rebirth.Frame.Rebirth_Content.Content.Rebirth.Frame.Top.SkipBox.Label.Text, "Skip") then
+                    game:GetService("ReplicatedStorage").Rebirth:InvokeServer()
+                end
+            end
+        end
+    end
+    function upgradeshow()
+        while getgenv().UpgradeShow do
+            for i, v in pairs(myfac:GetDescendants()) do
+                if string.match(v.Name, "Upgrade") and v.Name ~= "UpgraderShip" and v.Name ~= "UpgradeShip" and v.Name ~= "The Darkest Upgrader" and v.Name ~= "The Final Upgrader" and v.Name ~= "Rainbow Upgrader" and v.Name ~= "FakeUpgrade" and v.Name ~= "FakeUpgrader" and v.Name ~= "Professional Upgrader" and v.Name ~= "Birthday Upgrader" and v.Name ~= "Banana Split Upgrader" and v.Name ~= "Three Years Upgrader" and v.Name ~= "Golden Bell Upgrader" and v.Name ~= "Shiny Red Upgrader" and v.Name ~= "Macaroon Upgrader" and v.Name ~= "Inflatable Party Upgrader" then                    v.Transparency = 0.5
+                    if v:FindFirstChild("SelectionBox") then
+                    else
+                        local outline = Instance.new("SelectionBox",v)
+                        outline.Adornee = v
+                        outline.Color3 = Color3.fromRGB(255,5,255)
+                    end
+                end
+            end
+            wait(1)
+        end
+    end
+
+    ---------------------------
+
+	local Main = Window:MakeTab({
+		Name = "Main",
+        Icon = "rbxassetid://5506574548",
+        PremiumOnly = false
+	})
+
+    local rbSection = Main:AddSection({Name = "Rebirthing"})
+
+    rbSection:AddToggle({
+        Name = "Auto Reborn",
+        Default = false,
+        Callback = function(v)
+            getgenv().AutoReborn = v
+            if v == true then
+                game:GetService("ReplicatedStorage").Rebirth:InvokeServer()
+            end
+        end
+    })
+    
+    rbSection:AddSlider({
+        Name = "Reborn Delay",
+        Min = 0,
+        Max = 20,
+        Default = 0,
+        Color = Color3.fromRGB(255,255,255),
+        Increment = 1,
+        ValueName = "seconds",
+        Callback = function(v)
+            local rebornDelay = v
+        end
+    })
+
+    rbSection:AddSlider({
+        Name = "Delay Variance",
+        Min = 0,
+        Max = 20,
+        Default = 0,
+        Color = Color3.fromRGB(255,255,255),
+        Increment = 1,
+        ValueName = "seconds",
+        Callback = function(v)
+            local delayVariance = v
+        end
+    })
+
+    local laySection = Main:AddSection({Name = "Layouts"})
+
+    laySection:AddToggle({
+        Name = "Auto Layout",
+        Default = false,
+        Callback = function(v)
+            getgenv().AutoLayout = v
+        end
+    })
+
+    laySection:AddToggle({
+        Name = "Auto 2nd Layout",
+        Default = false,
+        Callback = function(v)
+            layout2 = v
+        end
+    })
+
+    laySection:AddDropdown({
+        Name = "Auto Layout",
+        Default = "One",
+        Options = {"One", "Two", "Three", "Four"},
+        Callback = function(v)
+            if v == "One" then
+                layoutNum = "Layout1"
+            elseif v == "Two" then
+                layoutNum = "Layout2"
+            elseif v == "Three" then
+                layoutNum = "Layout3"
+            elseif v == "Four" then
+                layoutNum = "Layout4"
+            end
+            layoutarg = {
+                [1] = "Load",
+                [2] = layoutNum
+            }
+            if #myfac:GetChildren() < 6 and getgenv().AutoLayout == true then
+                game:GetService("ReplicatedStorage").Layouts:InvokeServer(unpack(layoutarg))
+            end
+        end
+    })
+
+    laySection:AddDropdown({
+        Name = "Auto 2nd Layout",
+        Default = "Two",
+        Options = {"One", "Two", "Three", "Four"},
+        Callback = function(v)
+            if v == "One" then
+                layoutNum2 = "Layout1"
+            elseif v == "Two" then
+                layoutNum2 = "Layout2"
+            elseif v == "Three" then
+                layoutNum2 = "Layout3"
+            elseif v == "Four" then
+                layoutNum2 = "Layout4"
+            end
+            layoutarg2 = {
+                [1] = "Load",
+                [2] = layoutNum2
+            }
+            if getgenv().AutoLayout == true then
+                game:GetService("ReplicatedStorage").Layouts:InvokeServer(unpack(layoutarg2))
+            end
+        end
+    })
+
+    laySection:AddToggle({
+        Name = "Show Upgraders",
+        Default = false,
+        Callback = function(v)
+            getgenv().UpgradeShow = v
+            if v then
+                upgradeshow()
+            elseif getgenv().UpgradeShow == false then
+                for i, v in pairs(myfac:GetDescendants()) do
+                    if v.Name == "SelectionBox" then
+                        if string.match(v.Parent.Name,"Upgrade") then
+                            v:Destroy()
+                        end
+                    end
+                end
+            end
+        end
+    })
+
+    local oreSection = Main:AddSection({Name = "Ores"})
+
+    oreSection:AddToggle({
+        Name = "Ore Boost",
+        Default = false,
+        Callback = function(v)
+            getgenv().OreBoost = v
+        end
+    })
+    
+    oreSection:AddToggle({
+        Name = "Spawn Ores at Furnace",
+        Default = false,
+        Callback = function(v)
+            getgenv().OreFurnace = v
+        end
+    })
+
+    oreSection:AddToggle({
+        Name = "Auto Remote",
+        Default = false,
+        Callback = function(v)
+            getgenv().AutoRemote = v
+            autoRemote()
+        end
+    })
+
+    oreSection:AddButton({
+        Name = "TP Ores",
+        Callback = function()
+            for i, v in pairs(game.Workspace.DroppedParts:GetChildren()) do
+                v.CFrame = plr.Character.HumanoidRootPart.CFrame
+            end
+        end
+    })
+
+    oreSection:AddToggle({
+        Name = "Become The Ore",
+        Default = false,
+        Callback = function(v)
+            getgenv().BecomeTheOre = v
+        end
+    })
+
+    local BoxWin = Window:MakeTab({
+        Name = "Boxes",
+        Icon = "rbxassetid://5140907242",
+        PremiumOnly = false
+    })
+
+    local boxSection = BoxWin:AddSection({Name = "Boxes"})
+
+    boxSection:AddToggle({
+        Name = "Box Farm",
+        Default = false,
+        Callback = function(v)
+            getgenv().BoxFarm = v
+            currentBoxes()
+        end
+    })
+
+    boxSection:AddToggle({
+        Name = "Clover Farm",
+        Default = false,
+        Callback = function(v)
+            tog = v
+            if tog == true then
+                task.spawn(function()
+                    local originalPosition = plr.Character.HumanoidRootPart.CFrame
+                    local function teleportBack()
+                        plr.Character.HumanoidRootPart.CFrame = originalPosition * CFrame.new(0,0,0)
+                    end
+                    repeat
+                        for i, v in pairs(game.Workspace.Clovers:GetChildren()) do
+                            if v:FindFirstChild("ProximityPrompt") and tog == true then
+                                plr.Character.HumanoidRootPart.CFrame = v.CFrame * CFrame.new(0,0,0)
+                                repeat 
+                                    fireproximityprompt(v.ProximityPrompt)
+                                    fireproximityprompt(v.ProximityPrompt) 
+                                    fireproximityprompt(v.ProximityPrompt)
+                                until v.Parent == nil or tog == false
+                                task.wait()
+                            end
+                        end
+                        task.wait()
+                    until #game.Workspace.Clovers:GetChildren() == 0
+                    teleportBack()
+                end)
+            end
+            getgenv().CloverFarm = v
+        end
+    })
+
+    boxSection:AddToggle({
+        Name = "Open Boxes",
+        Default = false,
+        Callback = function(v)
+            getgenv().BoxOpen = v
+            openBoxes()
+        end
+    })
+
+    boxSection:AddDropdown({
+        Name = "Box Options",
+        Default = "Regular",
+        Options = {"Regular", "Unreal", "Inferno", "Easter", "Festive", "Pumpkin", "Spectral"},
+        Callback = function(v)
+            boxoption = v
+        end
+    })
+    --[[
+    boxSection:AddButton({
+        Name = "Claim Daily Box",
+        Callback = function()
+            --
+        end
+    })
+    --]]
+    local guiWin = Window:MakeTab({
+        Name = "GUIs",
+        Icon = "rbxassetid://5670621831",
+        PremiumOnly = false
+    })
+
+    local guiSection1 = guiWin:AddSection({Name = "Useful"})
+
+    guiSection1:AddButton({
+        Name = "Craftsman",
+        Callback = function()
+            plr.Character.HumanoidRootPart.CFrame = game.Workspace.Map.TeleporterModel.TowerInterior.CFrame * CFrame.new(0,0,0)
+        end
+    })
+
+    guiSection1:AddButton({
+        Name = "Masked Man",
+        Callback = function()
+            plr.PlayerGui.GUI.EventShop.Visible = true
+        end
+    })
+
+    guiSection1:AddButton({
+        Name = "Superstitious",
+        Callback = function()
+            plr.Character.HumanoidRootPart.CFrame = game.Workspace.Map.TeleporterModel.Temple.CFrame * CFrame.new(0,0,0)
+        end
+    })
+
+    guiSection1:AddButton({
+        Name = "Box Man",
+        Callback = function()
+            plr.PlayerGui.GUI.SpookMcDookShop.Visible = true
+        end
+    })
+
+    guiSection1:AddButton({
+        Name = "Fargield",
+        Callback = function()
+            plr.Character.HumanoidRootPart.CFrame = CFrame.new(-322, 104, 529) * CFrame.new(0,0,0)
+        end
+    })
+
+    guiSection1:AddButton({
+        Name = "John Doe",
+        Callback = function()
+            plr.Character.HumanoidRootPart.CFrame = CFrame.new(-729, 41, -32) * CFrame.new(0,0,0)
+        end
+    })
+
+    local plrWin = Window:MakeTab({
+		Name = "Player",
+        Icon = Players:GetUserThumbnailAsync(plr.UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size100x100),
+        PremiumOnly = false
+	})
+
+    local plrSection1 = plrWin:AddSection({Name = "Teleports"})
+
+    plrSection1:AddButton({
+        Name = "Teleport to Base",
+        Callback = function()
+            plr.Character.HumanoidRootPart.CFrame = Base.CFrame * CFrame.new(0,3,0)
+        end
+    })
+
+    plrSection1:AddButton({
+        Name = "Teleport to Leaderboards",
+        Callback = function()
+            plr.Character.HumanoidRootPart.CFrame = CFrame.new(-62, 179, 323) * CFrame.new(0,0,0)
+        end
+    })
+    
+    local plrSection2 = plrWin:AddSection({Name = "Attributes"})
+
+    plrSection2:AddSlider({
+        Name = "Walk Speed",
+        Min = 16,
+        Max = 300,
+        Default = plr.Character.Humanoid.WalkSpeed,
+        Color = Color3.fromRGB(255,255,255),
+        Increment = 1,
+        ValueName = "",
+        Callback = function(v)
+            plr.Character.Humanoid.WalkSpeed = v
+            speed = v
+        end
+    })
+
+    plrSection2:AddSlider({
+        Name = "Jump Power",
+        Min = 50,
+        Max = 300,
+        Default = plr.Character.Humanoid.JumpPower,
+        Color = Color3.fromRGB(255,255,255),
+        Increment = 1,
+        ValueName = "",
+        Callback = function(v)
+            plr.Character.Humanoid.JumpPower = v
+            jump = v
+        end
+    })
+
+    plrSection2:AddToggle({
+        Name = "Lock Attributes",
+        Default = false,
+        Callback = function(v)
+            getgenv().Speed = v
+            getgenv().Jump = v
+        end
+    })
+
+    plrSection2:AddToggle({
+        Name = "Anti AFK",
+        Default = false,
+        Callback = function(v)
+            local GC = getconnections or get_signal_cons
+            if GC and v then
+                for i,v in pairs(GC(Players.LocalPlayer.Idled)) do
+                    if v["Disable"] then
+                        v["Disable"](v)
+                    elseif v["Disconnect"] then
+                        v["Disconnect"](v)
+                    end
+                end
+            else
+                local VirtualUser = cloneref(game:GetService("VirtualUser"))
+                Players.LocalPlayer.Idled:Connect(function()
+                    VirtualUser:CaptureController()
+                    VirtualUser:ClickButton2(Vector2.new())
+                end)
+            end
+        end
+    })
+
+    local shinyWin = Window:MakeTab({
+		Name = "Shinys",
+        Icon = "rbxassetid://5506273563",
+        PremiumOnly = false
+	})
+--[[
+    local trackSection = shinyWin:AddSection({Name = ""})
+
+    trackSection:AddToggle({
+        Name = "Shiny Tracker",
+        Default = false,
+        Callback = function(v)
+            getgenv().ShinyTrack = v
+        end
+    })
+
+    local notifSection = shinyWin:AddSection({Name = "Notification Fabrication"})
+
+    notifSection:AddButton({
+        Name = "Fabricate Shiny Notification",
+        Callback = function()
+            if shinyid ~= 0 and shinyname then
+                notification = plr.PlayerGui.GUI.Notifications.ItemTemplate:Clone()
+                notification.Parent = plr.PlayerGui.GUI.Notifications
+                notification.BackgroundColor3 = Color3.fromRGB(180,239,255)
+                notification.Icon.Image = shinyid
+                notification.Title.Text = shinyname
+                notification.Icon.Amount.Text = "x1"
+                notification.Tier.Text = "Shiny Reborn"
+                notification.Size = UDim2.new(1,0,0,100)
+                notification.BackgroundTransparency = 0.1
+                notification.Visible = true
+                wait(10)
+                notification.Title.Text = "Destroying.."
+                wait(1)
+                notification:Destroy()
+            end
+        end
+    })
+    
+    local shinyDropdown = notifSection:AddDropdown({
+        Name = "Shiny List",
+        Default = "⭐ Foxy Cancer Cell ⭐",
+        Options = {"⭐ Foxy Cancer Cell ⭐"},
+        Callback = function(v)
+            shinyname = v.Text
+            for i=1, #shinytable do
+                if shinytable[i].Parent.Parent.Name == v then
+                    shinyid = shinytable[i].Parent.Parent.Icon.Image
+                end
+            end
+        end
+    })
+
+    notifSection:AddButton({
+        Name = "Refresh List",
+        Callback = function()
+            local table1 = {}
+            if shinytable[1] ~= nil then
+                for i=1, #shinytable do
+                    table.insert(table1,shinytable[i].Text)
+                end
+                shinyDropdown:Refresh(table1,true)
+            end 
+        end
+    })
+--]]
+    local shinySection = shinyWin:AddSection({Name = "Recently Acquired Shinies (Bottom to Top)"})
+
+    local lbWin = Window:MakeTab({
+		Name = "Leaderboards",
+        Icon = "rbxassetid://5506274466",
+        PremiumOnly = false
+	})
+
+    local lbSection1 = lbWin:AddSection({Name = "All Leaderboards"})
+
+    lbSection1:AddDropdown({
+        Name = "Leaderboards",
+        Default = "Top Lives",
+        Options = {"Top Lives","Daily Top Lives","Top RP","Top Gift Streak","Top uC","Top Boxes","Recent Shinies"},
+        Callback = function(v)
+            if v == "Top Lives" then
+                leaderboard = "highestLifeV5"
+                lbName = v
+            elseif v == "Daily Top Lives" then
+                leaderboard = "LifeSkippedV4"
+                lbName = v
+            elseif v == "Top RP" then
+                leaderboard = "LeaderboardRPAllTimeV0"
+                lbName = v
+            elseif v == "Top Gift Streak" then
+                leaderboard = "LeaderboardTopGiftV0"
+                lbName = v
+            elseif v == "Top uC" then
+                leaderboard = "LeaderboardUCV2"
+                lbName = v
+            elseif v == "Top Boxes" then
+                leaderboard = "LeaderboardBoxesAllTime"
+                lbName = v
+            elseif v == "Recent Shinies" then
+                leaderboard = "RecentShinyItems"
+                lbName = v
+            end
+            if lbSection then
+                for i, v in pairs(game.CoreGui.HiddenUI.Orion:GetDescendants()) do
+                    if v:IsA("TextLabel") then
+                        if v.Text == "Leaderboard" then
+                            v.Parent:Destroy()
+                        end
+                    end
+                end
+            end
+            lbSection = lbWin:AddSection({Name = "Leaderboard"})
+            lbSection:AddLabel(lbName)
+            for i, v in pairs(game.Workspace.LeaderboardModels[leaderboard].Gui.Contents.Scrolling:GetChildren()) do
+                if v:IsA("Frame") then
+                    if lbName ~= "Recent Shinies" then
+                        lbSection:AddLabel("" ..v.Rank.Text.. " " ..v.DisplayName.Username.Text.. " " ..v.DisplayName.Data.Text)
+                    else
+                        lbSection:AddLabel("" ..v.DisplayName.Text.. " " ..v.DisplayName.Data.Text)
+                    end
+                end
+            end
+            local plrnames = nil
+            local plrnames = {}
+            local amount = nil
+            local rank = nil
+            local num = nil
+            for i, v in pairs(game.Workspace.LeaderboardModels[leaderboard].Gui.Contents.Scrolling:GetChildren()) do
+                if v:IsA("Frame") then
+                    if v:FindFirstChild("Rank") and v.Rank.Text == "#100" then
+                        rank = string.gsub(v.Rank.Text,"%D","")
+                        num = string.gsub(v.DisplayName.Data.Text,"%D","")
+                        if lbName == "Top Lives" then
+                            amount = num-plr.Rebirths.Value
+                            table.insert(plrnames,rank,v.DisplayName.Text)
+                        end
+                        if lbName == "Daily Top Lives" then
+                            table.insert(plrnames,rank,v.DisplayName.Text)
+                        end
+                        if lbName == "Top RP" then
+                            amount = num-plr.Points.Value
+                            table.insert(plrnames,rank,v.DisplayName.Text)
+                        end
+                        if lbName == "Top Gift Streak" then
+                            amount = num-plr.LoginStreak.Value
+                            table.insert(plrnames,rank,v.DisplayName.Text)
+                        end
+                        if lbName == "Top uC" then
+                            amount = num-plr.Crystals.Value
+                            table.insert(plrnames,rank,v.DisplayName.Text)
+                        end
+                        if lbName == "Top Boxes" then
+                            amount = num-plr.Crates.Value
+                            table.insert(plrnames,rank,v.DisplayName.Text)
+                        end
+                    end
+                end
+            end
+            local count = 0
+            for i=1, #plrnames do
+                count = count+1
+                local current = game.Workspace.LeaderboardModels[leaderboard].Gui.Contents.Scrolling:WaitForChild(plrnames[count])
+                lbSection:AddLabel("" ..current.Rank.Text.. " - " ..current.DisplayName.Text.. "    " ..current.DisplayName.Data.Text)
+            end
+            if amount then
+                if lbName ~= "Daily Top Lives" then
+                    lbSection:AddLabel("You are " ..amount.. " away from #100")
+                end
+            end
+        end
+    })
+
+    local setWin = Window:MakeTab({
+		Name = "Settings",
+        Icon = "rbxassetid://5506279557",
+        PremiumOnly = false
+	})
+
+    local setSection = setWin:AddSection({Name = "Settings"})
+
+    setSection:AddButton({
+        Name = "Destroy GUI",
+        Callback = function()
+            OrionLib:Destroy()
+        end
+    })
+
+    setSection:AddBind({
+        Name = "UI Keybind",
+        Default = Enum.KeyCode.V,
+        Hold = false,
+        Callback = function()
+            local string = "MH FKR v"..version
+            for i, v in pairs(game.CoreGui.HiddenUI.Orion:GetDescendants()) do
+                if v:IsA("TextLabel") and v.Text == string then
+                    frame = v.Parent.Parent
+                end
+            end
+            if frame.Visible == false then
+                frame.Visible = true
+                frame:TweenSize(UDim2.new(0,615,0,344), Enum.EasingDirection.In, Enum.EasingStyle.Linear, 0.2, true)
+            elseif frame.Visible == true then
+                frame:TweenSize(UDim2.new(0, 0, 0, 0), Enum.EasingDirection.In, Enum.EasingStyle.Linear, 0.2, true)
+                wait(0.2)
+                frame.Visible = false
+            end
+        end    
+    })
+
+    for i, v in pairs(game.Workspace.LeaderboardModels:GetDescendants()) do
+        if v.Name == plr.Name or v.Name == plr.DisplayName then
+            print(v.DisplayName.Username.Text, v.DisplayName.Data.Text, v.Rank.Text, v.Parent.Parent.Top.TextLabel.Text)
+        end
+    end
+
+    -----------------------------------------------------
+
+    game.Workspace.DroppedParts[myfacName].ChildAdded:Connect(function(ore)
+        if getgenv().OreBoost then
+            task.spawn(function()
+                if string.match(ore.Name, "Coal") then
+                    for i, v in pairs(myfac:GetChildren()) do
+                        if string.match(v.Name, "Industrial") or string.match(v.Name, "Vulcan's Wrath") then
+                            ore.Position = v.Model.Lava.Position + Vector3.new(0,0.5,0)
+                            ore.Velocity = Vector3.new(0,0,0)
+                            task.wait()
+                        end
+                    end
+                    return
+                end
+                getUpgraders()
+                ore.Position = Base.Position + Vector3.new(0,102,0)
+                task.wait()
+                ore.Position = Base.Position + Vector3.new(0,102,0)
+                if resetCount == 1 then
+                    ore.Position = Base.Position + Vector3.new(0,127,0)
+                    task.wait()
+                    ore.Position = Base.Position + Vector3.new(0,102,0)
+                    task.wait()
+                    ore.Position = Base.Position + Vector3.new(0,102,0)
+                end
+                if resetCount == 2 then
+                    ore.Position = Base.Position + Vector3.new(0,152,0)
+                    task.wait()
+                    ore.Position = Base.Position + Vector3.new(0,102,0)
+                    task.wait()
+                    ore.Position = Base.Position + Vector3.new(0,102,0)
+                end
+                if resetCount == 3 then
+                    ore.Position = Base.Position + Vector3.new(0,177,0)
+                    task.wait()
+                    ore.Position = Base.Position + Vector3.new(0,102,0)
+                    task.wait()
+                    ore.Position = Base.Position + Vector3.new(0,102,0)
+                end
+                if resetCount == 4 then
+                    ore.Position = Base.Position + Vector3.new(0,202,0)
+                    task.wait()
+                    ore.Position = Base.Position + Vector3.new(0,102,0)
+                    task.wait()
+                    ore.Position = Base.Position + Vector3.new(0,102,0)
+                end
+                if furnace then
+                    ore.Position = furnace.Position + Vector3.new(0,0.5,0)
+                else
+                    for i, v in pairs(myfac:GetChildren()) do
+                        if v:IsA("Model") then
+                            if v:FindFirstChild("Model") then
+                                if string.match(v.Name, "Teleport") or string.match(v.Name, "Industrial") or v.Name == "Vulcan's Wrath" or string.match(v.Name, "Dreamer") then
+                                else
+                                    ore.Position = v.Model.Lava.Position + Vector3.new(0,0.5,0)
+                                    furnace = v.Model.Lava
+                                end
+                            end
+                        end
+                    end	
+                end
+            end)
+        end
+        if getgenv().OreFurnace then
+            task.spawn(function()
+                if furnace then
+                    ore.Position = furnace.Position + Vector3.new(0,0.5,0)
+                else
+                    for i, v in pairs(myfac:GetChildren()) do
+                        if v:IsA("Model") then
+                            if v:FindFirstChild("Model") then
+                                if string.match(v.Name, "Teleport") then
+                                elseif string.match(ore.Name, "Coal") and string.match(v.Name, "Industrial") then
+                                    ore.Position = v.Model.Lava.Position + Vector3.new(0,0.5,0)
+                                    furnace = v.Model.Lava
+                                else
+                                    ore.Position = v.Model.Lava.Position + Vector3.new(0,0.5,0)
+                                    furnace = v.Model.Lava
+                                end
+                            end
+                        end
+                    end
+                end
+            end)
+        end
+        if getgenv().BecomeTheOre then
+            task.spawn(function()
+                repeat
+                    ore.Position = plr.Character.HumanoidRootPart.Position
+                    ore.CanCollide = false
+                    task.wait(.1)
+                until getgenv().BecomeTheOre == false
+                ore.CanCollide = true
+            end)
+        end
+    end)
+
+    game.Players.LocalPlayer.Rebirths:GetPropertyChangedSignal("Value"):Connect(function()
+        if getgenv().AutoLayout then
+            task.spawn(function()
+                repeat wait() until #myfac:GetChildren() < 6
+                repeat
+                wait(.75)
+                game:GetService("ReplicatedStorage").Layouts:InvokeServer(unpack(layoutarg))
+                until #myfac:GetChildren() > 6
+                if layout2 == true then
+                    if itemCount == 0 then
+                        for i, v in pairs(myfac:GetChildren()) do
+                            itemCount = itemCount+1
+                        end
+                    end
+                    repeat
+                    game:GetService("ReplicatedStorage").Layouts:InvokeServer(unpack(layoutarg2))
+                    wait(.75)
+                    until #myfac:GetChildren() > itemCount
+                end
+            end)
+        end
+    end)
+
+    game.Players.LocalPlayer.leaderstats.Cash:GetPropertyChangedSignal("Value"):Connect(function()
+        if getgenv().AutoReborn then
+            task.spawn(function()
+                if string.match(game:GetService("Players").LocalPlayer.PlayerGui.Rebirth.Frame.Rebirth_Content.Content.Rebirth.Frame.Top.SkipBox.Label.Text, "Skip") then
+                    if rebornDelay ~= 0 and delayVariance ~= 0 then
+                        wait(math.random(rebornDelay+math.random(rebornDelay,math.abs(rebornDelay+delayVariance))))
+                        game:GetService("ReplicatedStorage").Rebirth:InvokeServer()
+                    elseif rebornDelay ~= 0 and delayVariance == 0 then
+                        wait(rebornDelay)
+                        game:GetService("ReplicatedStorage").Rebirth:InvokeServer()
+                    elseif rebornDelay == 0 and delayVariance == 0 then
+                        game:GetService("ReplicatedStorage").Rebirth:InvokeServer()
+                    end
+                end
+            end)
+        end
+    end)
+
+    game.Workspace.Boxes.ChildAdded:Connect(function(Box)
+        if getgenv().BoxFarm then
+            task.spawn(function()
+                task.wait(.2)
+                local originalPosition = plr.Character.HumanoidRootPart.CFrame
+                local function teleportBack()
+                    plr.Character.HumanoidRootPart.CFrame = originalPosition * CFrame.new(0,0,0)
+                end
+                plr.Character.HumanoidRootPart.CFrame = Box.CFrame * CFrame.new(0,0,0)
+                task.wait(.5)
+                teleportBack()
+                task.wait(.5)
+                if getgenv().AutoReborn then
+                    if string.match(game:GetService("Players").LocalPlayer.PlayerGui.Rebirth.Frame.Rebirth_Content.Content.Rebirth.Frame.Top.SkipBox.Label.Text, "Skip") then
+                        game:GetService("ReplicatedStorage").Rebirth:InvokeServer()
+                    end
+                end
+                if getgenv().AutoLayout then
+                    task.spawn(function()
+                        repeat wait() until #myfac:GetChildren() < 6
+                        repeat
+                        wait(.75)
+                        game:GetService("ReplicatedStorage").Layouts:InvokeServer(unpack(layoutarg))
+                        until #myfac:GetChildren() > 6
+                        if layout2 == true then
+                            if itemCount == 0 then
+                                for i, v in pairs(myfac:GetChildren()) do
+                                    itemCount = itemCount+1
+                                end
+                            end
+                            repeat
+                            game:GetService("ReplicatedStorage").Layouts:InvokeServer(unpack(layoutarg2))
+                            wait(.75)
+                            until #myfac:GetChildren() > itemCount
+                        end
+                    end)
+                end
+            end)
+        end
+    end)
+
+    game.Players.LocalPlayer.Character.Humanoid:GetPropertyChangedSignal("WalkSpeed"):Connect(function()
+        if getgenv().Speed then
+            game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = speed
+        end
+    end)
+
+    game.Players.LocalPlayer.Character.Humanoid:GetPropertyChangedSignal("JumpPower"):Connect(function()
+        if getgenv().Jump then
+            game.Players.LocalPlayer.Character.Humanoid.JumpPower = jump
+        end
+    end)
+
+    game.Players.LocalPlayer.PlayerGui.GUI.Notifications.ChildAdded:Connect(function(notif)
+        task.spawn(function()
+            if notif.Name == "ItemTemplate" and string.match(notif.Title.Text,"⭐") then
+                shinySection:AddLabel(notif.Title.Text)
+                local label;
+                for i, v in pairs(game.CoreGui.HiddenUI.Orion:GetDescendants()) do
+                    if v:IsA("TextLabel") and v.Text == notif.Title.Text then
+                        label = v
+                    end
+                end
+                local pic = Instance.new("ImageLabel",label)
+                pic.Image = notif.Icon.Image
+                pic.Position = UDim2.new(.915,0,.05,0)
+                pic.Size = UDim2.new(.08,0,.9,0)
+            end
+        end)
+    end)
+
+    game.Workspace.Clovers.ChildAdded:Connect(function()
+        if getgenv().CloverFarm then
+            task.spawn(function()
+                local originalPosition = plr.Character.HumanoidRootPart.CFrame
+                local function teleportBack()
+                    plr.Character.HumanoidRootPart.CFrame = originalPosition * CFrame.new(0,0,0)
+                end
+                for i, v in pairs(game.Workspace.Clovers:GetChildren()) do
+                    if v:FindFirstChild("ProximityPrompt") then
+                        plr.Character.HumanoidRootPart.CFrame = v.CFrame * CFrame.new(0,0,0)
+                        repeat 
+                            fireproximityprompt(v.ProximityPrompt)
+                            fireproximityprompt(v.ProximityPrompt) 
+                            fireproximityprompt(v.ProximityPrompt)
+                        until v.Parent == nil or getgenv().CloverFarm == false
+                        task.wait()
+                    end
+                end
+                task.wait()
+                teleportBack()
+            end)
+        end
+    end)
+
+    OrionLib:Init()
+
+    --END OF NORMAL MINERS HAVEN
+elseif game.PlaceId == 432041175 then
+    local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/jensonhirst/Orion/main/source')))()
+	local Window = OrionLib:MakeWindow({Name = "MH FKR v" ..version, HidePremium = true, SaveConfig = true, ConfigFolder = "hub/MHfkr2", IntroEnabled = true, IntroText = "Welcome to MH FKR v"..version..", "..plr.Name, IntroIcon = "rbxassetid://5670621915", Icon = "rbxassetid://5670621915"})
+	
+    local Base = plr.PlayerTycoon.Value.Base
+    local myfac = Players.LocalPlayer.PlayerTycoon.Value
+    myfacName = tostring(myfac)
+
+    local itemNames = {}
+    local itemPositions = {}
+    local boxoption = "Regular"
+
+    -------------------------- Functions
+    function autoRemote()
+        while getgenv().AutoRemote == true do
+            for i, v in pairs(myfac:GetDescendants()) do
+                if v.Name == "DropRate" then
+                    if v.Value == "Manual" then
+                        game:GetService("ReplicatedStorage"):WaitForChild("RemoteDrop"):FireServer()
+                    end
+                end
+            end
+            wait(.01)
+        end
+    end
+    function openBoxes()
+        while getgenv().BoxOpen == true do
+            local box = {
+                [1] = boxoption
+            }
+            game:GetService("ReplicatedStorage"):WaitForChild("MysteryBox"):InvokeServer(unpack(box))
+            wait(5)
+        end
+    end
+    function currentBoxes()
+        if getgenv().BoxFarm then
+            local originalPosition = plr.Character.HumanoidRootPart.CFrame
+            local function teleportBack()
+                plr.Character.HumanoidRootPart.CFrame = originalPosition * CFrame.new(0,0,0)
+            end
+            for _,v in pairs(game.Workspace.Boxes:GetChildren()) do
+                plr.Character.HumanoidRootPart.CFrame = v.CFrame * CFrame.new(0,0,0)
+                wait(.2)
+            end
+            wait(.2)
+            teleportBack()
+            if getgenv().AutoReborn then
+                if string.match(game:GetService("Players").LocalPlayer.PlayerGui.Rebirth.Frame.Rebirth_Content.Content.Rebirth.Frame.Top.SkipBox.Label.Text, "Skip") then
+                    game:GetService("ReplicatedStorage").Rebirth:InvokeServer()
+                end
+            end
+        end
+    end
+    function convert(cframe)
+        return {cframe:components()} 
+    end
+    function place(num,cframe)
+        local pArgs = {
+            [1] = num,
+            [2] = cframe,
+            [3] = {
+                [1] = Base
+            }
+        }
+        game:GetService("ReplicatedStorage"):WaitForChild("PlaceItem"):InvokeServer(unpack(pArgs))
+    end
+
+    ---------------------------
+
+	local Main = Window:MakeTab({
+		Name = "Main",
+        Icon = "rbxassetid://5506574548",
+        PremiumOnly = false
+	})
+
+    local rbSection = Main:AddSection({Name = "Rebirthing"})
+
+    rbSection:AddToggle({
+        Name = "Auto Reborn",
+        Default = false,
+        Callback = function(v)
+            getgenv().AutoReborn = v
+        end
+    })
+
+    local laySection = Main:AddSection({Name = "Layouts"})
+
+    laySection:AddToggle({
+        Name = "Auto Layout",
+        Default = false,
+        Callback = function(v)
+            getgenv().AutoLayout = v
+        end
+    })
+
+    laySection:AddDropdown({
+        Name = "Auto Layout",
+        Default = "One",
+        Options = {"One", "Two", "Three", "Four"},
+        Callback = function(v)
+            if v == "One" then
+                layoutNum = v
+            elseif v == "Two" then
+                layoutNum = v
+            elseif v == "Three" then
+                layoutNum = v
+            elseif v == "Four" then
+                layoutNum = v
+            end
+        end
+    })
+    
+    laySection:AddButton({
+        Name = "Save Layout",
+        Callback = function()
+            itemNames = nil
+            itemPositions = nil
+            itemNames = {}
+            itemPositions = {}
+            for i, v in pairs(game.Workspace.DroppedParts:GetChildren()) do
+                for i, v in pairs(myfac:GetChildren()) do
+                    if v.Name ~= "AdjustSpeed" and v.Name ~= "Owner" and v.Name ~= "Producing" and v.Name ~= "SpecialMusic" and v.Name ~= "Base" then
+                        table.insert(itemNames, i, v.Name)
+                        table.insert(itemPositions, i, convert(v.Hitbox.CFrame))
+                    end
+                end
+            end
+        end
+    })
+
+    laySection:AddButton({
+        Name = "Load Layout",
+        Callback = function()
+            game:GetService("ReplicatedStorage"):WaitForChild("DestroyAll"):InvokeServer()
+            for i=1, #itemPositions do
+                place(itemNames[i],itemPositions[i])
+                place(itemNames[i],itemPositions[i])
+            end
+        end
+    })
+    
+    local oreSection = Main:AddSection({Name = "Ores"})
+
+    oreSection:AddToggle({
+        Name = "Ore Boost",
+        Default = false,
+        Callback = function(v)
+            getgenv().OreBoost = v
+        end
+    })
+    
+    oreSection:AddToggle({
+        Name = "Spawn Ores at Furnace",
+        Default = false,
+        Callback = function(v)
+            getgenv().OreFurnace = v
+        end
+    })
+
+    oreSection:AddToggle({
+        Name = "Auto Remote",
+        Default = false,
+        Callback = function(v)
+            getgenv().AutoRemote = v
+            autoRemote()
+        end
+    })
+
+    oreSection:AddButton({
+        Name = "Universal Ore Boost",
+        Callback = function()
+            function move(upg, furnace)
+                upg.Position = furnace.Position + Vector3.new(0,1,0)
+                upg.Size = Vector3.new(3,3,3)
+                upg.Rotation = Vector3.new(0,0,0)
+            end
+            local Upgraders = nil
+            local Upgraders = {}
+            for i, v in pairs(myfac.Parent:GetDescendants()) do
+                if v.Name == "Upgrade" then
+                    table.insert(Upgraders,v)
+                elseif v.Name == "Upgrader" then
+                    table.insert(Upgraders,v)
+                elseif v.Name == "Upgrade2" then
+                    table.insert(Upgraders,v)
+                end
+            end
+            for i, v in pairs(myfac:GetChildren()) do
+                if v:IsA("Model") and v.Model:FindFirstChild("Lava") then
+                    furnace = v.Model.Lava
+                end
+            end
+            for i=1, #Upgraders do
+                move(Upgraders[i], furnace)
+            end
+        end
+    })
+
+    oreSection:AddButton({
+        Name = "TP Ores",
+        Callback = function()
+            for i, v in pairs(game.Workspace.DroppedParts:GetChildren()) do
+                v.Position = Vector3.new(plr.Character.HumanoidRootPart.CFrame)
+            end
+        end
+    })
+
+    oreSection:AddToggle({
+        Name = "Become The Ore",
+        Default = false,
+        Callback = function(v)
+            getgenv().BecomeTheOre = v
+        end
+    })
+
+    local BoxWin = Window:MakeTab({
+        Name = "Boxes",
+        Icon = "rbxassetid://5140907242",
+        PremiumOnly = false
+    })
+
+    local boxSection = BoxWin:AddSection({Name = "Boxes"})
+
+    boxSection:AddToggle({
+        Name = "Box Farm",
+        Default = false,
+        Callback = function(v)
+            getgenv().BoxFarm = v
+            currentBoxes()
+        end
+    })
+
+    boxSection:AddToggle({
+        Name = "Open Boxes",
+        Default = false,
+        Callback = function(v)
+            getgenv().BoxOpen = v
+            openBoxes()
+        end
+    })
+
+    boxSection:AddDropdown({
+        Name = "Box Options",
+        Default = "Regular",
+        Options = {"Regular", "Unreal", "Inferno"},
+        Callback = function(v)
+            boxoption = v
+        end
+    })
+
+    local guiWin = Window:MakeTab({
+        Name = "GUIs",
+        Icon = "rbxassetid://5670621831",
+        PremiumOnly = false
+    })
+
+    local guiSection1 = guiWin:AddSection({Name = "Useful"})
+
+    guiSection1:AddButton({
+        Name = "Craftsman",
+        Callback = function()
+            --
+        end
+    })
+    
+    guiSection1:AddButton({
+        Name = "Masked Man",
+        Callback = function()
+            --
+        end
+    })
+
+    local plrWin = Window:MakeTab({
+		Name = "Player",
+        Icon = Players:GetUserThumbnailAsync(plr.UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size100x100),
+        PremiumOnly = false
+	})
+
+    local plrSection1 = plrWin:AddSection({Name = "Teleports"})
+
+    plrSection1:AddButton({
+        Name = "Teleport to Base",
+        Callback = function()
+            plr.Character.HumanoidRootPart.CFrame = Base.CFrame * CFrame.new(0,3,0)
+        end
+    })
+    
+    local plrSection2 = plrWin:AddSection({Name = "Attributes"})
+
+    plrSection2:AddSlider({
+        Name = "Walk Speed",
+        Min = 16,
+        Max = 300,
+        Default = plr.Character.Humanoid.WalkSpeed,
+        Color = Color3.fromRGB(255,255,255),
+        Increment = 1,
+        ValueName = "",
+        Callback = function(v)
+            plr.Character.Humanoid.WalkSpeed = v
+            speed = v
+        end
+    })
+
+    plrSection2:AddSlider({
+        Name = "Jump Power",
+        Min = 50,
+        Max = 300,
+        Default = plr.Character.Humanoid.JumpPower,
+        Color = Color3.fromRGB(255,255,255),
+        Increment = 1,
+        ValueName = "",
+        Callback = function(v)
+            plr.Character.Humanoid.JumpPower = v
+            jump = v
+        end
+    })
+
+    plrSection2:AddToggle({
+        Name = "Lock Attributes",
+        Default = false,
+        Callback = function(v)
+            getgenv().Speed = v
+            getgenv().Jump = v
+        end
+    })
+
+    plrSection2:AddToggle({
+        Name = "Anti AFK",
+        Default = false,
+        Callback = function(v)
+            local GC = getconnections or get_signal_cons
+            if GC and v then
+                for i,v in pairs(GC(Players.LocalPlayer.Idled)) do
+                    if v["Disable"] then
+                        v["Disable"](v)
+                    elseif v["Disconnect"] then
+                        v["Disconnect"](v)
+                    end
+                end
+            else
+                local VirtualUser = cloneref(game:GetService("VirtualUser"))
+                Players.LocalPlayer.Idled:Connect(function()
+                    VirtualUser:CaptureController()
+                    VirtualUser:ClickButton2(Vector2.new())
+                end)
+            end
+        end
+    })
+
+    local setWin = Window:MakeTab({
+		Name = "Settings",
+        Icon = "rbxassetid://5506279557",
+        PremiumOnly = false
+	})
+
+    local setSection = setWin:AddSection({Name = "Settings"})
+
+    setSection:AddButton({
+        Name = "Destroy GUI",
+        Callback = function()
+            OrionLib:Destroy()
+        end
+    })
+
+    setSection:AddBind({
+        Name = "UI Keybind",
+        Default = Enum.KeyCode.V,
+        Hold = false,
+        Callback = function()
+            local string = "MH FKR v"..version
+            for i, v in pairs(game.CoreGui.HiddenUI.Orion:GetDescendants()) do
+                if v:IsA("TextLabel") and v.Text == string then
+                    frame = v.Parent.Parent
+                end
+            end
+            if frame.Visible == false then
+                frame.Visible = true
+                frame:TweenSize(UDim2.new(0,615,0,344), Enum.EasingDirection.In, Enum.EasingStyle.Linear, 0.2, true)
+            elseif frame.Visible == true then
+                frame:TweenSize(UDim2.new(0, 0, 0, 0), Enum.EasingDirection.In, Enum.EasingStyle.Linear, 0.2, true)
+                wait(0.2)
+                frame.Visible = false
+            end
+        end    
+    })
+
+    -----------------------------------------------------
+
+    game.Workspace.DroppedParts[myfacName].ChildAdded:Connect(function(ore)
+        if getgenv().OreBoost then
+            task.spawn(function()
+                if string.match(ore.Name, "Coal") then
+                    for i, v in pairs(myfac:GetChildren()) do
+                        if string.match(v.Name, "Industrial") then
+                            ore.Position = v.Model.Lava.Position + Vector3.new(0,0.5,0)
+                            ore.Velocity = Vector3.new(0,0,0)
+                            ore.CanCollide = true
+                            task.wait()
+                        end
+                    end
+                    return
+                end
+                local loop = false
+                local target;
+                local upgr;
+                for i, v in pairs(myfac:GetChildren()) do
+                    if v:IsA("Model") and v:FindFirstChild("Model") then
+                        for i=1, #loopList do
+                            if v.Name == loopList[i] then
+                                target = capList[i] - 1
+                                upgr = myfac[loopList[i]].Model.Upgrade
+                                loop = true
+                            end
+                        end
+                        if loop == true then
+                            repeat
+                                ore.Position = upgr.Position
+                                task.wait()
+                                ore.Position = Base.Position + Vector3.new(0,100,0)
+                                task.wait()
+                            until ore.Cash.Value >= target
+                        end
+                    end
+                end
+                local rCount = 0
+                local upgraders = nil
+                local resetters = nil
+                local upgraders = {}
+                local resetters = {}
+                local stars = nil
+                local stars = {}
+                function upgrade(ore)
+                    for i=1, #upgraders do
+                        ore.Position = upgraders[i].Position
+                        ore.Velocity = Vector3.new(0,0,0)
+                        task.wait()
+                        ore.Position = Base.Position + Vector3.new(0,100,0)
+                        ore.Position = upgraders[i].Position
+                        ore.Velocity = Vector3.new(0,0,0)
+                        task.wait()
+                    end
+                end
+                for i, v in pairs(myfac:GetChildren()) do
+                    if v:IsA("Model") then
+                        if v:FindFirstChild("Model") then
+                            if string.match(v.Name, "Tesla") then
+                                table.insert(resetters, v.Model.Upgrade)
+                                rCount = rCount + 1
+                            elseif v.Name == "The Final Upgrader" or v.Name == "The Ultimate Sacrifice" then
+                                table.insert(resetters, v.Model.Upgrade)
+                                rCount = rCount + 1
+                            elseif v.Model:FindFirstChild("Upgrade2") then
+                                table.insert(upgraders, v.Model.Upgrade2)
+                            elseif v.Model:FindFirstChild("Upgrade") then
+                                table.insert(upgraders, v.Model.Upgrade)
+                            elseif v.Model:FindFirstChild("FunShield") then
+                                table.insert(upgraders, v.Model.FunShield)
+                            end
+                        end
+                    end
+                end
+                if string.match(ore.Name, "Sym") or ore.BrickColor == BrickColor.new("Dark blue") then
+                    for i, v in pairs(myfac.Parent:GetDescendants()) do
+                        if v.Name == "Catalyzed Star" then
+                            table.insert(stars, v.Model.Upgrade)
+                        elseif v.Name == "Nova Star" then
+                            ore.Position = v.Model.Upgrade.Position
+                            task.wait()
+                        end
+                    end
+                    repeat
+                        for i=1, #stars do
+                            ore.Position = stars[i].Position
+                            ore.Velocity = Vector3.new(0,0,0)
+                            task.wait()
+                            ore.Position = Base.Position + Vector3.new(0,100,0)
+                        end
+                    until ore.Cash.Value >= 1e+60
+                end
+                upgrade(ore)
+                if rCount >= 1 then
+                    ore.Position = resetters[1].Position
+                    task.wait()
+                    upgrade(ore)
+                end
+                if rCount >= 2 then
+                    ore.Position = resetters[2].Position
+                    task.wait()
+                    upgrade(ore)
+                end
+                for i, v in pairs(myfac:GetDescendants()) do
+                    if v.Name == "Lava" and v:IsA("Part") and v.Parent.Parent.Name ~= "Vulcan's Wrath" then
+                        if v.Parent.Parent.Name:match("Dreamer") or v.Parent.Parent.Name:match("Teleport") or v.Parent.Parent.Name:match("Heart of Void") or v.Parent.Parent.Name:match("Industrial") then
+                        else
+                            ore.Position = v.Position + Vector3.new(0,1,0)
+                            ore.Velocity = Vector3.new(0,0,0)
+                            ore.CanCollide = false
+                            task.wait()
+                        end
+                    end
+                end
+            end)
+        end
+        if getgenv().OreFurnace then
+            task.spawn(function()
+                if furnace then
+                    ore.Position = furnace.Position + Vector3.new(0,0.5,0)
+                else
+                    for i, v in pairs(myfac:GetChildren()) do
+                        if v:IsA("Model") then
+                            if v:FindFirstChild("Model") then
+                                if string.match(v.Name, "Teleport") then
+                                elseif string.match(ore.Name, "Coal") and string.match(v.Name, "Industrial") then
+                                    ore.Position = v.Model.Lava.Position + Vector3.new(0,0.5,0)
+                                    furnace = v.Model.Lava
+                                else
+                                    ore.Position = v.Model.Lava.Position + Vector3.new(0,0.5,0)
+                                    furnace = v.Model.Lava
+                                end
+                            end
+                        end
+                    end
+                end
+            end)
+        end
+        if getgenv().BecomeTheOre then
+            task.spawn(function()
+                repeat
+                    ore.Position = plr.Character.HumanoidRootPart.Position
+                    ore.CanCollide = false
+                    task.wait(.5)
+                until getgenv().BecomeTheOre == false
+                ore.CanCollide = true
+            end)
+        end
+    end)
+
+    game.Players.LocalPlayer.Rebirths:GetPropertyChangedSignal("Value"):Connect(function()
+        if getgenv().AutoLayout then
+            task.spawn(function()
+                local layoutarg = {
+                    [1] = "Load",
+                    [2] = layoutNum
+                }
+                repeat wait() until #myfac:GetChildren() < 6
+                repeat
+                task.wait(.75)
+                game:GetService("ReplicatedStorage").Layouts:InvokeServer(unpack(layoutarg))
+                until #myfac:GetChildren() > 6
+            end)
+        end
+    end)
+
+    game.Players.LocalPlayer.leaderstats.Cash:GetPropertyChangedSignal("Value"):Connect(function()
+        if getgenv().AutoReborn then
+            if string.match(game:GetService("Players").LocalPlayer.PlayerGui.Rebirth.Frame.Rebirth_Content.Content.Rebirth.Frame.Top.SkipBox.Label.Text, "Skip") then
+                game:GetService("ReplicatedStorage").Rebirth:InvokeServer()
+            end
+        end
+    end)
+
+    game.Workspace.Boxes.ChildAdded:Connect(function(Box)
+        if getgenv().BoxFarm then
+            task.spawn(function()
+                task.wait(.2)
+                local originalPosition = plr.Character.HumanoidRootPart.CFrame
+                local function teleportBack()
+                    plr.Character.HumanoidRootPart.CFrame = originalPosition * CFrame.new(0,0,0)
+                end
+                plr.Character.HumanoidRootPart.CFrame = Box.CFrame * CFrame.new(0,0,0)
+                task.wait(.5)
+                teleportBack()
+                task.wait(.5)
+                if getgenv().AutoReborn then
+                    if string.match(game:GetService("Players").LocalPlayer.PlayerGui.Rebirth.Frame.Rebirth_Content.Content.Rebirth.Frame.Top.SkipBox.Label.Text, "Skip") then
+                        game:GetService("ReplicatedStorage").Rebirth:InvokeServer()
+                    end
+                end
+                if getgenv().AutoLayout then
+                    task.spawn(function()
+                        local layoutarg = {
+                            [1] = "Load",
+                            [2] = layoutNum
+                        }
+                        repeat wait() until #myfac:GetChildren() < 6
+                        repeat
+                        task.wait(.75)
+                        game:GetService("ReplicatedStorage").Layouts:InvokeServer(unpack(layoutarg))
+                        until #myfac:GetChildren() > 6
+                    end)
+                end
+            end)
+        end
+    end)
+
+    game.Players.LocalPlayer.Character.Humanoid:GetPropertyChangedSignal("WalkSpeed"):Connect(function()
+        if getgenv().Speed then
+            game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = speed
+        end
+    end)
+
+    game.Players.LocalPlayer.Character.Humanoid:GetPropertyChangedSignal("JumpPower"):Connect(function()
+        if getgenv().Jump then
+            game.Players.LocalPlayer.Character.Humanoid.JumpPower = jump
+        end
+    end)
+    OrionLib:Init()
+elseif game.Workspace:FindFirstChild("Tycoons") then
+    local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/jensonhirst/Orion/main/source')))()
+	local Window = OrionLib:MakeWindow({Name = "MH FKR v" ..version, HidePremium = true, SaveConfig = true, ConfigFolder = "hub/MHfkr2", IntroEnabled = true, IntroText = "Welcome to MH FKR v"..version..", "..plr.Name, IntroIcon = "rbxassetid://5670621915", Icon = "rbxassetid://5670621915"})
+	
+    local Base = plr.PlayerTycoon.Value.Base
+    local myfac = Players.LocalPlayer.PlayerTycoon.Value
+    myfacName = tostring(myfac)
+    local staramount = 1
+    local boxoption = "Regular"
+
+    -------------------------- Functions
+    function autoRemote()
+        while getgenv().AutoRemote == true do
+            for i, v in pairs(myfac:GetDescendants()) do
+                if v.Name == "DropRate" then
+                    if v.Value == "Manual" then
+                        game:GetService("ReplicatedStorage"):WaitForChild("RemoteDrop"):FireServer()
+                    end
+                end
+            end
+            wait(.01)
+        end
+    end
+    function openBoxes()
+        while getgenv().BoxOpen == true do
+            local box = {
+                [1] = boxoption
+            }
+            game:GetService("ReplicatedStorage"):WaitForChild("MysteryBox"):InvokeServer(unpack(box))
+            wait(5)
+        end
+    end
+    function currentBoxes()
+        if getgenv().BoxFarm then
+            local originalPosition = plr.Character.HumanoidRootPart.CFrame
+            local function teleportBack()
+                plr.Character.HumanoidRootPart.CFrame = originalPosition * CFrame.new(0,0,0)
+            end
+            for _,v in pairs(game.Workspace.Boxes:GetChildren()) do
+                plr.Character.HumanoidRootPart.CFrame = v.CFrame * CFrame.new(0,0,0)
+                wait(.2)
+            end
+            wait(.2)
+            teleportBack()
+            if getgenv().AutoReborn then
+                if string.match(game:GetService("Players").LocalPlayer.PlayerGui.Rebirth.Frame.Rebirth_Content.Content.Rebirth.Frame.Top.SkipBox.Label.Text, "Skip") then
+                    game:GetService("ReplicatedStorage").Rebirth:InvokeServer()
+                end
+            end
+        end
+    end
+
+    ---------------------------
+
+	local Main = Window:MakeTab({
+		Name = "Main",
+        Icon = "rbxassetid://5506574548",
+        PremiumOnly = false
+	})
+
+    local rbSection = Main:AddSection({Name = "Rebirthing"})
+
+    rbSection:AddToggle({
+        Name = "Auto Reborn",
+        Default = false,
+        Callback = function(v)
+            getgenv().AutoReborn = v
+        end
+    })
+
+    local laySection = Main:AddSection({Name = "Layouts"})
+
+    laySection:AddToggle({
+        Name = "Auto Layout",
+        Default = false,
+        Callback = function(v)
+            getgenv().AutoLayout = v
+        end
+    })
+
+    laySection:AddDropdown({
+        Name = "Auto Layout",
+        Default = "One",
+        Options = {"One", "Two", "Three", "Four"},
+        Callback = function(v)
+            if v == "One" then
+                layoutNum = v
+            elseif v == "Two" then
+                layoutNum = v
+            elseif v == "Three" then
+                layoutNum = v
+            elseif v == "Four" then
+                layoutNum = v
+            end
+        end
+    })
+    
+    local oreSection = Main:AddSection({Name = "Ores"})
+
+    oreSection:AddToggle({
+        Name = "Ore Boost",
+        Default = false,
+        Callback = function(v)
+            getgenv().OreBoost = v
+        end
+    })
+    
+    oreSection:AddToggle({
+        Name = "Spawn Ores at Furnace",
+        Default = false,
+        Callback = function(v)
+            getgenv().OreFurnace = v
+        end
+    })
+
+    oreSection:AddToggle({
+        Name = "Auto Remote",
+        Default = false,
+        Callback = function(v)
+            getgenv().AutoRemote = v
+            autoRemote()
+        end
+    })
+
+    oreSection:AddButton({
+        Name = "Universal Ore Boost",
+        Callback = function()
+            function move(upg, furnace)
+                upg.Position = furnace.Position + Vector3.new(0,1,0)
+                upg.Size = Vector3.new(3,3,3)
+                upg.Rotation = Vector3.new(0,0,0)
+            end
+            local Upgraders = nil
+            local Upgraders = {}
+            for i, v in pairs(myfac.Parent:GetDescendants()) do
+                if v.Name == "Upgrade" then
+                    table.insert(Upgraders,v)
+                elseif v.Name == "Upgrader" then
+                    table.insert(Upgraders,v)
+                elseif v.Name == "Upgrade2" then
+                    table.insert(Upgraders,v)
+                end
+            end
+            for i, v in pairs(myfac:GetChildren()) do
+                if v:IsA("Model") and v.Model:FindFirstChild("Lava") then
+                    furnace = v.Model.Lava
+                end
+            end
+            for i=1, #Upgraders do
+                move(Upgraders[i], furnace)
+            end
+        end
+    })
+
+    oreSection:AddButton({
+        Name = "TP Ores",
+        Callback = function()
+            for i, v in pairs(game.Workspace.DroppedParts:GetChildren()) do
+                v.CFrame = plr.Character.HumanoidRootPart.CFrame
+            end
+        end
+    })
+
+    oreSection:AddToggle({
+        Name = "Become The Ore",
+        Default = false,
+        Callback = function(v)
+            getgenv().BecomeTheOre = v
+        end
+    })
+
+    local BoxWin = Window:MakeTab({
+        Name = "Boxes",
+        Icon = "rbxassetid://5140907242",
+        PremiumOnly = false
+    })
+
+    local boxSection = BoxWin:AddSection({Name = "Boxes"})
+
+    boxSection:AddToggle({
+        Name = "Box Farm",
+        Default = false,
+        Callback = function(v)
+            getgenv().BoxFarm = v
+            currentBoxes()
+        end
+    })
+
+    boxSection:AddToggle({
+        Name = "Open Boxes",
+        Default = false,
+        Callback = function(v)
+            getgenv().BoxOpen = v
+            openBoxes()
+        end
+    })
+
+    boxSection:AddDropdown({
+        Name = "Box Options",
+        Default = "Regular",
+        Options = {"Regular", "Unreal", "Inferno"},
+        Callback = function(v)
+            boxoption = v
+        end
+    })
+
+    local guiWin = Window:MakeTab({
+        Name = "GUIs",
+        Icon = "rbxassetid://5670621831",
+        PremiumOnly = false
+    })
+
+    local guiSection1 = guiWin:AddSection({Name = "Useful"})
+
+    guiSection1:AddButton({
+        Name = "Craftsman",
+        Callback = function()
+            --
+        end
+    })
+    
+    guiSection1:AddButton({
+        Name = "Masked Man",
+        Callback = function()
+            plr.Character.HumanoidRootPart.CFrame = game.Workspace.Market.Hitfox.CFrame * CFrame.new(0,0,0)
+        end
+    })
+
+    local TM = Window:MakeTab({
+		Name = "Time Machine",
+        Icon = "rbxassetid://260153760",
+        PremiumOnly = false
+	})
+
+    local tmSection = TM:AddSection({Name = "Stars"})
+
+    tmSection:AddSlider({
+        Name = "Amount of Stars",
+        Min = 1,
+        Max = 15,
+        Default = 1,
+        Color = Color3.fromRGB(255,255,255),
+        Increment = 1,
+        ValueName = "Catalyzed",
+        Callback = function(v)
+            staramount = v
+        end
+    })
+
+    tmSection:AddToggle({
+        Name = "Auto Cata Star",
+        Default = false,
+        Callback = function(v)
+            getgenv().AutoCata = v
+            if getgenv().AutoCata then
+                task.spawn(function()
+                    local star = {
+                        [1] = "Catalyzed Star",
+                        [2] = myfac,
+                        [3] = CFrame.new(myfac.Base.Position + Vector3.new(0,6,0))*CFrame.Angles(0,0,0),
+                        [4] = 0
+                    }
+                    local mine = {
+                        [1] = "Symmetrium Mine",
+                        [2] = myfac,
+                        [3] = CFrame.new(myfac.Base.Position + Vector3.new(-10,12,0))*CFrame.Angles(0,0,0),
+                        [4] = 0
+                    }
+                    local furnace = {
+                        [1] = "Basic Furnace",
+                        [2] = myfac,
+                        [3] = CFrame.new(myfac.Base.Position + Vector3.new(0,6,10))*CFrame.Angles(0,0,0),
+                        [4] = 0
+                    }
+                    repeat
+                        game:GetService("ReplicatedStorage").PlaceItem:InvokeServer(unpack(star))
+                    until #myfac:GetChildren() >= staramount+3
+                    repeat
+                        game:GetService("ReplicatedStorage").PlaceItem:InvokeServer(unpack(mine))
+                    until #myfac:GetChildren() >= staramount+4
+                    repeat
+                        game:GetService("ReplicatedStorage").PlaceItem:InvokeServer(unpack(furnace))
+                    until #myfac:GetChildren() >= staramount+5
+                    for i, v in pairs(myfac.Parent:GetChildren()) do
+                        for i, v in pairs(v:GetChildren()) do
+                            if v:IsA("Model") and v.Name == "Catalyzed Star" and v.Model.Upgrade.Position then
+                                v.Model.Upgrade.Position = myfac["Catalyzed Star"].Model.Upgrade.Position
+                            end
+                        end
+                    end
+                    local ore = game.Workspace.DroppedParts[myfacName]:WaitForChild("DroppedPart")
+                    repeat
+                        ore.Position = myfac["Catalyzed Star"].Model.Upgrade.Position
+                        task.wait()
+                        ore.Position = Base.Position + Vector3.new(0,100,0)
+                        ore.Velocity = Vector3.new(0,0,0)
+                        task.wait()
+                    until ore.Cash.Value >= 1e+78
+                    ore.Position = myfac["Basic Furnace"].Model.Lava.Position + Vector3.new(0,0.5,0)
+                end)
+            end
+        end
+    })
+
+    local plrWin = Window:MakeTab({
+		Name = "Player",
+        Icon = Players:GetUserThumbnailAsync(plr.UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size100x100),
+        PremiumOnly = false
+	})
+
+    local plrSection1 = plrWin:AddSection({Name = "Teleports"})
+
+    plrSection1:AddButton({
+        Name = "Teleport to Base",
+        Callback = function()
+            plr.Character.HumanoidRootPart.CFrame = Base.CFrame * CFrame.new(0,3,0)
+        end
+    })
+    
+    local plrSection2 = plrWin:AddSection({Name = "Attributes"})
+
+    plrSection2:AddSlider({
+        Name = "Walk Speed",
+        Min = 16,
+        Max = 300,
+        Default = plr.Character.Humanoid.WalkSpeed,
+        Color = Color3.fromRGB(255,255,255),
+        Increment = 1,
+        ValueName = "",
+        Callback = function(v)
+            plr.Character.Humanoid.WalkSpeed = v
+            speed = v
+        end
+    })
+
+    plrSection2:AddSlider({
+        Name = "Jump Power",
+        Min = 50,
+        Max = 300,
+        Default = plr.Character.Humanoid.JumpPower,
+        Color = Color3.fromRGB(255,255,255),
+        Increment = 1,
+        ValueName = "",
+        Callback = function(v)
+            plr.Character.Humanoid.JumpPower = v
+            jump = v
+        end
+    })
+
+    plrSection2:AddToggle({
+        Name = "Lock Attributes",
+        Default = false,
+        Callback = function(v)
+            getgenv().Speed = v
+            getgenv().Jump = v
+        end
+    })
+
+    plrSection2:AddToggle({
+        Name = "Anti AFK",
+        Default = false,
+        Callback = function(v)
+            local GC = getconnections or get_signal_cons
+            if GC and v then
+                for i,v in pairs(GC(Players.LocalPlayer.Idled)) do
+                    if v["Disable"] then
+                        v["Disable"](v)
+                    elseif v["Disconnect"] then
+                        v["Disconnect"](v)
+                    end
+                end
+            else
+                local VirtualUser = cloneref(game:GetService("VirtualUser"))
+                Players.LocalPlayer.Idled:Connect(function()
+                    VirtualUser:CaptureController()
+                    VirtualUser:ClickButton2(Vector2.new())
+                end)
+            end
+        end
+    })
+
+    local setWin = Window:MakeTab({
+		Name = "Settings",
+        Icon = "rbxassetid://5506279557",
+        PremiumOnly = false
+	})
+
+    local setSection = setWin:AddSection({Name = "Settings"})
+
+    setSection:AddButton({
+        Name = "Destroy GUI",
+        Callback = function()
+            OrionLib:Destroy()
+        end
+    })
+
+    setSection:AddBind({
+        Name = "UI Keybind",
+        Default = Enum.KeyCode.V,
+        Hold = false,
+        Callback = function()
+            local string = "MH FKR v"..version
+            for i, v in pairs(game.CoreGui.HiddenUI.Orion:GetDescendants()) do
+                if v:IsA("TextLabel") and v.Text == string then
+                    frame = v.Parent.Parent
+                end
+            end
+            if frame.Visible == false then
+                frame.Visible = true
+                frame:TweenSize(UDim2.new(0,615,0,344), Enum.EasingDirection.In, Enum.EasingStyle.Linear, 0.2, true)
+            elseif frame.Visible == true then
+                frame:TweenSize(UDim2.new(0, 0, 0, 0), Enum.EasingDirection.In, Enum.EasingStyle.Linear, 0.2, true)
+                wait(0.2)
+                frame.Visible = false
+            end
+        end    
+    })
+
+    -----------------------------------------------------
+
+    game.Workspace.DroppedParts[myfacName].ChildAdded:Connect(function(ore)
+        if getgenv().OreBoost then
+            task.spawn(function()
+                ore.CanCollide = false
+                if string.match(ore.Name, "Coal") then
+                    for i, v in pairs(myfac:GetChildren()) do
+                        if string.match(v.Name, "Industrial") then
+                            ore.Position = v.Model.Lava.Position + Vector3.new(0,0.5,0)
+                            ore.Velocity = Vector3.new(0,0,0)
+                            ore.CanCollide = true
+                            task.wait()
+                        end
+                    end
+                    return
+                end
+                local loop = false
+                local target;
+                local upgr;
+                for i, v in pairs(myfac:GetChildren()) do
+                    if v:IsA("Model") and v:FindFirstChild("Model") then
+                        for i=1, #loopList do
+                            if v.Name == loopList[i] then
+                                target = capList[i] - 1
+                                upgr = myfac[loopList[i]].Model.Upgrade
+                                loop = true
+                            end
+                        end
+                        if loop == true then
+                            repeat
+                                ore.Position = upgr.Position
+                                task.wait()
+                                ore.Position = Base.Position + Vector3.new(0,100,0)
+                                task.wait()
+                            until ore.Cash.Value >= target
+                        end
+                    end
+                end
+                local rCount = 0
+                local upgraders = nil
+                local resetters = nil
+                local upgraders = {}
+                local resetters = {}
+                local stars = nil
+                local stars = {}
+                function upgrade(ore)
+                    for i=1, #upgraders do
+                        ore.Position = upgraders[i].Position
+                        ore.Velocity = Vector3.new(0,0,0)
+                        task.wait()
+                    end
+                end
+                for i, v in pairs(game.Workspace.Tycoons:GetChildren()) do
+                    for i, v in pairs(v:GetChildren()) do
+                        if v:IsA("Model") then
+                            if v:FindFirstChild("Model") then
+                                if string.match(v.Name, "Tesla") then
+                                    table.insert(resetters, v.Model.Upgrade)
+                                    rCount = rCount + 1
+                                elseif v.Name == "The Final Upgrader" or v.Name == "The Ultimate Sacrifice" then
+                                    table.insert(resetters, v.Model.Upgrade)
+                                    rCount = rCount + 1
+                                elseif v.Model:FindFirstChild("Upgrade2") then
+                                    table.insert(upgraders, v.Model.Upgrade2)
+                                elseif v.Model:FindFirstChild("Upgrade") then
+                                    table.insert(upgraders, v.Model.Upgrade)
+                                end
+                            end
+                        end
+                    end
+                end
+                if string.match(ore.Name, "Sym") or ore.BrickColor == BrickColor.new("Dark blue") then
+                    for i, v in pairs(myfac.Parent:GetDescendants()) do
+                        if v.Name == "Catalyzed Star" then
+                            table.insert(stars, v.Model.Upgrade)
+                        elseif v.Name == "Nova Star" then
+                            ore.Position = v.Model.Upgrade.Position
+                            task.wait()
+                        end
+                    end
+                    repeat
+                        for i=1, #stars do
+                            ore.Position = stars[i].Position
+                            ore.Velocity = Vector3.new(0,0,0)
+                            ore.CanCollide = false
+                            task.wait()
+                            ore.Position = Base.Position + Vector3.new(0,100,0)
+                        end
+                    until ore.Cash.Value >= 1e+60
+                end
+                upgrade(ore)
+                if rCount >= 1 then
+                    ore.Position = resetters[1].Position
+                    task.wait()
+                    upgrade(ore)
+                end
+                if rCount >= 2 then
+                    ore.Position = resetters[2].Position
+                    task.wait()
+                    upgrade(ore)
+                end
+                for i, v in pairs(myfac:GetDescendants()) do
+                    if v.Name == "Lava" and v:IsA("Part") and v.Parent.Parent.Name ~= "Vulcan's Wrath" then
+                        if v.Parent.Parent.Name:match("Dreamer") or v.Parent.Parent.Name:match("Teleport") or v.Parent.Parent.Name:match("Heart of Void") or v.Parent.Parent.Name:match("Industrial") then
+                        else
+                            ore.Position = v.Position + Vector3.new(0,3,0)
+                            ore.Velocity = Vector3.new(0,0,0)
+                            task.wait()
+                        end
+                    end
+                end
+            end)
+        end
+        if getgenv().OreFurnace then
+            task.spawn(function()
+                if furnace then
+                    ore.Position = furnace.Position + Vector3.new(0,0.5,0)
+                else
+                    for i, v in pairs(myfac:GetChildren()) do
+                        if v:IsA("Model") then
+                            if v:FindFirstChild("Model") then
+                                if string.match(v.Name, "Teleport") then
+                                elseif string.match(ore.Name, "Coal") and string.match(v.Name, "Industrial") then
+                                    ore.Position = v.Model.Lava.Position + Vector3.new(0,0.5,0)
+                                    furnace = v.Model.Lava
+                                else
+                                    ore.Position = v.Model.Lava.Position + Vector3.new(0,0.5,0)
+                                    furnace = v.Model.Lava
+                                end
+                            end
+                        end
+                    end
+                end
+            end)
+        end
+        if getgenv().BecomeTheOre then
+            task.spawn(function()
+                repeat
+                    ore.Position = plr.Character.HumanoidRootPart.Position
+                    ore.CanCollide = false
+                    task.wait(.5)
+                until getgenv().BecomeTheOre == false
+                ore.CanCollide = true
+            end)
+        end
+    end)
+
+    game.Players.LocalPlayer.Rebirths:GetPropertyChangedSignal("Value"):Connect(function()
+        if getgenv().AutoLayout then
+            task.spawn(function()
+                local layoutarg = {
+                    [1] = "Load",
+                    [2] = layoutNum
+                }
+                repeat wait() until #myfac:GetChildren() < 6
+                repeat
+                task.wait(.75)
+                game:GetService("ReplicatedStorage").Layouts:InvokeServer(unpack(layoutarg))
+                until #myfac:GetChildren() > 6
+            end)
+        end
+        if getgenv().AutoCata then
+            task.spawn(function()
+                local star = {
+                    [1] = "Catalyzed Star",
+                    [2] = myfac,
+                    [3] = CFrame.new(myfac.Base.Position + Vector3.new(0,6,0))*CFrame.Angles(0,0,0),
+                    [4] = 0
+                }
+                local mine = {
+                    [1] = "Symmetrium Mine",
+                    [2] = myfac,
+                    [3] = CFrame.new(myfac.Base.Position + Vector3.new(-10,12,0))*CFrame.Angles(0,0,0),
+                    [4] = 0
+                }
+                local furnace = {
+                    [1] = "Basic Furnace",
+                    [2] = myfac,
+                    [3] = CFrame.new(myfac.Base.Position + Vector3.new(0,6,10))*CFrame.Angles(0,0,0),
+                    [4] = 0
+                }
+                repeat
+                    game:GetService("ReplicatedStorage").PlaceItem:InvokeServer(unpack(star))
+                until #myfac:GetChildren() >= staramount+3
+                repeat
+                    game:GetService("ReplicatedStorage").PlaceItem:InvokeServer(unpack(mine))
+                until #myfac:GetChildren() >= staramount+4
+                repeat
+                    game:GetService("ReplicatedStorage").PlaceItem:InvokeServer(unpack(furnace))
+                until #myfac:GetChildren() >= staramount+5
+                for i, v in pairs(myfac.Parent:GetChildren()) do
+                    for i, v in pairs(v:GetChildren()) do
+                        if v:IsA("Model") and v.Name == "Catalyzed Star" and v.Model.Upgrade.Position then
+                            v.Model.Upgrade.Position = myfac["Catalyzed Star"].Model.Upgrade.Position
+                        end
+                    end
+                end
+                local ore = game.Workspace.DroppedParts[myfacName]:WaitForChild("DroppedPart")
+                repeat
+                    ore.Position = myfac["Catalyzed Star"].Model.Upgrade.Position
+                    task.wait()
+                    ore.Position = Base.Position + Vector3.new(0,100,0)
+                    ore.Velocity = Vector3.new(0,0,0)
+                    task.wait()
+                until ore.Cash.Value >= 1e+78
+                ore.Position = myfac["Basic Furnace"].Model.Lava.Position + Vector3.new(0,0.5,0)
+            end)
+        end
+    end)
+
+    game.Players.LocalPlayer.leaderstats.Cash:GetPropertyChangedSignal("Value"):Connect(function()
+        if getgenv().AutoReborn then
+            game:GetService("ReplicatedStorage").DestroyAll:InvokeServer()
+            wait(0.5)
+            game:GetService("ReplicatedStorage").Rebirth:InvokeServer()
+        end
+    end)
+
+    game.Workspace.Boxes.ChildAdded:Connect(function(Box)
+        if getgenv().BoxFarm then
+            task.spawn(function()
+                task.wait(.2)
+                local originalPosition = plr.Character.HumanoidRootPart.CFrame
+                local function teleportBack()
+                    plr.Character.HumanoidRootPart.CFrame = originalPosition * CFrame.new(0,0,0)
+                end
+                plr.Character.HumanoidRootPart.CFrame = Box.CFrame * CFrame.new(0,0,0)
+                task.wait(.5)
+                teleportBack()
+                task.wait(.5)
+                if getgenv().AutoReborn then
+                    if string.match(game:GetService("Players").LocalPlayer.PlayerGui.Rebirth.Frame.Rebirth_Content.Content.Rebirth.Frame.Top.SkipBox.Label.Text, "Skip") then
+                        game:GetService("ReplicatedStorage").Rebirth:InvokeServer()
+                    end
+                end
+                if getgenv().AutoLayout then
+                    task.spawn(function()
+                        local layoutarg = {
+                            [1] = "Load",
+                            [2] = layoutNum
+                        }
+                        repeat wait() until #myfac:GetChildren() < 6
+                        repeat
+                        task.wait(.75)
+                        game:GetService("ReplicatedStorage").Layouts:InvokeServer(unpack(layoutarg))
+                        until #myfac:GetChildren() > 6
+                    end)
+                end
+            end)
+        end
+    end)
+
+    game.Players.LocalPlayer.Character.Humanoid:GetPropertyChangedSignal("WalkSpeed"):Connect(function()
+        if getgenv().Speed then
+            game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = speed
+        end
+    end)
+
+    game.Players.LocalPlayer.Character.Humanoid:GetPropertyChangedSignal("JumpPower"):Connect(function()
+        if getgenv().Jump then
+            game.Players.LocalPlayer.Character.Humanoid.JumpPower = jump
+        end
+    end)
+    OrionLib:Init()
+elseif game.PlaceId == 15055025587 then
+    local Rayfield = loadstring(game:HttpGet('https://raw.githubusercontent.com/ShadowrrGTHB/Shade/refs/heads/main/source.lua'))()
+    local fishbtn = workspace.Buttons.FishInPondFree
+    workspace.CollectionRangePart.Size = Vector3.new(1000,0.25,1000)
+    workspace.CollectionRangePart.Transparency = 1
+    workspace.CollectionRangePart.SurfaceGui.Enabled = false
+    local fishing;
+    
+    local Window = Rayfield:CreateWindow({
+       Name = "Eggy Incremental",
+       Icon = 5670621915, -- Icon in Topbar. Can use Lucide Icons (string) or Roblox Image (number). 0 to use no icon (default).
+       LoadingTitle = "Loading...",
+       LoadingSubtitle = "Welcome to 257 Hub v"..version..", "..plr.Name,
+       Theme = "Default", -- Check https://docs.sirius.menu/rayfield/configuration/themes
+    
+       DisableRayfieldPrompts = false,
+       DisableBuildWarnings = false, -- Prevents Rayfield from warning when the script has a version mismatch with the interface
+    
+       ConfigurationSaving = {
+          Enabled = true,
+          FolderName = "257", -- Create a custom folder for your hub/game
+          FileName = "eggtree"
+       },
+    
+       Discord = {
+          Enabled = false, -- Prompt the user to join your Discord server if their executor supports it
+          Invite = "noinvitelink", -- The Discord invite code, do not include discord.gg/. E.g. discord.gg/ ABCD would be ABCD
+          RememberJoins = true -- Set this to false to make them join the discord every time they load it up
+       },
+    
+       KeySystem = true, -- Set this to true to use our key system
+       KeySettings = {
+          Title = "Welcome, " ..plr.Name,
+          Subtitle = "v " ..version,
+          Note = "No Key? Tuff", -- Use this to tell the user how to get a key
+          FileName = "etKey", -- It is recommended to use something unique as other scripts using Rayfield may overwrite your key file
+          SaveKey = true, -- The user's key will be saved, but if you change the key, they will be unable to use your script
+          GrabKeyFromSite = false, -- If this is true, set Key below to the RAW site you would like Rayfield to get the key from
+          Key = {"faggotry"} -- List of keys that will be accepted by the system, can be RAW file links (pastebin, github etc) or simple strings ("hello","key22")
+       }
+    })
+    
+    local Tab = Window:CreateTab("Main", 15055998727)
+    
+    local EggToggle = Tab:CreateToggle({
+       Name = "Auto Collect Eggs",
+       CurrentValue = false,
+       Flag = "eggcollect",
+       Callback = function(v)
+          --getgenv().AutoCollectEggs = v
+          workspace.CollectionRangePart.Size = Vector3.new(1000,0.25,1000)
+          workspace.CollectionRangePart.Anchored = v
+       end,
+    })
+    
+    local CrateToggle = Tab:CreateToggle({
+        Name = "Auto Collect Crates",
+        CurrentValue = false,
+        Flag = "cratecollect",
+        Callback = function(v)
+            getgenv().AutoCollectCrates = v
+            if game.Workspace.Crates:FindFirstChild("CurrencyCrate") then
+                task.spawn(function()
+                    local originalPosition = plr.Character.HumanoidRootPart.CFrame
+                    local function returnPlayer()
+                        if getgenv().Fishing then
+                            plr.Character.HumanoidRootPart.CFrame = fishbtn.CFrame * CFrame.new(0,3,0)
+                            plr.Character.HumanoidRootPart.Velocity = Vector3.new(0,0,0)
+                        else
+                            plr.Character.HumanoidRootPart.CFrame = originalPosition * CFrame.new(0,3,0)
+                            plr.Character.HumanoidRootPart.Velocity = Vector3.new(0,0,0)
+                        end
+                    end
+                    for i, v in pairs(game.Workspace.Crates:GetChildren()) do
+                        plr.Character.HumanoidRootPart.CFrame = v:WaitForChild("Primary").CFrame * CFrame.new(0,3,0)
+                        task.wait(.5)
+                        plr.Character.HumanoidRootPart.CFrame = game.Workspace.BoxMachine.DelieveryZone.CFrame * CFrame.new(0,5,0)
+                        task.wait(.5)
+                    end
+                    returnPlayer()
+                    task.wait(.2)
+                end)
+            end
+        end,
+    })
+
+    local FishToggle = Tab:CreateToggle({
+        Name = "Auto Fish + Crate",
+        CurrentValue = false,
+        Flag = "fishcollect",
+        Callback = function(v)
+            getgenv().Fishing = v
+            if game.Workspace.Crates:FindFirstChild("CurrencyCrate") then
+                task.spawn(function()
+                    local originalPosition = plr.Character.HumanoidRootPart.CFrame
+                    local function returnPlayer()
+                        if getgenv().Fishing then
+                            plr.Character.HumanoidRootPart.CFrame = fishbtn.CFrame * CFrame.new(0,3,0)
+                            plr.Character.HumanoidRootPart.Velocity = Vector3.new(0,0,0)
+                        else
+                            plr.Character.HumanoidRootPart.CFrame = originalPosition * CFrame.new(0,3,0)
+                            plr.Character.HumanoidRootPart.Velocity = Vector3.new(0,0,0)
+                        end
+                    end
+                    for i, v in pairs(game.Workspace.Crates:GetChildren()) do
+                        plr.Character.HumanoidRootPart.CFrame = v:WaitForChild("Primary").CFrame * CFrame.new(0,3,0)
+                        task.wait(.5)
+                        plr.Character.HumanoidRootPart.CFrame = game.Workspace.BoxMachine.DelieveryZone.CFrame * CFrame.new(0,5,0)
+                        task.wait(.5)
+                    end
+                    returnPlayer()
+                    task.wait(.2)
+                end)
+            end
+        end,
+    })
+    
+    local tpTab = Window:CreateTab("Teleports", 16831482778)
+    
+    local tpBtn1 = tpTab:CreateButton({
+        Name = "Teleport to Eggs",
+        Callback = function()
+            plr.Character.HumanoidRootPart.CFrame = game.Workspace.Field.CFrame * CFrame.new(0,3,0)
+        end,
+    })
+    
+    local tpBtn2 = tpTab:CreateButton({
+        Name = "Teleport to Crates",
+        Callback = function()
+            plr.Character.HumanoidRootPart.CFrame = game.Workspace.CrateField.CFrame * CFrame.new(0,3,0)
+        end,
+    })
+    
+    local tpBtn3 = tpTab:CreateButton({
+        Name = "Teleport to Pets",
+        Callback = function()
+            plr.Character.HumanoidRootPart.CFrame = CFrame.new(74,4,-139) * CFrame.new(0,0,0)
+        end,
+    })
+    
+    local tpBtn4 = tpTab:CreateButton({
+        Name = "Teleport to Fishing Area",
+        Callback = function()
+            plr.Character.HumanoidRootPart.CFrame = fishbtn.CFrame * CFrame.new(0,3,0)
+        end,
+    })
+    
+    local setTab = Window:CreateTab("Settings", 5506279557)
+    
+    local destroyBtn = setTab:CreateButton({
+        Name = "Destroy GUI",
+        Callback = function()
+            Rayfield:Destroy()
+        end,
+    })
+    
+    --[[
+    game.Workspace.CollectionRangePart:GetPropertyChangedSignal("Size"):Connect(function()
+       if getgenv().AutoCollectEggs then
+           workspace.CollectionRangePart.Size = Vector3.new(1000,0.25,1000)
+       end
+    end)
+    --]]
+    
+    game.Workspace.Crates.ChildAdded:Connect(function(crate)
+       local primary = crate:WaitForChild("Primary")
+       if getgenv().AutoCollectCrate or getgenv().Fishing then
+           task.spawn(function()
+               local originalPosition = plr.Character.HumanoidRootPart.CFrame
+               local function returnPlayer()
+                    if getgenv().Fishing then
+                        plr.Character.HumanoidRootPart.CFrame = fishbtn.CFrame * CFrame.new(0,3,0)
+                        plr.Character.HumanoidRootPart.Velocity = Vector3.new(0,0,0)
+                    else
+                        plr.Character.HumanoidRootPart.CFrame = originalPosition * CFrame.new(0,3,0)
+                        plr.Character.HumanoidRootPart.Velocity = Vector3.new(0,0,0)
+                    end
+               end
+               plr.Character.HumanoidRootPart.CFrame = primary.CFrame * CFrame.new(0,5,0)
+               task.wait(.2)
+               plr.Character.HumanoidRootPart.CFrame = game.Workspace.BoxMachine.DelieveryZone.CFrame * CFrame.new(0,3,0)
+               task.wait(.2)
+               returnPlayer()
+               task.wait(.2)
+           end)
+       end
+    end)
+
+    Rayfield:LoadConfiguration()
+end
