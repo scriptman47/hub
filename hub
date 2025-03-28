@@ -366,7 +366,7 @@ if game.PlaceId == 258258996 then
         Name = "Clover Farm",
         Default = false,
         Callback = function(v)
-            local tog = v
+            tog = v
             if tog == true then
                 task.spawn(function()
                     local originalPosition = plr.Character.HumanoidRootPart.CFrame
@@ -377,12 +377,16 @@ if game.PlaceId == 258258996 then
                         for i, v in pairs(game.Workspace.Clovers:GetChildren()) do
                             if v:FindFirstChild("ProximityPrompt") and tog == true then
                                 plr.Character.HumanoidRootPart.CFrame = v.CFrame * CFrame.new(0,0,0)
-                                repeat fireproximityprompt(v.ProximityPrompt) until v.Parent == nil or tog == false
+                                repeat 
+                                    fireproximityprompt(v.ProximityPrompt)
+                                    fireproximityprompt(v.ProximityPrompt) 
+                                    fireproximityprompt(v.ProximityPrompt)
+                                until v.Parent == nil or tog == false
                                 task.wait()
                             end
                         end
                         task.wait()
-                    until #game.Workspace.Clovers:GetChildren() == 0 or tog == false
+                    until #game.Workspace.Clovers:GetChildren() == 0
                     teleportBack()
                 end)
             end
@@ -960,16 +964,18 @@ if game.PlaceId == 258258996 then
                 local function teleportBack()
                     plr.Character.HumanoidRootPart.CFrame = originalPosition * CFrame.new(0,0,0)
                 end
-                repeat
-                    for i, v in pairs(game.Workspace.Clovers:GetChildren()) do
-                        if v:FindFirstChild("ProximityPrompt") then
-                            plr.Character.HumanoidRootPart.CFrame = v.CFrame * CFrame.new(0,0,0)
-                            repeat fireproximityprompt(v.ProximityPrompt) until v.Parent == nil
-                            task.wait()
-                        end
+                for i, v in pairs(game.Workspace.Clovers:GetChildren()) do
+                    if v:FindFirstChild("ProximityPrompt") then
+                        plr.Character.HumanoidRootPart.CFrame = v.CFrame * CFrame.new(0,0,0)
+                        repeat 
+                            fireproximityprompt(v.ProximityPrompt)
+                            fireproximityprompt(v.ProximityPrompt) 
+                            fireproximityprompt(v.ProximityPrompt)
+                        until v.Parent == nil or getgenv().CloverFarm == false
+                        task.wait()
                     end
-                    task.wait()
-                until #game.Workspace.Clovers:GetChildren() == 0
+                end
+                task.wait()
                 teleportBack()
             end)
         end
