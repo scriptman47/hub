@@ -1,3 +1,6 @@
+local Players = game:GetService("Players")
+local plr = game.Players.LocalPlayer
+local version = "1.0"
 local Rayfield = loadstring(game:HttpGet('https://raw.githubusercontent.com/ShadowrrGTHB/Shade/refs/heads/main/source.lua'))()
 local fishbtn = workspace.Buttons.FishInPondFree
 workspace.CollectionRangePart.Size = Vector3.new(1000,0.25,1000)

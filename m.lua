@@ -1,3 +1,6 @@
+local Players = game:GetService("Players")
+local plr = game.Players.LocalPlayer
+local version = "2.2"
 local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/jensonhirst/Orion/main/source')))()
 local Window = OrionLib:MakeWindow({
     Name = "MH FKR v" ..version,
