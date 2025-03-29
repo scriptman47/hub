@@ -809,7 +809,7 @@ if game.PlaceId == 258258996 then
                         if v:IsA("Model") then
                             if v:FindFirstChild("Model") then
                                 if string.match(v.Name, "Teleport") or string.match(v.Name, "Industrial") or v.Name == "Vulcan's Wrath" or string.match(v.Name, "Dreamer") then
-                                else
+                                elseif v:FindFirstChild("Model") and v.Model:FindFirstChild("Lava") then
                                     ore.Position = v.Model.Lava.Position + Vector3.new(0,0.5,0)
                                     furnace = v.Model.Lava
                                 end
