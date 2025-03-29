@@ -399,6 +399,38 @@ if game.PlaceId == 258258996 then
         end
     })
 
+    gameSection:AddColorpicker({
+        Name = "Upgrader Colour",
+        Default = Color3.fromRGB(200,0,0),
+        Callback = function(v)
+            UpgColour = v
+            if getgenv().UpgradeShow then
+                for i, v in pairs(myfac:GetDescendants()) do
+                    if string.match(v.Name, "Upgrade") and v.Name ~= "UpgraderShip" and v.Name ~= "UpgradeShip" and v.Name ~= "The Darkest Upgrader" and v.Name ~= "The Final Upgrader" and v.Name ~= "Rainbow Upgrader" and v.Name ~= "FakeUpgrade" and v.Name ~= "FakeUpgrader" and v.Name ~= "Professional Upgrader" and v.Name ~= "Birthday Upgrader" and v.Name ~= "Banana Split Upgrader" and v.Name ~= "Three Years Upgrader" and v.Name ~= "Golden Bell Upgrader" and v.Name ~= "Shiny Red Upgrader" and v.Name ~= "Macaroon Upgrader" and v.Name ~= "Inflatable Party Upgrader" then                    
+                        if v.Transparency and v.Transparency == 0 and v.Parent.Parent.Name ~= "Methuselah's Mask" and v.Parent.Parent.Name ~= "Dreamer's Birthday Cake" then
+                            if string.match(v.Parent.Parent.Name, "Soul Blossom") or string.match(v.Parent.Parent.Name, "Final Fab") or string.match(v.Parent.Parent.Name, "Energy Core") or string.match(v.Parent.Parent.Name, "Portable Pearl") then
+                            else
+                                v.Transparency = .25
+                            end
+                        end
+                        if v:FindFirstChild("SelectionBox") then
+                            if v.SelectionBox.Color3 ~= UpgColour then
+                                v.SelectionBox.Color3 = UpgColour
+                            end
+                        elseif v.Parent.Parent.Name ~= "Methuselah's Mask" and v.Parent.Parent.Name ~= "Dreamer's Birthday Cake" then
+                            if string.match(v.Parent.Parent.Name, "Soul Blossom") or string.match(v.Parent.Parent.Name, "Final Fab") or string.match(v.Parent.Parent.Name, "Energy Core") or string.match(v.Parent.Parent.Name, "Portable Pearl") then
+                            else
+                                local outline = Instance.new("SelectionBox",v)
+                                outline.Adornee = v
+                                outline.Color3 = UpgColour
+                            end
+                        end
+                    end
+                end
+            end
+        end
+    })
+
     local tpSection = GameWin:AddSection({Name = "Teleports"})
 
     tpSection:AddButton({
@@ -714,38 +746,6 @@ if game.PlaceId == 258258996 then
         Name = "Destroy GUI",
         Callback = function()
             OrionLib:Destroy()
-        end
-    })
-
-    setSection:AddColorpicker({
-        Name = "Upgrader Colour",
-        Default = Color3.fromRGB(200,0,0),
-        Callback = function(v)
-            UpgColour = v
-            if getgenv().UpgradeShow then
-                for i, v in pairs(myfac:GetDescendants()) do
-                    if string.match(v.Name, "Upgrade") and v.Name ~= "UpgraderShip" and v.Name ~= "UpgradeShip" and v.Name ~= "The Darkest Upgrader" and v.Name ~= "The Final Upgrader" and v.Name ~= "Rainbow Upgrader" and v.Name ~= "FakeUpgrade" and v.Name ~= "FakeUpgrader" and v.Name ~= "Professional Upgrader" and v.Name ~= "Birthday Upgrader" and v.Name ~= "Banana Split Upgrader" and v.Name ~= "Three Years Upgrader" and v.Name ~= "Golden Bell Upgrader" and v.Name ~= "Shiny Red Upgrader" and v.Name ~= "Macaroon Upgrader" and v.Name ~= "Inflatable Party Upgrader" then                    
-                        if v.Transparency and v.Transparency == 0 and v.Parent.Parent.Name ~= "Methuselah's Mask" and v.Parent.Parent.Name ~= "Dreamer's Birthday Cake" then
-                            if string.match(v.Parent.Parent.Name, "Soul Blossom") or string.match(v.Parent.Parent.Name, "Final Fab") or string.match(v.Parent.Parent.Name, "Energy Core") or string.match(v.Parent.Parent.Name, "Portable Pearl") then
-                            else
-                                v.Transparency = .25
-                            end
-                        end
-                        if v:FindFirstChild("SelectionBox") then
-                            if v.SelectionBox.Color3 ~= UpgColour then
-                                v.SelectionBox.Color3 = UpgColour
-                            end
-                        elseif v.Parent.Parent.Name ~= "Methuselah's Mask" and v.Parent.Parent.Name ~= "Dreamer's Birthday Cake" then
-                            if string.match(v.Parent.Parent.Name, "Soul Blossom") or string.match(v.Parent.Parent.Name, "Final Fab") or string.match(v.Parent.Parent.Name, "Energy Core") or string.match(v.Parent.Parent.Name, "Portable Pearl") then
-                            else
-                                local outline = Instance.new("SelectionBox",v)
-                                outline.Adornee = v
-                                outline.Color3 = UpgColour
-                            end
-                        end
-                    end
-                end
-            end
         end
     })
 
