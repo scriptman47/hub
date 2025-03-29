@@ -298,25 +298,6 @@ if game.PlaceId == 258258996 then
         end
     })
 
-    laySection:AddToggle({
-        Name = "Show Upgraders",
-        Default = false,
-        Callback = function(v)
-            getgenv().UpgradeShow = v
-            if v then
-                upgradeshow()
-            elseif getgenv().UpgradeShow == false then
-                for i, v in pairs(myfac:GetDescendants()) do
-                    if v.Name == "SelectionBox" then
-                        if string.match(v.Parent.Name,"Upgrade") then
-                            v:Destroy()
-                        end
-                    end
-                end
-            end
-        end
-    })
-
     local oreSection = Main:AddSection({Name = "Ores"})
 
     oreSection:AddToggle({
@@ -358,6 +339,72 @@ if game.PlaceId == 258258996 then
         Default = false,
         Callback = function(v)
             getgenv().BecomeTheOre = v
+        end
+    })
+
+    local GameWin = Window:MakeTab({
+        Name = "Game",
+        Icon = "rbxassetid://5506273757",
+        PremiumOnly = false
+    })
+
+    local gameSection = GameWin:AddSection({Name = "Game"})
+
+    gameSection:AddToggle({
+        Name = "Anti AFK",
+        Default = false,
+        Callback = function(v)
+            local GC = getconnections or get_signal_cons
+            if GC and v then
+                for i,v in pairs(GC(Players.LocalPlayer.Idled)) do
+                    if v["Disable"] then
+                        v["Disable"](v)
+                    elseif v["Disconnect"] then
+                        v["Disconnect"](v)
+                    end
+                end
+            else
+                local VirtualUser = cloneref(game:GetService("VirtualUser"))
+                Players.LocalPlayer.Idled:Connect(function()
+                    VirtualUser:CaptureController()
+                    VirtualUser:ClickButton2(Vector2.new())
+                end)
+            end
+        end
+    })
+
+    gameSection:AddToggle({
+        Name = "Show Upgraders",
+        Default = false,
+        Callback = function(v)
+            getgenv().UpgradeShow = v
+            if v then
+                upgradeshow()
+            elseif getgenv().UpgradeShow == false then
+                for i, v in pairs(myfac:GetDescendants()) do
+                    if v.Name == "SelectionBox" then
+                        if string.match(v.Parent.Name,"Upgrade") then
+                            v:Destroy()
+                        end
+                    end
+                end
+            end
+        end
+    })
+
+    local tpSection = GameWin:AddSection({Name = "Teleports"})
+
+    tpSection:AddButton({
+        Name = "Teleport to Base",
+        Callback = function()
+            plr.Character.HumanoidRootPart.CFrame = Base.CFrame * CFrame.new(0,3,0)
+        end
+    })
+
+    tpSection:AddButton({
+        Name = "Teleport to Leaderboards",
+        Callback = function()
+            plr.Character.HumanoidRootPart.CFrame = CFrame.new(-62, 179, 323) * CFrame.new(0,0,0)
         end
     })
 
@@ -493,19 +540,16 @@ if game.PlaceId == 258258996 then
 
     local plrSection1 = plrWin:AddSection({Name = "Teleports"})
 
-    plrSection1:AddButton({
-        Name = "Teleport to Base",
-        Callback = function()
-            plr.Character.HumanoidRootPart.CFrame = Base.CFrame * CFrame.new(0,3,0)
+    for i, v in pairs(game.Players:GetChildren()) do
+        if v.Name ~= plr.Name then
+            local button = plrSection1:AddButton({
+                Name = v.Name,
+                Callback = function()
+                    plr.Character.HumanoidRootPart.CFrame = game.Workspace[v.Name].HumanoidRootPart.CFrame * CFrame.new(0,0,0)
+                end
+            })
         end
-    })
-
-    plrSection1:AddButton({
-        Name = "Teleport to Leaderboards",
-        Callback = function()
-            plr.Character.HumanoidRootPart.CFrame = CFrame.new(-62, 179, 323) * CFrame.new(0,0,0)
-        end
-    })
+    end
     
     local plrSection2 = plrWin:AddSection({Name = "Attributes"})
 
@@ -546,96 +590,13 @@ if game.PlaceId == 258258996 then
         end
     })
 
-    plrSection2:AddToggle({
-        Name = "Anti AFK",
-        Default = false,
-        Callback = function(v)
-            local GC = getconnections or get_signal_cons
-            if GC and v then
-                for i,v in pairs(GC(Players.LocalPlayer.Idled)) do
-                    if v["Disable"] then
-                        v["Disable"](v)
-                    elseif v["Disconnect"] then
-                        v["Disconnect"](v)
-                    end
-                end
-            else
-                local VirtualUser = cloneref(game:GetService("VirtualUser"))
-                Players.LocalPlayer.Idled:Connect(function()
-                    VirtualUser:CaptureController()
-                    VirtualUser:ClickButton2(Vector2.new())
-                end)
-            end
-        end
-    })
 
     local shinyWin = Window:MakeTab({
 		Name = "Shinys",
         Icon = "rbxassetid://5506273563",
         PremiumOnly = false
 	})
---[[
-    local trackSection = shinyWin:AddSection({Name = ""})
 
-    trackSection:AddToggle({
-        Name = "Shiny Tracker",
-        Default = false,
-        Callback = function(v)
-            getgenv().ShinyTrack = v
-        end
-    })
-
-    local notifSection = shinyWin:AddSection({Name = "Notification Fabrication"})
-
-    notifSection:AddButton({
-        Name = "Fabricate Shiny Notification",
-        Callback = function()
-            if shinyid ~= 0 and shinyname then
-                notification = plr.PlayerGui.GUI.Notifications.ItemTemplate:Clone()
-                notification.Parent = plr.PlayerGui.GUI.Notifications
-                notification.BackgroundColor3 = Color3.fromRGB(180,239,255)
-                notification.Icon.Image = shinyid
-                notification.Title.Text = shinyname
-                notification.Icon.Amount.Text = "x1"
-                notification.Tier.Text = "Shiny Reborn"
-                notification.Size = UDim2.new(1,0,0,100)
-                notification.BackgroundTransparency = 0.1
-                notification.Visible = true
-                wait(10)
-                notification.Title.Text = "Destroying.."
-                wait(1)
-                notification:Destroy()
-            end
-        end
-    })
-    
-    local shinyDropdown = notifSection:AddDropdown({
-        Name = "Shiny List",
-        Default = "⭐ Foxy Cancer Cell ⭐",
-        Options = {"⭐ Foxy Cancer Cell ⭐"},
-        Callback = function(v)
-            shinyname = v.Text
-            for i=1, #shinytable do
-                if shinytable[i].Parent.Parent.Name == v then
-                    shinyid = shinytable[i].Parent.Parent.Icon.Image
-                end
-            end
-        end
-    })
-
-    notifSection:AddButton({
-        Name = "Refresh List",
-        Callback = function()
-            local table1 = {}
-            if shinytable[1] ~= nil then
-                for i=1, #shinytable do
-                    table.insert(table1,shinytable[i].Text)
-                end
-                shinyDropdown:Refresh(table1,true)
-            end 
-        end
-    })
---]]
     local shinySection = shinyWin:AddSection({Name = "Recently Acquired Shinies (Bottom to Top)"})
 
     local lbWin = Window:MakeTab({
@@ -1080,6 +1041,23 @@ if game.PlaceId == 258258996 then
                 task.wait()
                 teleportBack()
             end)
+        end
+    end)
+
+    game.Players.PlayerAdded:Connect(function(plr)
+        local button = plrSection1:AddButton({
+            Name = v.Name,
+            Callback = function()
+                plr.Character.HumanoidRootPart.CFrame = game.Workspace[v.Name].HumanoidRootPart.CFrame * CFrame.new(0,0,0)
+            end
+        })
+    end)
+
+    game.Players.PlayerRemoving:Connect(function(plr)
+        for i, v in pairs(game.CoreGui.HiddenUI.Orion:GetDescendants()) do
+            if v:IsA("TextLabel") and v.Text == plr.Name then
+                v.Parent:Destroy()
+            end
         end
     end)
 
