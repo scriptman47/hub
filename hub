@@ -60,6 +60,10 @@ if game.PlaceId == 258258996 then
     local boxoption = "Regular"
     local Resetters = {}
     local Upgraders = {}
+    local oldLife = plr.Rebirths.Value
+    local totalLife;
+    local rbCount;
+    local shinyCount;
 
     -------------------------- Functions
     function getUpgraders()
@@ -269,6 +273,13 @@ if game.PlaceId == 258258996 then
         Default = false,
         Callback = function(v)
             getgenv().AutoLayout = v
+            layoutarg = {
+                [1] = "Load",
+                [2] = layoutNum
+            }
+            if #myfac:GetChildren() < 6 and getgenv().AutoLayout == true then
+                game:GetService("ReplicatedStorage").Layouts:InvokeServer(unpack(layoutarg))
+            end
         end
     })
 
@@ -277,6 +288,13 @@ if game.PlaceId == 258258996 then
         Default = false,
         Callback = function(v)
             layout2 = v
+            layoutarg2 = {
+                [1] = "Load",
+                [2] = layoutNum2
+            }
+            if getgenv().AutoLayout == true and layout2 == true then
+                game:GetService("ReplicatedStorage").Layouts:InvokeServer(unpack(layoutarg2))
+            end
         end
     })
 
@@ -294,13 +312,6 @@ if game.PlaceId == 258258996 then
             elseif v == "Four" then
                 layoutNum = "Layout4"
             end
-            layoutarg = {
-                [1] = "Load",
-                [2] = layoutNum
-            }
-            if #myfac:GetChildren() < 6 and getgenv().AutoLayout == true then
-                game:GetService("ReplicatedStorage").Layouts:InvokeServer(unpack(layoutarg))
-            end
         end
     })
 
@@ -317,13 +328,6 @@ if game.PlaceId == 258258996 then
                 layoutNum2 = "Layout3"
             elseif v == "Four" then
                 layoutNum2 = "Layout4"
-            end
-            layoutarg2 = {
-                [1] = "Load",
-                [2] = layoutNum2
-            }
-            if getgenv().AutoLayout == true then
-                game:GetService("ReplicatedStorage").Layouts:InvokeServer(unpack(layoutarg2))
             end
         end
     })
@@ -743,6 +747,22 @@ if game.PlaceId == 258258996 then
         end
     })
 
+    local statWin = Window:MakeTab({
+		Name = "Stats",
+        Icon = "rbxassetid://5670621915",
+        PremiumOnly = false
+	})
+
+    local gstatSection = statWin:AddSection({Name = "MH FKR v" ..version.. " Runtime"})
+
+    local timeElapsed = gstatSection:AddLabel("0s")
+
+    local rstatSection = statWin:AddSection({Name = "Rebirths"})
+
+    local lfcLabel = rstatSection:AddLabel("0 Lives")
+    local rbcLabel = rstatSection:AddLabel("0 Rebirths")
+    local scLabel = rstatSection:AddLabel("0 Shinies")
+
     local setWin = Window:MakeTab({
 		Name = "Settings",
         Icon = "rbxassetid://5506279557",
@@ -929,8 +949,22 @@ if game.PlaceId == 258258996 then
             end)
         end
     end)
-
-    game.Players.LocalPlayer.Rebirths:GetPropertyChangedSignal("Value"):Connect(function()
+    
+    plr.Rebirths:GetPropertyChangedSignal("Value"):Connect(function()
+        difference = plr.Rebirths.Value-oldLife
+        oldLife = plr.Rebirths.Value
+        if totalLife then
+            totalLife = totalLife+difference
+        else
+            totalLife = difference
+        end
+        if rbCount then
+            rbCount = rbCount+1
+        else
+            rbCount = 1
+        end
+        lfcLabel:Set("" ..totalLife.. " Lives")
+        rbcLabel:Set("" ..rbCount.. " Rebirths")
         if getgenv().AutoLayout then
             task.spawn(function()
                 repeat wait() until #myfac:GetChildren() < 6
@@ -953,7 +987,7 @@ if game.PlaceId == 258258996 then
         end
     end)
 
-    game.Players.LocalPlayer.leaderstats.Cash:GetPropertyChangedSignal("Value"):Connect(function()
+    plr.leaderstats.Cash:GetPropertyChangedSignal("Value"):Connect(function()
         if getgenv().AutoReborn then
             task.spawn(function()
                 if string.match(game:GetService("Players").LocalPlayer.PlayerGui.Rebirth.Frame.Rebirth_Content.Content.Rebirth.Frame.Top.SkipBox.Label.Text, "Skip") then
@@ -1012,22 +1046,28 @@ if game.PlaceId == 258258996 then
         end
     end)
 
-    game.Players.LocalPlayer.Character.Humanoid:GetPropertyChangedSignal("WalkSpeed"):Connect(function()
+    plr.Character.Humanoid:GetPropertyChangedSignal("WalkSpeed"):Connect(function()
         if getgenv().Speed then
-            game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = speed
+            plr.Character.Humanoid.WalkSpeed = speed
         end
     end)
 
-    game.Players.LocalPlayer.Character.Humanoid:GetPropertyChangedSignal("JumpPower"):Connect(function()
+    plr.Character.Humanoid:GetPropertyChangedSignal("JumpPower"):Connect(function()
         if getgenv().Jump then
-            game.Players.LocalPlayer.Character.Humanoid.JumpPower = jump
+            plr.Character.Humanoid.JumpPower = jump
         end
     end)
 
-    game.Players.LocalPlayer.PlayerGui.GUI.Notifications.ChildAdded:Connect(function(notif)
+    plr.PlayerGui.GUI.Notifications.ChildAdded:Connect(function(notif)
         task.spawn(function()
             if notif.Name == "ItemTemplate" and string.match(notif.Title.Text,"⭐") then
                 shinySection:AddLabel(notif.Title.Text)
+                if shinyCount then
+                    shinyCount = shinyCount+1
+                else
+                    shinyCount = 1
+                end
+                scLabel:Set("" ..shinyCount.. " Shinies")
                 local label;
                 for i, v in pairs(game.CoreGui.HiddenUI.Orion:GetDescendants()) do
                     if v:IsA("TextLabel") and v.Text == notif.Title.Text then
@@ -1077,6 +1117,23 @@ if game.PlaceId == 258258996 then
     end)
 
     OrionLib:Init()
+
+    local runCount = 0
+    while true do
+        runCount = runCount+1
+        if runCount < 60 then
+            timeElapsed:Set("" ..runCount.. "s")
+        elseif runCount >= 60 then
+            runCount = runCount/60
+            timeElapsed:Set("" ..runCount.. " mins")
+            runCount = runCount*60
+        elseif runCount >= 3600 then
+            runCount = runCount/3600
+            timeElapsed:Set("" ..runCount.. " hours")
+            runCount = runCount*3600
+        end
+        wait(1)
+    end
 
     --END OF NORMAL MINERS HAVEN
 elseif game.PlaceId == 432041175 then
@@ -1619,7 +1676,7 @@ elseif game.PlaceId == 432041175 then
         end
     end)
 
-    game.Players.LocalPlayer.Rebirths:GetPropertyChangedSignal("Value"):Connect(function()
+    plr.Rebirths:GetPropertyChangedSignal("Value"):Connect(function()
         if getgenv().AutoLayout then
             task.spawn(function()
                 local layoutarg = {
@@ -1635,7 +1692,7 @@ elseif game.PlaceId == 432041175 then
         end
     end)
 
-    game.Players.LocalPlayer.leaderstats.Cash:GetPropertyChangedSignal("Value"):Connect(function()
+    plr.leaderstats.Cash:GetPropertyChangedSignal("Value"):Connect(function()
         if getgenv().AutoReborn then
             if string.match(game:GetService("Players").LocalPlayer.PlayerGui.Rebirth.Frame.Rebirth_Content.Content.Rebirth.Frame.Top.SkipBox.Label.Text, "Skip") then
                 game:GetService("ReplicatedStorage").Rebirth:InvokeServer()
@@ -1677,15 +1734,15 @@ elseif game.PlaceId == 432041175 then
         end
     end)
 
-    game.Players.LocalPlayer.Character.Humanoid:GetPropertyChangedSignal("WalkSpeed"):Connect(function()
+    plr.Character.Humanoid:GetPropertyChangedSignal("WalkSpeed"):Connect(function()
         if getgenv().Speed then
-            game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = speed
+            plr.Character.Humanoid.WalkSpeed = speed
         end
     end)
 
-    game.Players.LocalPlayer.Character.Humanoid:GetPropertyChangedSignal("JumpPower"):Connect(function()
+    plr.Character.Humanoid:GetPropertyChangedSignal("JumpPower"):Connect(function()
         if getgenv().Jump then
-            game.Players.LocalPlayer.Character.Humanoid.JumpPower = jump
+            plr.Character.Humanoid.JumpPower = jump
         end
     end)
     OrionLib:Init()
@@ -2258,7 +2315,7 @@ elseif game.Workspace:FindFirstChild("Tycoons") then
         end
     end)
 
-    game.Players.LocalPlayer.Rebirths:GetPropertyChangedSignal("Value"):Connect(function()
+    plr.Rebirths:GetPropertyChangedSignal("Value"):Connect(function()
         if getgenv().AutoLayout then
             task.spawn(function()
                 local layoutarg = {
@@ -2321,7 +2378,7 @@ elseif game.Workspace:FindFirstChild("Tycoons") then
         end
     end)
 
-    game.Players.LocalPlayer.leaderstats.Cash:GetPropertyChangedSignal("Value"):Connect(function()
+    plr.leaderstats.Cash:GetPropertyChangedSignal("Value"):Connect(function()
         if getgenv().AutoReborn then
             game:GetService("ReplicatedStorage").DestroyAll:InvokeServer()
             wait(0.5)
@@ -2363,15 +2420,15 @@ elseif game.Workspace:FindFirstChild("Tycoons") then
         end
     end)
 
-    game.Players.LocalPlayer.Character.Humanoid:GetPropertyChangedSignal("WalkSpeed"):Connect(function()
+    plr.Character.Humanoid:GetPropertyChangedSignal("WalkSpeed"):Connect(function()
         if getgenv().Speed then
-            game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = speed
+            plr.Character.Humanoid.WalkSpeed = speed
         end
     end)
 
-    game.Players.LocalPlayer.Character.Humanoid:GetPropertyChangedSignal("JumpPower"):Connect(function()
+    plr.Character.Humanoid:GetPropertyChangedSignal("JumpPower"):Connect(function()
         if getgenv().Jump then
-            game.Players.LocalPlayer.Character.Humanoid.JumpPower = jump
+            plr.Character.Humanoid.JumpPower = jump
         end
     end)
     OrionLib:Init()
