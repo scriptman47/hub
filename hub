@@ -17,6 +17,15 @@ loopList[#loopList + 1] = {NAME = "Horizon Centrifuge",CAP = 1e+24}
 loopList[#loopList + 1] = {NAME = "Ore Thermocrusher",CAP = 10e+24}
 loopList[#loopList + 1] = {NAME = "Suspended Lava Refiner",CAP = 1e+27}
 loopList[#loopList + 1] = {NAME = "Ore Transistor",CAP = 1e+30}
+priorityItems = {}
+priorityItems[#priorityItems + 1] = "Angel's Blessing"
+priorityItems[#priorityItems + 1] = "Garden of Gaia"
+priorityItems[#priorityItems + 1] = "Astral"
+priorityItems[#priorityItems + 1] = "Soapy Refiner"
+priorityItems[#priorityItems + 1] = "Atlantic"
+priorityItems[#priorityItems + 1] = "Turtle Dignifier"
+priorityItems[#priorityItems + 1] = "Meralin's Sorcery"
+priorityItems[#priorityItems + 1] = "Methuselah's Mask"
 if game.PlaceId == 258258996 then
     local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/jensonhirst/Orion/main/source')))()
 	local Window = OrionLib:MakeWindow({
@@ -48,23 +57,45 @@ if game.PlaceId == 258258996 then
     local rebornDelay = 0
     local delayVariance = 0
     local boxoption = "Regular"
+    local Resetters = {}
+    local Upgraders = {}
 
     -------------------------- Functions
     function getUpgraders()
-        local Upgraders = nil
-        local Resetters = nil
-        local Upgraders = {}
-        local Resetters = {}
+        Upgraders = nil
+        Resetters = nil
+        Upgraders = {}
+        Resetters = {}
         local resetCount = 0
         for i, v in pairs(myfac:GetChildren()) do
             if string.match(v.Name, "Tesla") or string.match(v.Name, "Void Star") or string.match(v.Name, "Black Dwarf") or v.Name == "The Final Upgrader" or v.Name == "The Ultimate Sacrifice" or v.Name == "Daestrophe" then
                 table.insert(Resetters, v.Model.Upgrade)
-            elseif v:FindFirstChild("Model") and v.Model:FindFirstChild("Upgrade2") then
+            elseif string.match(v.Name, "Temporal Armageddon") or string.match(v.Name, "Ooftopian Refiner") or string.match(v.Name, "Blaster") or string.match(v.Name, "Melter") then
+            elseif v:FindFirstChild("Model") and v.Model:FindFirstChild("Upgrade7") and v.Name ~= "Void Drive" then
                 table.insert(Upgraders, v.Model.Upgrade2)
-            elseif v:FindFirstChild("Model") and v.Model:FindFirstChild("Upgrade") then
+            elseif v:FindFirstChild("Model") and v.Model:FindFirstChild("Upgrade6") and v.Name ~= "Void Drive" then
+                table.insert(Upgraders, v.Model.Upgrade2)
+            elseif v:FindFirstChild("Model") and v.Model:FindFirstChild("Upgrade5") and v.Name ~= "Void Drive" then
+                table.insert(Upgraders, v.Model.Upgrade2)
+            elseif v:FindFirstChild("Model") and v.Model:FindFirstChild("Upgrade4") and v.Name ~= "Void Drive" then
+                table.insert(Upgraders, v.Model.Upgrade2)
+            elseif v:FindFirstChild("Model") and v.Model:FindFirstChild("Upgrade3") and v.Name ~= "Void Drive" then
+                table.insert(Upgraders, v.Model.Upgrade2)
+            elseif v:FindFirstChild("Model") and v.Model:FindFirstChild("Upgrade2") and v.Name ~= "Void Drive" then
+                table.insert(Upgraders, v.Model.Upgrade2)
+            elseif v:FindFirstChild("Model") and v.Model:FindFirstChild("Upgrade") and v.Name ~= "Void Drive" then
                 table.insert(Upgraders, v.Model.Upgrade)
-            elseif v:FindFirstChild("Model") and v.Model:FindFirstChild("Upgrader") then
+            elseif v:FindFirstChild("Model") and v.Model:FindFirstChild("Upgrader") and v.Name ~= "Void Drive" then
                 table.insert(Upgraders, v.Model.Upgrader)
+            end
+            for i=1, #priorityItems do
+                if string.match(v.Name,priorityItems[i]) then
+                    for u=1, #Upgraders do
+                        if v == Upgraders[u].Parent.Parent then
+                            table.remove(Upgraders,u)
+                        end
+                    end
+                end
             end
         end
         for i=1, #Upgraders do
@@ -762,60 +793,106 @@ if game.PlaceId == 258258996 then
             task.spawn(function()
                 if string.match(ore.Name, "Coal") then
                     for i, v in pairs(myfac:GetChildren()) do
-                        if string.match(v.Name, "Industrial") or string.match(v.Name, "Vulcan's Wrath") then
-                            ore.Position = v.Model.Lava.Position + Vector3.new(0,0.5,0)
-                            ore.Velocity = Vector3.new(0,0,0)
-                            task.wait()
+                        if v:FindFirstChild("Model") and v.Model:FindFirstChild("Lava") then
+                            if string.match(v.Name, "Industrial") or string.match(v.Name, "Vulcan's Wrath") then
+                                ore.Position = v.Model.Lava.Position + Vector3.new(0,.5,0)
+                            end
                         end
                     end
-                    return
-                end
-                getUpgraders()
-                ore.Position = Base.Position + Vector3.new(0,102,0)
-                task.wait()
-                ore.Position = Base.Position + Vector3.new(0,102,0)
-                if resetCount == 1 then
-                    ore.Position = Base.Position + Vector3.new(0,127,0)
-                    task.wait()
-                    ore.Position = Base.Position + Vector3.new(0,102,0)
-                    task.wait()
-                    ore.Position = Base.Position + Vector3.new(0,102,0)
-                end
-                if resetCount == 2 then
-                    ore.Position = Base.Position + Vector3.new(0,152,0)
-                    task.wait()
-                    ore.Position = Base.Position + Vector3.new(0,102,0)
-                    task.wait()
-                    ore.Position = Base.Position + Vector3.new(0,102,0)
-                end
-                if resetCount == 3 then
-                    ore.Position = Base.Position + Vector3.new(0,177,0)
-                    task.wait()
-                    ore.Position = Base.Position + Vector3.new(0,102,0)
-                    task.wait()
-                    ore.Position = Base.Position + Vector3.new(0,102,0)
-                end
-                if resetCount == 4 then
-                    ore.Position = Base.Position + Vector3.new(0,202,0)
-                    task.wait()
-                    ore.Position = Base.Position + Vector3.new(0,102,0)
-                    task.wait()
-                    ore.Position = Base.Position + Vector3.new(0,102,0)
-                end
-                if furnace then
-                    ore.Position = furnace.Position + Vector3.new(0,0.5,0)
                 else
-                    for i, v in pairs(myfac:GetChildren()) do
-                        if v:IsA("Model") then
-                            if v:FindFirstChild("Model") then
-                                if string.match(v.Name, "Teleport") or string.match(v.Name, "Industrial") or v.Name == "Vulcan's Wrath" or string.match(v.Name, "Dreamer") then
-                                elseif v:FindFirstChild("Model") and v.Model:FindFirstChild("Lava") then
-                                    ore.Position = v.Model.Lava.Position + Vector3.new(0,0.5,0)
-                                    furnace = v.Model.Lava
+                    getUpgraders()
+                    local function upgrade()
+                        for i, v in pairs(myfac:GetChildren()) do
+                            for i=1, #priorityItems do
+                                if string.match(v.Name,tostring(priorityItems[i])) then
+                                    if v.Model:FindFirstChild("Upgrade3") then
+                                        for i=1, 2 do
+                                            ore.Position = v.Model.Upgrade3.Position
+                                            ore.Position = Base.Position + Vector3.new(0,103,0)
+                                            task.wait()
+                                        end
+                                        ore.Velocity = Vector3.new(0,0,0)
+                                    elseif v.Model:FindFirstChild("Upgrade2") then
+                                        for i=1, 2 do
+                                            ore.Position = v.Model.Upgrade2.Position
+                                            ore.Position = Base.Position + Vector3.new(0,103,0)
+                                            task.wait()
+                                        end
+                                        ore.Velocity = Vector3.new(0,0,0)
+                                    elseif v.Model:FindFirstChild("Upgrade") then
+                                        for i=1, 2 do
+                                            ore.Position = v.Model.Upgrade.Position
+                                            ore.Position = Base.Position + Vector3.new(0,103,0)
+                                            task.wait()
+                                        end
+                                        ore.Velocity = Vector3.new(0,0,0)
+                                    end
                                 end
                             end
                         end
-                    end	
+                        for i=1, 2 do
+                            ore.Position = Base.Position + Vector3.new(0,100,0)
+                            task.wait()
+                            ore.Position = Base.Position + Vector3.new(0,103,0)
+                            task.wait()
+                        end
+                        ore.Velocity = Vector3.new(0,0,0)
+                        for i, v in pairs(myfac:GetChildren()) do
+                            if string.match(v.Name, "Melter") then
+                                for i=1, 2 do
+                                    ore.Position = v.Model.Upgrade.Position
+                                    task.wait()
+                                    ore.Position = Base.Position + Vector3.new(0,103,0)
+                                    task.wait()
+                                end
+                                ore.Velocity = Vector3.new(0,0,0)
+                            elseif string.match(v.Name, "Blaster") then
+                                for i=1, 2 do
+                                    ore.Position = v.Model.Upgrade.Position
+                                    task.wait()
+                                    ore.Position = Base.Position + Vector3.new(0,103,0)
+                                    task.wait()
+                                end
+                                ore.Velocity = Vector3.new(0,0,0)
+                            elseif string.match(v.Name, "Temporal Armageddon") then
+                                for i=1, 2 do
+                                    ore.Position = v.Model.Upgrade.Position
+                                    task.wait()
+                                    ore.Position = Base.Position + Vector3.new(0,103,0)
+                                    task.wait()
+                                end
+                                ore.Velocity = Vector3.new(0,0,0)
+                            elseif string.match(v.Name, "Ooftopian Refiner") then
+                                for i=1, 2 do
+                                    ore.Position = v.Model.Upgrade.Position
+                                    task.wait()
+                                    ore.Position = Base.Position + Vector3.new(0,103,0)
+                                    task.wait()
+                                end
+                                ore.Velocity = Vector3.new(0,0,0)
+                            end
+                        end
+                    end
+                    upgrade()
+                    for i=1, #Resetters do
+                        for u=1, 2 do
+                            ore.Position = Resetters[i].Position
+                            task.wait()
+                            ore.Position = Base.Position + Vector3.new(0,103,0)
+                            task.wait()
+                        end
+                        upgrade()
+                    end
+                    for i, v in pairs(myfac:GetChildren()) do
+                        if v:FindFirstChild("Model") and v.Model:FindFirstChild("Lava") then
+                            if string.match(v.Name, "Industrial") or string.match(v.Name, "Vulcan's Wrath") or string.match(v.Name, "Teleporter") or string.match(v.Name, "Dreamer") then
+                            elseif string.match(v.Name, "Dreamer's Might") then
+                                ore.Position = v.Model.Lava.Position + Vector3.new(0,.5,0)
+                            else
+                                ore.Position = v.Model.Lava.Position + Vector3.new(0,.5,0)
+                            end
+                        end
+                    end
                 end
             end)
         end
