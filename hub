@@ -191,6 +191,28 @@ if game.PlaceId == 258258996 then
             wait(0.5)
         end
     end
+    function cloverfarm()
+        local originalPosition;
+        local function teleportBack()
+            plr.Character.HumanoidRootPart.CFrame = originalPosition * CFrame.new(0,0,0)
+        end
+        while getgenv().CloverFarm do
+            originalPosition = plr.Character.HumanoidRootPart.CFrame
+            if #game.Workspace.Clovers:GetChildren() > 0 then
+                for i, v in pairs(game.Workspace.Clovers:GetChildren()) do
+                    if v:FindFirstChild("ProximityPrompt") then
+                        local prompt = v.ProximityPrompt
+                        plr.Character.HumanoidRootPart.CFrame = v.CFrame * CFrame.new(0,0,0)
+                        wait()
+                        fireproximityprompt(prompt)
+                    end
+                end
+            else
+                teleportBack()
+            end
+            wait(1)
+        end
+    end
 
     ---------------------------
 
@@ -468,22 +490,8 @@ if game.PlaceId == 258258996 then
         Name = "Clover Farm",
         Default = false,
         Callback = function(v)
-            if v then
-                local originalPosition = plr.Character.HumanoidRootPart.CFrame
-                local function teleportBack()
-                    plr.Character.HumanoidRootPart.CFrame = originalPosition * CFrame.new(0,0,0)
-                end
-                for i, v in pairs(game.Workspace.Clovers:GetChildren()) do
-                    if v:FindFirstChild("ProximityPrompt") then
-                        local prompt = v.ProximityPrompt
-                        plr.Character.HumanoidRootPart.CFrame = v.CFrame * CFrame.new(0,0,0)
-                        wait()
-                        fireproximityprompt(prompt)
-                    end
-                end
-                teleportBack()
-            end
             getgenv().CloverFarm = v
+            cloverfarm()
         end
     })
 
@@ -1048,18 +1056,6 @@ if game.PlaceId == 258258996 then
                 end)
             end
         end)
-    end)
-
-    game.Workspace.Clovers.ChildAdded:Connect(function(clover)
-        if getgenv().CloverFarm then
-            local originalPosition = plr.Character.HumanoidRootPart.CFrame
-            local function teleportBack()
-                plr.Character.HumanoidRootPart.CFrame = originalPosition * CFrame.new(0,0,0)
-            end
-            wait()
-            fireproximityprompt(clover)
-            teleportBack()
-        end
     end)
 
     game.Players.PlayerAdded:Connect(function(plr)
