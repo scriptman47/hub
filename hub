@@ -731,6 +731,9 @@ if game.PlaceId == 258258996 then
                         end
                     end
                     if v:FindFirstChild("SelectionBox") then
+                        if v.SelectionBox.Color3 ~= UpgColour then
+                            v.SelectionBox.Color3 = UpgColour
+                        end
                     elseif v.Parent.Parent.Name ~= "Methuselah's Mask" and v.Parent.Parent.Name ~= "Dreamer's Birthday Cake" then
                         if string.match(v.Parent.Parent.Name, "Soul Blossom") or string.match(v.Parent.Parent.Name, "Final Fab") or string.match(v.Parent.Parent.Name, "Energy Core") or string.match(v.Parent.Parent.Name, "Portable Pearl") then
                         else
