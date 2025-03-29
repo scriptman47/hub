@@ -202,6 +202,7 @@ if game.PlaceId == 258258996 then
                 for i, v in pairs(game.Workspace.Clovers:GetChildren()) do
                     if v:FindFirstChild("ProximityPrompt") then
                         local prompt = v.ProximityPrompt
+                        prompt.Enabled = true
                         plr.Character.HumanoidRootPart.CFrame = v.CFrame * CFrame.new(0,0,0)
                         wait()
                         fireproximityprompt(prompt)
