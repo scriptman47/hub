@@ -1,6 +1,6 @@
 local Players = game:GetService("Players")
 local plr = game.Players.LocalPlayer
-local version = "2.2"
+local version = "2.3"
 local colour = 50
 loopList = {}
 loopList[#loopList + 1] = {NAME = "Way-Up-High Upgrader",CAP = 4e+5}
@@ -430,30 +430,19 @@ if game.PlaceId == 258258996 then
         Name = "Clover Farm",
         Default = false,
         Callback = function(v)
-            tog = v
-            if tog == true then
-                task.spawn(function()
-                    local originalPosition = plr.Character.HumanoidRootPart.CFrame
-                    local function teleportBack()
-                        plr.Character.HumanoidRootPart.CFrame = originalPosition * CFrame.new(0,0,0)
-                    end
-                    repeat
-                        for i, v in pairs(game.Workspace.Clovers:GetChildren()) do
-                            if v:FindFirstChild("ProximityPrompt") and tog == true then
-                                plr.Character.HumanoidRootPart.CFrame = v.CFrame * CFrame.new(0,0,0)
-                                repeat 
-                                    fireproximityprompt(v.ProximityPrompt)
-                                    fireproximityprompt(v.ProximityPrompt) 
-                                    fireproximityprompt(v.ProximityPrompt)
-                                until v.Parent == nil or tog == false
-                                task.wait()
-                            end
-                        end
-                        task.wait()
-                    until #game.Workspace.Clovers:GetChildren() == 0
-                    teleportBack()
-                end)
+            local originalPosition = plr.Character.HumanoidRootPart.CFrame
+            local function teleportBack()
+                plr.Character.HumanoidRootPart.CFrame = originalPosition * CFrame.new(0,0,0)
             end
+            for i, v in pairs(game.Workspace.Clovers:GetChildren()) do
+                if v:FindFirstChild("ProximityPrompt") then
+                    local prompt = v.ProximityPrompt
+                    plr.Character.HumanoidRootPart.CFrame = v.CFrame * CFrame.new(0,0,0)
+                    wait()
+                    fireproximityprompt(prompt)
+                end
+            end
+            teleportBack()
             getgenv().CloverFarm = v
         end
     })
@@ -1029,27 +1018,15 @@ if game.PlaceId == 258258996 then
         end)
     end)
 
-    game.Workspace.Clovers.ChildAdded:Connect(function()
+    game.Workspace.Clovers.ChildAdded:Connect(function(clover)
         if getgenv().CloverFarm then
-            task.spawn(function()
-                local originalPosition = plr.Character.HumanoidRootPart.CFrame
-                local function teleportBack()
-                    plr.Character.HumanoidRootPart.CFrame = originalPosition * CFrame.new(0,0,0)
-                end
-                for i, v in pairs(game.Workspace.Clovers:GetChildren()) do
-                    if v:FindFirstChild("ProximityPrompt") then
-                        plr.Character.HumanoidRootPart.CFrame = v.CFrame * CFrame.new(0,0,0)
-                        repeat 
-                            fireproximityprompt(v.ProximityPrompt)
-                            fireproximityprompt(v.ProximityPrompt) 
-                            fireproximityprompt(v.ProximityPrompt)
-                        until v.Parent == nil or getgenv().CloverFarm == false
-                        task.wait()
-                    end
-                end
-                task.wait()
-                teleportBack()
-            end)
+            local originalPosition = plr.Character.HumanoidRootPart.CFrame
+            local function teleportBack()
+                plr.Character.HumanoidRootPart.CFrame = originalPosition * CFrame.new(0,0,0)
+            end
+            wait()
+            fireproximityprompt(clover)
+            teleportBack()
         end
     end)
 
