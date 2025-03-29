@@ -1,6 +1,7 @@
 local Players = game:GetService("Players")
 local plr = game.Players.LocalPlayer
 local version = "2.2"
+local colour = 50
 loopList = {}
 loopList[#loopList + 1] = {NAME = "Way-Up-High Upgrader",CAP = 4e+5}
 loopList[#loopList + 1] = {NAME = "Freon-Blast Upgrader",CAP = 5e+7}
@@ -177,7 +178,7 @@ if game.PlaceId == 258258996 then
                     else
                         local outline = Instance.new("SelectionBox",v)
                         outline.Adornee = v
-                        outline.Color3 = Color3.fromRGB(255,5,255)
+                        outline.Color3 = Color3.fromRGB(tonumber(colour),tonumber(colour),tonumber(colour))
                     end
                 end
             end
@@ -716,6 +717,14 @@ if game.PlaceId == 258258996 then
         Name = "Destroy GUI",
         Callback = function()
             OrionLib:Destroy()
+        end
+    })
+
+    setSection:AddColorpicker({
+        Name = "Upgrader Colour",
+        Default = Color3.fromRGB(tonumber(colour),tonumber(colour),tonumber(colour)),
+        Callback = function(v)
+            colour = v
         end
     })
 
