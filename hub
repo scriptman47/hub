@@ -1,7 +1,7 @@
 local Players = game:GetService("Players")
 local plr = game.Players.LocalPlayer
 local version = "2.3"
-local colour = 50
+local colour = 200
 loopList = {}
 loopList[#loopList + 1] = {NAME = "Way-Up-High Upgrader",CAP = 4e+5}
 loopList[#loopList + 1] = {NAME = "Freon-Blast Upgrader",CAP = 5e+7}
@@ -430,19 +430,21 @@ if game.PlaceId == 258258996 then
         Name = "Clover Farm",
         Default = false,
         Callback = function(v)
-            local originalPosition = plr.Character.HumanoidRootPart.CFrame
-            local function teleportBack()
-                plr.Character.HumanoidRootPart.CFrame = originalPosition * CFrame.new(0,0,0)
-            end
-            for i, v in pairs(game.Workspace.Clovers:GetChildren()) do
-                if v:FindFirstChild("ProximityPrompt") then
-                    local prompt = v.ProximityPrompt
-                    plr.Character.HumanoidRootPart.CFrame = v.CFrame * CFrame.new(0,0,0)
-                    wait()
-                    fireproximityprompt(prompt)
+            if v then
+                local originalPosition = plr.Character.HumanoidRootPart.CFrame
+                local function teleportBack()
+                    plr.Character.HumanoidRootPart.CFrame = originalPosition * CFrame.new(0,0,0)
                 end
+                for i, v in pairs(game.Workspace.Clovers:GetChildren()) do
+                    if v:FindFirstChild("ProximityPrompt") then
+                        local prompt = v.ProximityPrompt
+                        plr.Character.HumanoidRootPart.CFrame = v.CFrame * CFrame.new(0,0,0)
+                        wait()
+                        fireproximityprompt(prompt)
+                    end
+                end
+                teleportBack()
             end
-            teleportBack()
             getgenv().CloverFarm = v
         end
     })
