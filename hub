@@ -1124,13 +1124,16 @@ if game.PlaceId == 258258996 then
         if runCount < 60 then
             timeElapsed:Set("" ..runCount.. "s")
         elseif runCount >= 60 then
-            runCount = runCount/60
-            timeElapsed:Set("" ..runCount.. " mins")
-            runCount = runCount*60
+            minutes = string.match(tostring(runCount/60),"^.")
+            runCount = runCount-math.abs(minutes*60)
+            timeElapsed:Set("" ..minutes.. " mins " ..runCount.. "s")
+            runCount = runCount+math.abs(minutes*60)
         elseif runCount >= 3600 then
-            runCount = runCount/3600
-            timeElapsed:Set("" ..runCount.. " hours")
-            runCount = runCount*3600
+            hours = string.match(tostring(runCount/3600),"^.")
+            minutes = string.match(tostring(runCount/60),"^.")
+            runCount = math.abs(runCount-math.abs(hours*3600))-math.abs(runCount-math.abs(minutes*60))
+            timeElapsed:Set("" ..hours.. " hours " ..minutes.. " mins " ..runCount.. "s")
+            runCount = math.abs(runCount+math.abs(hours*3600))+math.abs(runCount+math.abs(minutes*60))
         end
         wait(1)
     end
