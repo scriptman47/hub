@@ -991,9 +991,9 @@ if game.PlaceId == 258258996 then
         if getgenv().AutoReborn then
             task.spawn(function()
                 if string.match(game:GetService("Players").LocalPlayer.PlayerGui.Rebirth.Frame.Rebirth_Content.Content.Rebirth.Frame.Top.SkipBox.Label.Text, "Skip") then
-                    if rebornDelay then
-                        if delayVariance then
-                            wait(math.random(rebornDelay+math.random(rebornDelay,math.abs(rebornDelay+delayVariance))))
+                    if rebornDelay ~= 0 then
+                        if delayVariance ~= 0 then
+                            wait(math.floor(rebornDelay+math.floor(rebornDelay,math.abs(rebornDelay+delayVariance))))
                             game:GetService("ReplicatedStorage").Rebirth:InvokeServer()
                         else
                             wait(rebornDelay)
