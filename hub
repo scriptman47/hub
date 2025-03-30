@@ -991,13 +991,15 @@ if game.PlaceId == 258258996 then
         if getgenv().AutoReborn then
             task.spawn(function()
                 if string.match(game:GetService("Players").LocalPlayer.PlayerGui.Rebirth.Frame.Rebirth_Content.Content.Rebirth.Frame.Top.SkipBox.Label.Text, "Skip") then
-                    if rebornDelay ~= 0 and delayVariance ~= 0 then
-                        wait(math.random(rebornDelay+math.random(rebornDelay,math.abs(rebornDelay+delayVariance))))
-                        game:GetService("ReplicatedStorage").Rebirth:InvokeServer()
-                    elseif rebornDelay ~= 0 and delayVariance == 0 then
-                        wait(rebornDelay)
-                        game:GetService("ReplicatedStorage").Rebirth:InvokeServer()
-                    elseif rebornDelay == 0 and delayVariance == 0 then
+                    if rebornDelay then
+                        if delayVariance then
+                            wait(math.random(rebornDelay+math.random(rebornDelay,math.abs(rebornDelay+delayVariance))))
+                            game:GetService("ReplicatedStorage").Rebirth:InvokeServer()
+                        else
+                            wait(rebornDelay)
+                            game:GetService("ReplicatedStorage").Rebirth:InvokeServer()
+                        end
+                    else
                         game:GetService("ReplicatedStorage").Rebirth:InvokeServer()
                     end
                 end
@@ -1121,19 +1123,15 @@ if game.PlaceId == 258258996 then
     local seconds = 0
     while true do
         seconds = seconds+1
-        if seconds < 60 then
-            timeElapsed:Set("" ..seconds.. "s")
+        if seconds >= 3600 then
+            hrs = math.floor(seconds/3600)
+            mins = math.floor(math.abs(seconds-math.abs(hrs*3600))/60)
+            timeElapsed:Set("" ..hrs.. " hours " ..mins.. " mins " ..seconds.. "s")
         elseif seconds >= 60 then
-            minutes = string.match(tostring(seconds/60),"^.")
-            seconds = seconds-math.abs(minutes*60)
-            timeElapsed:Set("" ..minutes.. " mins " ..seconds.. "s")
-            seconds = seconds+math.abs(minutes*60)
-        elseif seconds >= 3600 then
-            hours = string.match(tostring(seconds/3600),"^.")
-            minutes = string.match(tostring(seconds/60),"^.")
-            seconds = math.abs(seconds-math.abs(hours*3600))-math.abs(seconds-math.abs(minutes*60))
-            timeElapsed:Set("" ..hours.. " hours " ..minutes.. " mins " ..seconds.. "s")
-            seconds = math.abs(seconds+math.abs(hours*3600))+math.abs(seconds+math.abs(minutes*60))
+            mins = math.floor(seconds/60)
+            timeElapsed:Set("" ..mins.. " mins " ..seconds.. "s")
+        elseif seconds < 60 then
+            timeElapsed:Set(seconds)
         end
         wait(1)
     end
