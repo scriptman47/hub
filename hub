@@ -998,7 +998,7 @@ if game.PlaceId == 258258996 then
                         --else
                             wait(rebornDelay)
                             game:GetService("ReplicatedStorage").Rebirth:InvokeServer()
-                        end
+                        --end
                     else
                         game:GetService("ReplicatedStorage").Rebirth:InvokeServer()
                     end
