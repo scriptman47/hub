@@ -992,10 +992,10 @@ if game.PlaceId == 258258996 then
             task.spawn(function()
                 if string.match(game:GetService("Players").LocalPlayer.PlayerGui.Rebirth.Frame.Rebirth_Content.Content.Rebirth.Frame.Top.SkipBox.Label.Text, "Skip") then
                     if rebornDelay ~= 0 then
-                        if delayVariance ~= 0 then
-                            wait(math.floor(rebornDelay+math.floor(rebornDelay,math.abs(rebornDelay+delayVariance))))
-                            game:GetService("ReplicatedStorage").Rebirth:InvokeServer()
-                        else
+                        --if delayVariance ~= 0 then
+                        --    wait(math.floor(rebornDelay+math.floor(rebornDelay,math.abs(rebornDelay+delayVariance))))
+                        --    game:GetService("ReplicatedStorage").Rebirth:InvokeServer()
+                        --else
                             wait(rebornDelay)
                             game:GetService("ReplicatedStorage").Rebirth:InvokeServer()
                         end
