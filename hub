@@ -1131,7 +1131,7 @@ if game.PlaceId == 258258996 then
             mins = math.floor(seconds/60)
             timeElapsed:Set("" ..mins.. " mins " ..seconds.. "s")
         elseif seconds < 60 then
-            timeElapsed:Set(seconds)
+            timeElapsed:Set("" ..seconds.. "s")
         end
         wait(1)
     end
