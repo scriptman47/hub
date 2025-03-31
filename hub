@@ -1,3 +1,7 @@
+--make box noncollidable and steal tpua from iy edit to box n toggl if v then ez ez
+
+
+
 local Players = game:GetService("Players")
 local plr = game.Players.LocalPlayer
 local rs = game:GetService("RunService")
@@ -468,7 +472,7 @@ if game.PlaceId == 258258996 then
         Callback = function(v)
             UpgColour = v
             if getgenv().UpgradeShow then
-                for i, v in pairs(myfac:GetDescendants()) do
+                for i, v in pairs(myfac.Parent:GetDescendants()) do
                     if string.match(v.Name, "Upgrade") and v.Name ~= "UpgraderShip" and v.Name ~= "UpgradeShip" and v.Name ~= "The Darkest Upgrader" and v.Name ~= "The Final Upgrader" and v.Name ~= "Rainbow Upgrader" and v.Name ~= "FakeUpgrade" and v.Name ~= "FakeUpgrader" and v.Name ~= "Professional Upgrader" and v.Name ~= "Birthday Upgrader" and v.Name ~= "Banana Split Upgrader" and v.Name ~= "Three Years Upgrader" and v.Name ~= "Golden Bell Upgrader" and v.Name ~= "Shiny Red Upgrader" and v.Name ~= "Macaroon Upgrader" and v.Name ~= "Inflatable Party Upgrader" then                    
                         if v.Transparency and v.Transparency == 0 and v.Parent.Parent.Name ~= "Methuselah's Mask" and v.Parent.Parent.Name ~= "Dreamer's Birthday Cake" then
                             if string.match(v.Parent.Parent.Name, "Soul Blossom") or string.match(v.Parent.Parent.Name, "Final Fab") or string.match(v.Parent.Parent.Name, "Energy Core") or string.match(v.Parent.Parent.Name, "Portable Pearl") then
@@ -1165,7 +1169,7 @@ if game.PlaceId == 258258996 then
             end
             if notif.Name == "ItemTemplate" and string.match(notif.Title.Text,"⭐") then
                 shinyCount = shinyCount+1
-                if string.match(notif.Title.Text,"Interstellar Conqueror") or string.match(notif.Title.Text,"Stellarite Mine") or string.match(notif.Title.Text,"Funky Town") or string.match(notif.Title.Text,"The Grand Banana") or string.match(notif.Title.Text,"Everlasting Key") or string.match(notif.Title.Text,"Ore Memer") or string.match(notif.Title.Text,"Ooftopian Refiner") or string.match(notif.Title.Text,"Meatball Sandwich") or string.match(notif.Title.Text,"Grim Reaper") or string.match(notif.Title.Text,"Soul Blossom") then
+                if string.match(notif.Title.Text,"Interstellar Conqueror") or string.match(notif.Title.Text,"Stellarite Mine") or string.match(notif.Title.Text,"Turtle Dignifier") or string.match(notif.Title.Text,"Funky Town") or string.match(notif.Title.Text,"The Grand Banana") or string.match(notif.Title.Text,"Everlasting Key") or string.match(notif.Title.Text,"Ore Memer") or string.match(notif.Title.Text,"Ooftopian Refiner") or string.match(notif.Title.Text,"Meatball Sandwich") or string.match(notif.Title.Text,"Grim Reaper") or string.match(notif.Title.Text,"Soul Blossom") then
                     notify("Shiny Decimal Acquired:" ..notif.Title.Text)
                 else
                     notify("Shiny Acquired: "..notif.Title.Text)
@@ -1179,17 +1183,17 @@ if game.PlaceId == 258258996 then
                     end
                 end
                 picture(notif.Icon.Image,label,notif.BackgroundColor3,notif.Tier.Text)
-            elseif notif.Name == "ItemTemplate" and string.match(notif.Title.Text,"Adv") then
+            elseif notif.Name == "ItemTemplate" and string.match(notif.Tier.Text,"Adv") then
                 advCount = advCount+1
-                advRBlabel:Set(advCount)
-            elseif notif.Name == "ItemTemplate" and string.match(notif.Title.Text,"Interstellar Conqueror") or string.match(notif.Title.Text,"Stellarite Mine") or string.match(notif.Title.Text,"Funky Town") or string.match(notif.Title.Text,"The Grand Banana") or string.match(notif.Title.Text,"Everlasting Key") or string.match(notif.Title.Text,"Ore Memer") or string.match(notif.Title.Text,"Ooftopian Refiner") or string.match(notif.Title.Text,"Meatball Sandwich") or string.match(notif.Title.Text,"Grim Reaper") or string.match(notif.Title.Text,"Soul Blossom") then
+                advRBlabel:Set("" ..advCount.. " Adv. Reborns")
+            elseif notif.Name == "ItemTemplate" and string.match(notif.Title.Text,"Interstellar Conqueror") or string.match(notif.Title.Text,"Stellarite Mine") or string.match(notif.Title.Text,"Turtle Dignifier") or string.match(notif.Title.Text,"Funky Town") or string.match(notif.Title.Text,"The Grand Banana") or string.match(notif.Title.Text,"Everlasting Key") or string.match(notif.Title.Text,"Ore Memer") or string.match(notif.Title.Text,"Ooftopian Refiner") or string.match(notif.Title.Text,"Meatball Sandwich") or string.match(notif.Title.Text,"Grim Reaper") or string.match(notif.Title.Text,"Soul Blossom") then
                 decCount = decCount+1
-                dcLabel:Set(decCount)
+                dcLabel:Set("" ..decCount.. " Decimals")
                 local sdcLabel;
                 if string.match(notif.Title.Text,"⭐") then
                     sdcCount = sdcCount+1
                     if sdcLabel then
-                        sdcLabel:Set(sdcCount)
+                        sdcLabel:Set("" ..sdcCount.. " Shiny Decimals")
                     else
                         sdcLabel = rstatSection:AddLabel("0 Shiny Decimals")
                     end
