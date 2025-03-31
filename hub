@@ -67,7 +67,7 @@ if game.PlaceId == 258258996 then
     local rbCount;
     local shinyCount = 0
     local advCount = 0
-    local dcCount = 0
+    local decCount = 0
     local sdcCount = 0
     local cloverCount = 0
     local oldElapsed = 0
