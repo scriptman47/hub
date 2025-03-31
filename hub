@@ -810,10 +810,12 @@ if game.PlaceId == 258258996 then
 
     local lfcLabel = rstatSection:AddLabel("0 Lives")
     local rbcLabel = rstatSection:AddLabel("0 Rebirths")
-    local evLabel = rstatSection:AddLabel("0 Clovers")
     local scLabel = rstatSection:AddLabel("0 Shinies")
     local dcLabel = rstatSection:AddLabel("0 Decimals")
     local advRBlabel = rstatSection:AddLabel("0 Adv. Reborns")
+
+    local eventSection = statWin:AddSection({Name = "Event"})
+    local evLabel = eventSection:AddLabel("0 Clovers")
 
     local setWin = Window:MakeTab({
 		Name = "Settings",
@@ -1163,6 +1165,11 @@ if game.PlaceId == 258258996 then
             end
             if notif.Name == "ItemTemplate" and string.match(notif.Title.Text,"⭐") then
                 shinyCount = shinyCount+1
+                if string.match(notif.Title.Text,"Interstellar Conqueror") or string.match(notif.Title.Text,"Stellarite Mine") or string.match(notif.Title.Text,"Funky Town") or string.match(notif.Title.Text,"The Grand Banana") or string.match(notif.Title.Text,"Everlasting Key") or string.match(notif.Title.Text,"Ore Memer") or string.match(notif.Title.Text,"Ooftopian Refiner") or string.match(notif.Title.Text,"Meatball Sandwich") or string.match(notif.Title.Text,"Grim Reaper") or string.match(notif.Title.Text,"Soul Blossom") then
+                    notify("Shiny Decimal Acquired:" ..notif.Title.Text)
+                else
+                    notify("Shiny Acquired: "..notif.Title.Text)
+                end
                 shinySection:AddLabel(notif.Title.Text)
                 scLabel:Set("" ..shinyCount.. " Shinies")
                 local label;
