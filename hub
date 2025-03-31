@@ -69,6 +69,7 @@ if game.PlaceId == 258258996 then
     local advCount = 0
     local dcCount = 0
     local sdcCount = 0
+    local cloverCount = 0
     local oldElapsed = 0
 
     -------------------------- Functions
@@ -1066,7 +1067,8 @@ if game.PlaceId == 258258996 then
     end)
 
     plr.PatrickClovers:GetPropertyChangedSignal("Value"):Connect(function()
-        evLabel:Set("" ..plr.PatrickClovers.Value.. " Clovers")
+        cloverCount = cloverCount+1
+        evLabel:Set("" ..cloverCount.. " Clovers")
     end)
 
     game.Workspace.Boxes.ChildAdded:Connect(function(Box)
