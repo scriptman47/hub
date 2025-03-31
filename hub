@@ -1,6 +1,8 @@
 local Players = game:GetService("Players")
 local plr = game.Players.LocalPlayer
-local version = "2.3"
+local rs = game:GetService("RunService")
+local version = "2.4"
+local changes = "Added: Notifications, Adv. Reborn + Decimal Tracking\nFixed:Clover Farm, GUI Runtime"
 local UpgColour;
 loopList = {}
 loopList[#loopList + 1] = {NAME = "Way-Up-High Upgrader",CAP = 4e+5}
@@ -63,7 +65,11 @@ if game.PlaceId == 258258996 then
     local oldLife = plr.Rebirths.Value
     local totalLife;
     local rbCount;
-    local shinyCount;
+    local shinyCount = 0
+    local advCount = 0
+    local dcCount = 0
+    local sdcCount = 0
+    local oldElapsed = 0
 
     -------------------------- Functions
     function getUpgraders()
@@ -196,27 +202,35 @@ if game.PlaceId == 258258996 then
         end
     end
     function cloverfarm()
-        local originalPosition;
-        local function teleportBack()
-            plr.Character.HumanoidRootPart.CFrame = originalPosition * CFrame.new(0,0,0)
-        end
         while getgenv().CloverFarm do
             originalPosition = plr.Character.HumanoidRootPart.CFrame
+            local function teleportBack()
+                plr.Character.HumanoidRootPart.CFrame = originalPosition * CFrame.new(0,0,0)
+            end
             if #game.Workspace.Clovers:GetChildren() > 0 then
-                for i, v in pairs(game.Workspace.Clovers:GetChildren()) do
-                    if v:FindFirstChild("ProximityPrompt") then
-                        local prompt = v.ProximityPrompt
-                        prompt.Enabled = true
-                        plr.Character.HumanoidRootPart.CFrame = v.CFrame * CFrame.new(0,0,0)
-                        wait()
-                        fireproximityprompt(prompt)
-                    end
-                end
+                local prompt = game.Workspace.Clovers:FindFirstChildOfClass("MeshPart").ProximityPrompt
+                prompt.Enabled = true
+                plr.Character.HumanoidRootPart.CFrame = prompt.Parent.CFrame * CFrame.new(0,0,0)
+                wait()
+                fireproximityprompt(prompt)
             else
                 teleportBack()
             end
             wait(1)
         end
+    end
+    function notify(message)
+        local ntf = plr.PlayerGui.GUI.Notifications.MessageTemplate:Clone()
+        ntf.Parent = plr.PlayerGui.GUI.Notifications
+        ntf.Label.Text = message
+        size = ntf.Size
+        ntf.Size = UDim2.new(0,0,0,0)
+        ntf.Visible = true
+        ntf:TweenSize(UDim2.new(size), Enum.EasingDirection.In, Enum.EasingStyle.Linear, 0.2, true)
+        wait(2)
+        ntf:TweenSize(UDim2.new(0,0,0,0), Enum.EasingDirection.In, Enum.EasingStyle.Linear, 0.2, true)
+        wait(.2)
+        ntf:Destroy()
     end
 
     ---------------------------
@@ -235,6 +249,7 @@ if game.PlaceId == 258258996 then
         Callback = function(v)
             getgenv().AutoReborn = v
             if v == true then
+                notify("Auto Reborn Activated")
                 game:GetService("ReplicatedStorage").Rebirth:InvokeServer()
             end
         end
@@ -277,6 +292,9 @@ if game.PlaceId == 258258996 then
                 [1] = "Load",
                 [2] = layoutNum
             }
+            if v then
+                notify("Auto Layout Activated")
+            end
             if #myfac:GetChildren() < 6 and getgenv().AutoLayout == true then
                 game:GetService("ReplicatedStorage").Layouts:InvokeServer(unpack(layoutarg))
             end
@@ -293,6 +311,7 @@ if game.PlaceId == 258258996 then
                 [2] = layoutNum2
             }
             if getgenv().AutoLayout == true and layout2 == true then
+                notify("Auto 2nd Layout Activated")
                 game:GetService("ReplicatedStorage").Layouts:InvokeServer(unpack(layoutarg2))
             end
         end
@@ -339,6 +358,9 @@ if game.PlaceId == 258258996 then
         Default = false,
         Callback = function(v)
             getgenv().OreBoost = v
+            if v then
+                notify("Ore Boost Activated")
+            end
         end
     })
     
@@ -347,6 +369,9 @@ if game.PlaceId == 258258996 then
         Default = false,
         Callback = function(v)
             getgenv().OreFurnace = v
+            if v then
+                notify("Spawn Ores at Furnace Activated")
+            end
         end
     })
 
@@ -355,6 +380,9 @@ if game.PlaceId == 258258996 then
         Default = false,
         Callback = function(v)
             getgenv().AutoRemote = v
+            if v then
+                notify("Auto Remote Activated")
+            end
             autoRemote()
         end
     })
@@ -373,6 +401,9 @@ if game.PlaceId == 258258996 then
         Default = false,
         Callback = function(v)
             getgenv().BecomeTheOre = v
+            if v then
+                notify("Why did you do That?")
+            end
         end
     })
 
@@ -388,6 +419,9 @@ if game.PlaceId == 258258996 then
         Name = "Anti AFK",
         Default = false,
         Callback = function(v)
+            if v then
+                notify("Anti AFK Kick Activated")
+            end
             local GC = getconnections or get_signal_cons
             if GC and v then
                 for i,v in pairs(GC(Players.LocalPlayer.Idled)) do
@@ -413,6 +447,7 @@ if game.PlaceId == 258258996 then
         Callback = function(v)
             getgenv().UpgradeShow = v
             if v then
+                notify("Upgraders Visible")
                 upgradeshow()
             elseif getgenv().UpgradeShow == false then
                 for i, v in pairs(myfac:GetDescendants()) do
@@ -487,6 +522,9 @@ if game.PlaceId == 258258996 then
         Default = false,
         Callback = function(v)
             getgenv().BoxFarm = v
+            if v then
+                notify("Box Farm Activated")
+            end
             currentBoxes()
         end
     })
@@ -496,6 +534,9 @@ if game.PlaceId == 258258996 then
         Default = false,
         Callback = function(v)
             getgenv().CloverFarm = v
+            if v then
+                notify("Clover Farm Activated")
+            end
             cloverfarm()
         end
     })
@@ -505,6 +546,9 @@ if game.PlaceId == 258258996 then
         Default = false,
         Callback = function(v)
             getgenv().BoxOpen = v
+            if v then
+                notify("Opening " ..boxoption.. " boxes")
+            end
             openBoxes()
         end
     })
@@ -589,6 +633,7 @@ if game.PlaceId == 258258996 then
                 Name = v.Name,
                 Callback = function()
                     plr.Character.HumanoidRootPart.CFrame = game.Workspace[v.Name].HumanoidRootPart.CFrame * CFrame.new(0,0,0)
+                    notify("Teleported to "..v.Name)
                 end
             })
         end
@@ -630,6 +675,9 @@ if game.PlaceId == 258258996 then
         Callback = function(v)
             getgenv().Speed = v
             getgenv().Jump = v
+            if v then
+                notify("Attributes Locked")
+            end
         end
     })
 
@@ -761,7 +809,10 @@ if game.PlaceId == 258258996 then
 
     local lfcLabel = rstatSection:AddLabel("0 Lives")
     local rbcLabel = rstatSection:AddLabel("0 Rebirths")
+    local evLabel = rstatSection:AddLabel("0 Clovers")
     local scLabel = rstatSection:AddLabel("0 Shinies")
+    local dcLabel = rstatSection:AddLabel("0 Decimals")
+    local advRBlabel = rstatSection:AddLabel("0 Adv. Reborns")
 
     local setWin = Window:MakeTab({
 		Name = "Settings",
@@ -775,6 +826,13 @@ if game.PlaceId == 258258996 then
         Name = "Destroy GUI",
         Callback = function()
             OrionLib:Destroy()
+        end
+    })
+
+    setSection:AddButton({
+        Name = "Changelog",
+        Callback = function()
+            notify(changes)
         end
     })
 
@@ -1007,6 +1065,10 @@ if game.PlaceId == 258258996 then
         end
     end)
 
+    plr.PatrickClovers:GetPropertyChangedSignal("Value"):Connect(function()
+        evLabel:Set("" ..plr.PatrickClovers.Value.. " Clovers")
+    end)
+
     game.Workspace.Boxes.ChildAdded:Connect(function(Box)
         if getgenv().BoxFarm then
             task.spawn(function()
@@ -1062,13 +1124,44 @@ if game.PlaceId == 258258996 then
 
     plr.PlayerGui.GUI.Notifications.ChildAdded:Connect(function(notif)
         task.spawn(function()
+            local function picture(image,guiLabel,colour,tier)
+                local pic = Instance.new("ImageButton",guiLabel)
+                pic.Image = image
+                pic.Position = UDim2.new(.915,0,.05,0)
+                pic.Size = UDim2.new(.08,0,.9,0)
+                pic.MouseButton1Click:Connect(function()
+                    local stack = false
+                    local notification;
+                    for i, v in pairs(plr.PlayerGui.GUI.Notifications:GetChildren()) do
+                        if v.Title.Text == guiLabel.Text then
+                            stack = true
+                            notification = v
+                        end
+                    end
+                    if stack then
+                        v.Icon.Amount.Text = "x"..math.abs(tonumber(v.Icon.Amount.Text)+1)
+                    else
+                        notification = plr.PlayerGui.GUI.Notifications.ItemTemplate:Clone()
+                        notification.Parent = plr.PlayerGui.GUI.Notifications
+                        notification.BackgroundColor3 = colour
+                        notification.Icon.Image = pic.Image
+                        notification.Title.Text = guiLabel.Text
+                        notification.Icon.Amount.Text = "x1"
+                        notification.Tier.Text = tier
+                        notification.BackgroundTransparency = 0.1
+                        notification.Visible = true
+                        notification:TweenSize(UDim2.new(1,0,0,100), Enum.EasingDirection.In, Enum.EasingStyle.Linear, 0.2, true)
+                        wait(10)
+                        notification.Title.Text = "Destroying.."
+                        notification:TweenSize(UDim2.new(0, 0, 0, 0), Enum.EasingDirection.In, Enum.EasingStyle.Linear, 0.2, true)
+                        wait(.2)
+                        notification:Destroy()
+                    end
+                end)
+            end
             if notif.Name == "ItemTemplate" and string.match(notif.Title.Text,"⭐") then
+                shinyCount = shinyCount+1
                 shinySection:AddLabel(notif.Title.Text)
-                if shinyCount then
-                    shinyCount = shinyCount+1
-                else
-                    shinyCount = 1
-                end
                 scLabel:Set("" ..shinyCount.. " Shinies")
                 local label;
                 for i, v in pairs(game.CoreGui.HiddenUI.Orion:GetDescendants()) do
@@ -1076,27 +1169,22 @@ if game.PlaceId == 258258996 then
                         label = v
                     end
                 end
-                local pic = Instance.new("ImageButton",label)
-                pic.Image = notif.Icon.Image
-                pic.Position = UDim2.new(.915,0,.05,0)
-                pic.Size = UDim2.new(.08,0,.9,0)
-                pic.MouseButton1Click:Connect(function()
-                    local notification = plr.PlayerGui.GUI.Notifications.ItemTemplate:Clone()
-                    notification.Parent = plr.PlayerGui.GUI.Notifications
-                    notification.BackgroundColor3 = Color3.fromRGB(180,239,255)
-                    notification.Icon.Image = pic.Image
-                    notification.Title.Text = label.Text
-                    notification.Icon.Amount.Text = "x1"
-                    notification.Tier.Text = "Shiny Reborn"
-                    notification.BackgroundTransparency = 0.1
-                    notification.Visible = true
-                    notification:TweenSize(UDim2.new(1,0,0,100), Enum.EasingDirection.In, Enum.EasingStyle.Linear, 0.2, true)
-                    wait(10)
-                    notification.Title.Text = "Destroying.."
-                    notification:TweenSize(UDim2.new(0, 0, 0, 0), Enum.EasingDirection.In, Enum.EasingStyle.Linear, 0.2, true)
-                    wait(.2)
-                    notification:Destroy()
-                end)
+                picture(notif.Icon.Image,label,notif.BackgroundColor3,notif.Tier.Text)
+            elseif notif.Name == "ItemTemplate" and string.match(notif.Title.Text,"Adv") then
+                advCount = advCount+1
+                advRBlabel:Set(advCount)
+            elseif notif.Name == "ItemTemplate" and string.match(notif.Title.Text,"Interstellar Conqueror") or string.match(notif.Title.Text,"Stellarite Mine") or string.match(notif.Title.Text,"Funky Town") or string.match(notif.Title.Text,"The Grand Banana") or string.match(notif.Title.Text,"Everlasting Key") or string.match(notif.Title.Text,"Ore Memer") or string.match(notif.Title.Text,"Ooftopian Refiner") or string.match(notif.Title.Text,"Meatball Sandwich") or string.match(notif.Title.Text,"Grim Reaper") or string.match(notif.Title.Text,"Soul Blossom") then
+                decCount = decCount+1
+                dcLabel:Set(decCount)
+                local sdcLabel;
+                if string.match(notif.Title.Text,"⭐") then
+                    sdcCount = sdcCount+1
+                    if sdcLabel then
+                        sdcLabel:Set(sdcCount)
+                    else
+                        sdcLabel = rstatSection:AddLabel("0 Shiny Decimals")
+                    end
+                end
             end
         end)
     end)
@@ -1120,21 +1208,23 @@ if game.PlaceId == 258258996 then
 
     OrionLib:Init()
 
-    local seconds = 0
-    while true do
-        seconds = seconds+1
-        if seconds >= 3600 then
-            hrs = math.floor(seconds/3600)
-            mins = math.floor(math.abs(seconds-math.abs(hrs*3600))/60)
-            timeElapsed:Set("" ..hrs.. " hours " ..mins.. " mins " ..seconds.. "s")
-        elseif seconds >= 60 then
-            mins = math.floor(seconds/60)
-            timeElapsed:Set("" ..mins.. " mins " ..seconds.. "s")
-        elseif seconds < 60 then
-            timeElapsed:Set("" ..seconds.. "s")
-        end
-        wait(1)
+    local currentTime = 0
+    local function formatTime(currentTime)
+        local hours = math.floor(currentTime / 3600)
+        local minutes = math.floor((currentTime - (hours * 3600))/60)
+        local seconds = math.floor((currentTime - (hours * 3600) - (minutes * 60)))
+        local milliseconds = 1000 * (currentTime - math.floor(currentTime))
+        local format = "%02d:%02d:%02d:%03d"
+        return format:format(hours, minutes, seconds, milliseconds)
     end
+    rs.Stepped:Connect(function(newElapsed, step)
+        if oldElapsed ~= math.floor(newElapsed) then
+            --do sum every once a second possibly
+        end
+        oldElapsed = math.floor(newElapsed)
+        currentTime += step
+        timeElapsed:Set(formatTime(currentTime))
+    end)
 
     --END OF NORMAL MINERS HAVEN
 elseif game.PlaceId == 432041175 then
@@ -2619,6 +2709,5 @@ elseif game.PlaceId == 15055025587 then
            end)
        end
     end)
-
     Rayfield:LoadConfiguration()
 end
