@@ -1,0 +1,126 @@
+import pyautogui
+import pydirectinput
+import time
+import keyboard
+import pygetwindow as gw
+import win32api
+import win32con
+import os
+
+stopButton = "F4"
+pauseButton = "F5"
+paused = False
+failsafeTimer = 25
+#IN SECONDS
+
+pydirectinput.PAUSE = 0.02
+
+load_timer = None
+pause_started = None
+
+loaded = False
+onRBbutton = False
+
+def stop():
+    os._exit(0)
+
+def press_keys(*keys):
+    for key in keys:
+        if key == '\\':
+            time.sleep(.15)
+            pydirectinput.press(key)
+            time.sleep(.15)
+        else:
+            pydirectinput.press(key)
+
+def toggle_pause():
+    global paused, pause_started, load_timer
+
+    if not paused:
+        paused = True
+        pause_started = time.time()
+        print("Paused")
+    else:
+        paused = False
+
+        if pause_started is not None and load_timer is not None:
+            load_timer += time.time() - pause_started
+
+        pause_started = None
+        print("Unpaused")
+
+keyboard.add_hotkey(pauseButton, toggle_pause)
+keyboard.add_hotkey(stopButton, stop)
+
+windows = gw.getWindowsWithTitle('Roblox')
+
+if not windows:
+    print("Roblox window not found")
+    exit()
+
+win = windows[0]
+win.activate()
+
+print("Started")
+time.sleep(1)
+
+while True:
+    if paused:
+        time.sleep(0.1)
+        continue
+
+    # check if ores exist
+    target_color = (255, 49, 52)
+    if pyautogui.pixelMatchesColor(1670, 1008, target_color, tolerance=10):
+        #print("already loaded")
+        # start timer only once
+        if load_timer is None:
+            load_timer = time.time()
+        # 2nd layout didnt load, failsafe code
+        if time.time() - load_timer >= failsafeTimer:
+            print("Load timed out!")
+            original = pydirectinput.PAUSE
+            pydirectinput.PAUSE = 0.05
+            press_keys('\\', 'e', 'l', '\\', 'right', 'Enter', 'Enter', 'Enter')
+            time.sleep(.5)
+            press_keys('\\', 'l', '\\', 'down', 'down', 'down', 'down', 'down', 'down', 'Enter', '\\')
+            load_timer = None
+            loaded = True
+            onRBbutton = False
+            pydirectinput.PAUSE = original
+    elif loaded == False:
+        # base isn't loaded yet, so load it
+        press_keys('Enter', 'Enter', 'Enter', 'Enter', 'Enter', '\\')
+        load_timer = None
+        loaded = True
+    target_color2 = (212, 22, 20)
+    target_color3 = (52, 255, 109)
+    if pyautogui.pixelMatchesColor(1327, 272, target_color2, tolerance=10):
+        print("reborn menu found")
+        if onRBbutton == False:
+            press_keys('\\', 'right', 'down')
+            time.sleep(.1)
+            color4 = pyautogui.pixel(1030, 313)
+            if color4 == (255,255,255):
+                pydirectinput.press('down')
+            time.sleep(3)
+            color5 = pyautogui.pixel(1168, 494)
+            if color5 == (255,255,255):
+                pydirectinput.press('up')
+            onRBbutton = True
+    elif loaded == True:
+        pydirectinput.press('m')
+    if pyautogui.pixelMatchesColor(912, 418, target_color3, tolerance=10):
+        # rebirth
+        if onRBbutton == True:
+            print("enough money detected")
+            load_timer = None
+            time.sleep(.1)
+            press_keys('Enter', 'left', 'Enter', '\\')
+            loaded = False
+            onRBbutton = False
+            press_keys('l', '\\', 'right')
+
+    time.sleep(.1)
+
+print("Exited")
