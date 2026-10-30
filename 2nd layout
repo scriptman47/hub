@@ -3,35 +3,58 @@ import pydirectinput
 import time
 import keyboard
 import pygetwindow as gw
-import win32api
-import win32con
 import os
 
+# SETTINGS
 stopButton = "F4"
 pauseButton = "F5"
-paused = False
-failsafeTimer = 25
-#IN SECONDS
+failsafeTimer = 18
+pulseBtn = 'q'
 
 pydirectinput.PAUSE = 0.02
 
+# STATE
+paused = False
+loaded = False
+onRBbutton = False
 load_timer = None
 pause_started = None
 
-loaded = False
-onRBbutton = False
+# COLORS
+target_color1 = (255, 50, 50)
+target_color2 = (52, 255, 109)
+target_color3 = (255, 50, 50)
+layout_color = (49, 48, 48)
 
 def stop():
+    print("Stopping script")
     os._exit(0)
 
 def press_keys(*keys):
     for key in keys:
         if key == '\\':
-            time.sleep(.15)
+            time.sleep(0.15)
             pydirectinput.press(key)
-            time.sleep(.15)
+            time.sleep(0.15)
         else:
             pydirectinput.press(key)
+
+def wait_for_pixel(x, y, color, timeout=30, tolerance=10):
+    start = time.time()
+
+    while time.time() - start < timeout:
+        if paused:
+            time.sleep(0.1)
+            continue
+
+        if pyautogui.pixelMatchesColor(
+            x, y, color, tolerance=tolerance
+        ):
+            return True
+
+        time.sleep(0.1)
+
+    return False
 
 def toggle_pause():
     global paused, pause_started, load_timer
@@ -49,14 +72,74 @@ def toggle_pause():
         pause_started = None
         print("Unpaused")
 
+def load_setup():
+    global loaded, onRBbutton, load_timer
+
+    print("Load menu found")
+
+    if not wait_for_pixel(1068, 937, layout_color):
+        print("Lay2 timeout")
+        return False
+
+    print("Lay2 detected")
+    press_keys('right', 'down', 'enter', '\\')
+    time.sleep(0.2)
+    press_keys('m', '\\', 'down')
+
+    loaded = True
+    onRBbutton = True
+    load_timer = time.time()
+
+    print("Setup loaded - watchdog started")
+    return True
+
+def failsafe_load():
+    global loaded, onRBbutton, load_timer, recovering
+
+    recovering = True
+    load_timer = None
+
+    print("LOAD TIMED OUT!")
+
+    try:
+        press_keys('\\', 'e', 'e', 'l', '\\', 'right', 'right')
+        time.sleep(.1)
+        if pyautogui.pixelMatchesColor(1444, 686, target_color3, tolerance=10):
+            print("load menu found")
+
+            if not wait_for_pixel(1068, 937, (49, 48, 48), timeout=30):
+                print("Lay2 timeout")
+                return False
+
+            press_keys('right', 'down', 'enter', '\\')
+            time.sleep(0.2)
+            press_keys('m', '\\', 'down', pulseBtn)
+
+            print("Failsafe setup completed")
+
+            loaded = True
+            onRBbutton = True
+
+            return True
+
+        else:
+            print("Load menu not found")
+            return False
+
+    finally:
+        recovering = False
+        load_timer = time.time()
+
+# HOTKEYS
 keyboard.add_hotkey(pauseButton, toggle_pause)
 keyboard.add_hotkey(stopButton, stop)
 
+# FIND ROBLOX
 windows = gw.getWindowsWithTitle('Roblox')
 
 if not windows:
     print("Roblox window not found")
-    exit()
+    raise SystemExit
 
 win = windows[0]
 win.activate()
@@ -64,60 +147,81 @@ win.activate()
 print("Started")
 time.sleep(1)
 
+# MAIN LOOP
 while True:
+
     if paused:
         time.sleep(0.1)
         continue
 
-    # check if ores exist
-    target_color = (255, 49, 52)
-    if pyautogui.pixelMatchesColor(1670, 1008, target_color, tolerance=10):
-        #print("already loaded")
-        # start timer only once
-        if load_timer is None:
-            load_timer = time.time()
-        # 2nd layout didnt load, failsafe code
-        if time.time() - load_timer >= failsafeTimer:
+    # BACKGROUND FAILSAFE
+    if load_timer is not None:
+        elapsed = time.time() - load_timer
+
+        if elapsed >= failsafeTimer:
             print("Load timed out!")
-            press_keys('\\', 'e', 'l', '\\', 'down', 'down', 'right', 'Enter', 'Enter', 'Enter')
-            time.sleep(.5)
-            press_keys('\\', 'l', '\\', 'down', 'down', 'down', 'down', 'down', 'down', 'Enter', '\\')
-            load_timer = None
-            loaded = True
-            onRBbutton = False
-    elif loaded == False:
-        # base isn't loaded yet, so load it
-        press_keys('Enter', 'Enter', 'Enter', 'Enter', 'Enter', '\\')
-        load_timer = None
-        loaded = True
-    target_color2 = (212, 22, 20)
-    target_color3 = (52, 255, 109)
-    if pyautogui.pixelMatchesColor(1327, 272, target_color2, tolerance=10):
-        print("reborn menu found")
-        if onRBbutton == False:
-            press_keys('\\', 'right', 'down')
-            time.sleep(.1)
-            color4 = pyautogui.pixel(1030, 313)
-            if color4 == (255,255,255):
+            failsafe_load()
+            time.sleep(0.1)
+            continue
+
+    # REBIRTH MENU
+    if pyautogui.pixelMatchesColor(
+        1349, 270, target_color1, tolerance=10
+    ):
+
+        if not onRBbutton:
+            print("Rebirth menu found")
+            press_keys('\\', 'down')
+            time.sleep(0.1)
+
+            colorb = pyautogui.pixel(1030, 313)
+
+            if colorb == (255, 255, 255):
                 pydirectinput.press('down')
-            time.sleep(3)
-            color5 = pyautogui.pixel(1168, 494)
-            if color5 == (255,255,255):
-                pydirectinput.press('up')
+
             onRBbutton = True
-    elif loaded == True:
+
+    elif loaded:
         pydirectinput.press('m')
-    if pyautogui.pixelMatchesColor(912, 418, target_color3, tolerance=10):
-        # rebirth
-        if onRBbutton == True:
-            print("enough money detected")
+
+    else:
+        pydirectinput.press('m')
+
+    # REBIRTH
+    if pyautogui.pixelMatchesColor(
+        910, 419, target_color2, tolerance=10
+    ):
+
+        if onRBbutton:
+
+            print("Enough money detected")
+
+            # Stop watchdog while rebirthing
             load_timer = None
+
             time.sleep(.1)
-            press_keys('Enter', 'left', 'Enter', '\\')
+            press_keys('enter', 'left', 'enter', '\\')
+
             loaded = False
             onRBbutton = False
-            press_keys('l', '\\', 'down', 'down', 'right')
 
-    time.sleep(.1)
+            time.sleep(.1)
+            press_keys('l', '\\', 'right', 'right')
 
-print("Exited")
+        # WAIT FOR LOADING INDICATOR
+        while pyautogui.pixelMatchesColor(
+            20, 1004, (22, 50, 26), tolerance=10
+        ):
+            if paused:
+                time.sleep(0.1)
+                continue
+
+            time.sleep(0.1)
+
+        # NORMAL SETUP LOADING
+        if pyautogui.pixelMatchesColor(
+            1444, 686, target_color3, tolerance=10
+        ):
+            load_setup()
+
+    time.sleep(0.1)
