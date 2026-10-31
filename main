@@ -93,6 +93,7 @@ def load_setup():
     print("Lay2 detected")
     time.sleep(.1)
     press_keys('left', 'down', 'right')
+    time.sleep(.1)
     check = pyautogui.pixel(1200, 461)
     if check == (255, 255, 255):
         press_keys('down', 'left', 'right')
@@ -135,6 +136,7 @@ def failsafe_load():
             print("Lay2 detected")
             time.sleep(.1)
             press_keys('left', 'down', 'right')
+            time.sleep(.1)
             check = pyautogui.pixel(1200, 461)
             if check == (255, 255, 255):
                 press_keys('down', 'left', 'right')
