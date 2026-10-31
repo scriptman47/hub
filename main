@@ -91,8 +91,13 @@ def load_setup():
         return False
 
     print("Lay2 detected")
-    press_keys('left', 'down', 'right', 'enter', '\\')
-    time.sleep(0.2)
+    time.sleep(.1)
+    press_keys('left', 'down', 'right')
+    check = pyautogui.pixel(1200, 461)
+    if check == (255, 255, 255):
+        press_keys('down', 'left', 'right')
+    press_keys('enter', '\\')
+    time.sleep(0.1)
     press_keys('m', '\\', 'down')
 
     loaded = True
@@ -109,18 +114,17 @@ def failsafe_load():
     load_timer = None
 
     print("LOAD TIMED OUT!")
-
+    press_keys('l')
+    press_keys('\\')
     try:
-        press_keys('\\', 'e', 'e', 'l')
-        time.sleep(.1)
-        if pyautogui.pixelMatchesColor(1444, 686, target_color3, tolerance=10):
+        if pyautogui.pixelMatchesColor(1232, 264, target_color3, tolerance=10):
             print("load menu found")
-            press_keys('\\', '\\')
 
             if not wait_for_pixel(1209, 445, layout_color):
                 print("Lay1 timeout")
                 return False
 
+            print("Lay1 detected")
             press_keys('enter')
             time.sleep(.1)
 
@@ -128,9 +132,15 @@ def failsafe_load():
                 print("Lay2 timeout")
                 return False
 
-            press_keys('left', 'down', 'right', 'enter', '\\')
-            time.sleep(0.2)
-            press_keys('m', '\\', 'down')
+            print("Lay2 detected")
+            time.sleep(.1)
+            press_keys('left', 'down', 'right')
+            check = pyautogui.pixel(1200, 461)
+            if check == (255, 255, 255):
+                press_keys('down', 'left', 'right')
+            press_keys('enter', '\\')
+            time.sleep(0.1)
+            press_keys('m', '\\', 'down', pulseBtn)
 
             print("Failsafe setup completed")
 
@@ -231,8 +241,6 @@ while True:
             if paused:
                 time.sleep(0.1)
                 continue
-
-            time.sleep(0.1)
 
         # NORMAL SETUP LOADING
         if pyautogui.pixelMatchesColor(
