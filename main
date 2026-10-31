@@ -76,21 +76,22 @@ def load_setup():
     global loaded, onRBbutton, load_timer
 
     print("Load menu found")
+    press_keys('\\', '\\')
 
-    if not wait_for_pixel(743, 940, layout_color):
+    if not wait_for_pixel(1209, 445, layout_color):
         print("Lay1 timeout")
         return False
 
     print("Lay1 detected")
-    press_keys('down', 'enter')
+    press_keys('enter')
     time.sleep(.1)
 
-    if not wait_for_pixel(1068, 937, layout_color):
+    if not wait_for_pixel(1190, 611, layout_color):
         print("Lay2 timeout")
         return False
 
     print("Lay2 detected")
-    press_keys('right', 'down', 'enter', '\\')
+    press_keys('left', 'down', 'right', 'enter', '\\')
     time.sleep(0.2)
     press_keys('m', '\\', 'down')
 
@@ -110,25 +111,26 @@ def failsafe_load():
     print("LOAD TIMED OUT!")
 
     try:
-        press_keys('\\', 'e', 'e', 'l', '\\', 'right', 'right', 'down')
+        press_keys('\\', 'e', 'e', 'l')
         time.sleep(.1)
         if pyautogui.pixelMatchesColor(1444, 686, target_color3, tolerance=10):
             print("load menu found")
+            press_keys('\\', '\\')
 
-            if not wait_for_pixel(743, 940, (49, 48, 48), timeout=30):
+            if not wait_for_pixel(1209, 445, layout_color):
                 print("Lay1 timeout")
                 return False
 
             press_keys('enter')
-            time.sleep(0.3)
+            time.sleep(.1)
 
-            if not wait_for_pixel(1068, 937, (49, 48, 48), timeout=30):
+            if not wait_for_pixel(1190, 611, layout_color):
                 print("Lay2 timeout")
                 return False
 
-            press_keys('right', 'down', 'enter', '\\')
+            press_keys('left', 'down', 'right', 'enter', '\\')
             time.sleep(0.2)
-            press_keys('m', '\\', 'down', pulseBtn)
+            press_keys('m', '\\', 'down')
 
             print("Failsafe setup completed")
 
@@ -214,14 +216,13 @@ while True:
             # Stop watchdog while rebirthing
             load_timer = None
 
-            time.sleep(.1)
             press_keys('enter', 'left', 'enter', '\\')
 
             loaded = False
             onRBbutton = False
 
             time.sleep(.1)
-            press_keys('l', '\\', 'right', 'right')
+            press_keys('l')
 
         # WAIT FOR LOADING INDICATOR
         while pyautogui.pixelMatchesColor(
@@ -235,7 +236,7 @@ while True:
 
         # NORMAL SETUP LOADING
         if pyautogui.pixelMatchesColor(
-            1444, 686, target_color3, tolerance=10
+            1232, 264, target_color3, tolerance=10
         ):
             load_setup()
 
