@@ -9,9 +9,11 @@ import os
 stopButton = "F4"
 pauseButton = "F5"
 failsafeTimer = 18
+last_activity = time.monotonic()
+recovering = False
 pulseBtn = 'q'
 
-pydirectinput.PAUSE = 0.02
+pydirectinput.PAUSE = 0.03
 
 # STATE
 paused = False
@@ -57,17 +59,17 @@ def wait_for_pixel(x, y, color, timeout=30, tolerance=10):
     return False
 
 def toggle_pause():
-    global paused, pause_started, load_timer
+    global paused, pause_started, last_activity
 
     if not paused:
         paused = True
-        pause_started = time.time()
+        pause_started = time.monotonic()
         print("Paused")
     else:
         paused = False
 
-        if pause_started is not None and load_timer is not None:
-            load_timer += time.time() - pause_started
+        if pause_started is not None:
+            last_activity += time.monotonic() - pause_started
 
         pause_started = None
         print("Unpaused")
@@ -76,14 +78,15 @@ def load_setup():
     global loaded, onRBbutton, load_timer
 
     print("Load menu found")
+    press_keys('\\', '\\')
 
-    if not wait_for_pixel(743, 940, layout_color):
-        print("Layout timeout")
+    if not wait_for_pixel(1209, 445, layout_color):
+        print("Lay1 timeout")
         return False
 
-    print("Layout detected")
-    press_keys('down', 'enter', '\\')
-    time.sleep(0.2)
+    print("Lay1 detected")
+    press_keys('enter', '\\')
+    time.sleep(0.1)
     press_keys('m', '\\', 'down')
 
     loaded = True
@@ -93,6 +96,17 @@ def load_setup():
     print("Setup loaded - watchdog started")
     return True
 
+def reset_watchdog():
+    global last_activity
+    last_activity = time.monotonic()
+
+
+def watchdog_expired():
+    if paused or recovering:
+        return False
+
+    return time.monotonic() - last_activity >= failsafeTimer
+
 def failsafe_load():
     global loaded, onRBbutton, load_timer, recovering
 
@@ -100,23 +114,20 @@ def failsafe_load():
     load_timer = None
 
     print("LOAD TIMED OUT!")
-
+    press_keys('l')
+    press_keys('\\')
     try:
-        press_keys('\\', 'e', 'e', 'l', '\\', 'right', 'right')
-        time.sleep(.1)
-        if pyautogui.pixelMatchesColor(1444, 686, target_color3, tolerance=10):
-            print("load menu found")
+        if pyautogui.pixelMatchesColor(1232, 264, target_color3, tolerance=10):
+            print("Load menu found")
+            press_keys('\\', '\\')
 
-            if not wait_for_pixel(743, 940, (49, 48, 48), timeout=30):
-                print("Layout timeout")
+            if not wait_for_pixel(1209, 445, layout_color):
+                print("Lay1 timeout")
                 return False
 
-            if not wait_for_pixel(1068, 937, (49, 48, 48), timeout=30):
-                print("Lay2 timeout")
-                return False
-
-            press_keys('right', 'down', 'enter', '\\')
-            time.sleep(0.2)
+            print("Lay1 detected")
+            press_keys('enter', '\\')
+            time.sleep(0.1)
             press_keys('m', '\\', 'down', pulseBtn)
 
             print("Failsafe setup completed")
@@ -157,6 +168,15 @@ while True:
     if paused:
         time.sleep(0.1)
         continue
+
+    # GLOBAL WATCHDOG
+    if watchdog_expired():
+        print("GLOBAL FAILSAFE TRIGGERED!")
+        print("Script appears inactive for 18 seconds.")
+
+        # Start your existing recovery routine here.
+        # Reset watchdog after recovery completes.
+        reset_watchdog()
 
     # BACKGROUND FAILSAFE
     if load_timer is not None:
@@ -203,14 +223,15 @@ while True:
             # Stop watchdog while rebirthing
             load_timer = None
 
-            time.sleep(.1)
-            press_keys('enter', 'left', 'enter', '\\')
+            pydirectinput.PAUSE = 0.05
+            press_keys('enter', 'left', 'enter', 'enter', '\\')
+            pydirectinput.PAUSE = 0.03
 
             loaded = False
             onRBbutton = False
 
             time.sleep(.1)
-            press_keys('l', '\\', 'right', 'right')
+            press_keys('l')
 
         # WAIT FOR LOADING INDICATOR
         while pyautogui.pixelMatchesColor(
@@ -220,11 +241,9 @@ while True:
                 time.sleep(0.1)
                 continue
 
-            time.sleep(0.1)
-
         # NORMAL SETUP LOADING
         if pyautogui.pixelMatchesColor(
-            1444, 686, target_color3, tolerance=10
+            1232, 264, target_color3, tolerance=10
         ):
             load_setup()
 
