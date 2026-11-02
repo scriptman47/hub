@@ -8,7 +8,7 @@ import os
 # SETTINGS
 stopButton = "F4"
 pauseButton = "F5"
-failsafeTimer = 18
+failsafeTimer = 25
 last_activity = time.monotonic()
 recovering = False
 pulseBtn = 'q'
