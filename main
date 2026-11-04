@@ -19,7 +19,6 @@ pydirectinput.PAUSE = 0.01
 # STATE
 paused = False
 loaded = False
-onRBbutton = False
 load_timer = None
 pause_started = None
 
@@ -71,7 +70,7 @@ def toggle_pause():
         reset_watchdog()
 
 def load_setup():
-    global loaded, onRBbutton, load_timer
+    global loaded, load_timer
     if not wait_for_pixel(1232, 264, target_color3):
         print("layout menu timeout")
         return False
@@ -95,7 +94,6 @@ def load_setup():
     autoit.mouse_click("left", 1190, 612, 2, 1)
     press_keys('m', '\\', 'down')
     loaded = True
-    onRBbutton = True
     load_timer = time.time()
     print("loaded")
     return True
@@ -113,7 +111,7 @@ def watchdog_expired():
 
 
 def failsafe_load():
-    global loaded, onRBbutton, load_timer, recovering
+    global loaded, load_timer, recovering
     recovering = True
     load_timer = None
     print("timed out")
@@ -137,7 +135,6 @@ def failsafe_load():
         autoit.mouse_click("left", 1190, 612, 2, 1)
         press_keys('m', '\\', 'down')
         loaded = True
-        onRBbutton = True
         load_timer = time.time()
         print("loaded")
     finally:
@@ -185,31 +182,23 @@ while True:
     if pyautogui.pixelMatchesColor(
         1349, 270, target_color1, tolerance=10
     ):
-        if not onRBbutton:
-            press_keys('\\', 'down')
-            time.sleep(0.1)
-            colorb = pyautogui.pixel(1030, 313)
-            if colorb == (255, 255, 255):
-                pydirectinput.press('down')
-            onRBbutton = True
-    elif loaded and not recovering:
-        pydirectinput.press('m')
-    elif not recovering:
-        pydirectinput.press('m')
-    # REBIRTH
-    if pyautogui.pixelMatchesColor(
-        910, 419, target_color2, tolerance=10
-    ):
-        if onRBbutton:
+        # REBIRTH
+        if pyautogui.pixelMatchesColor(
+            910, 419, target_color2, tolerance=10
+        ):
             # Stop watchdog while rebirthing
             load_timer = None
-            press_keys('enter', 'left', 'enter', 'enter', '\\')
+            autoit.mouse_move(932, 414, 1)
+            autoit.mouse_move(932, 415, 1)
+            autoit.mouse_click("left", 932, 415, 5, 1)
             loaded = False
-            onRBbutton = False
             time.sleep(.1)
             press_keys('l')
-        # NORMAL SETUP LOADING
+            # NORMAL SETUP LOADING
             load_setup()
             reset_watchdog()
+    else:
+        pydirectinput.press('m')
+
 
     time.sleep(0.1)
