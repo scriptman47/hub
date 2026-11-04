@@ -92,7 +92,7 @@ def load_setup():
         print("layout2 timeout")
         return False
     autoit.mouse_move(1190, 612, 1)
-    autoit.mouse_click("left", 1190, 612, 1, 1)
+    autoit.mouse_click("left", 1190, 612, 2, 1)
     press_keys('m', '\\', 'down')
     loaded = True
     onRBbutton = True
@@ -134,7 +134,7 @@ def failsafe_load():
             print("layout2 timeout")
             return False
         autoit.mouse_move(1190, 612, 1)
-        autoit.mouse_click("left", 1190, 612, 1, 1)
+        autoit.mouse_click("left", 1190, 612, 2, 1)
         press_keys('m', '\\', 'down')
         loaded = True
         onRBbutton = True
