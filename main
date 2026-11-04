@@ -4,7 +4,7 @@ import time
 import keyboard
 import pygetwindow as gw
 import os
-
+import autoit
 
 # SETTINGS
 stopButton = "F4"
@@ -77,35 +77,22 @@ def load_setup():
         return False
     print("Load menu found")
     time.sleep(.1)
-    press_keys('\\', '\\')
+    autoit.mouse_move(1209, 445, 1)
     while pyautogui.pixelMatchesColor(
             20, 1004, (22, 50, 26), tolerance=10
     ):
         if paused:
             time.sleep(0.1)
             continue
-    if not wait_for_pixel(1209, 445, layout_color):
-        print("layout timeout")
-        return False
-    press_keys('enter')
+            autoit.mouse_move(1209, 446, 1)
+    autoit.mouse_click("left", 1209, 446, 1, 1)
     time.sleep(.1)
-    if pyautogui.pixelMatchesColor(1235, 455, target_color4, tolerance=10):
-        press_keys('down', 'left', 'right', 'right')
-    if pyautogui.pixelMatchesColor(1256, 629, target_color4, tolerance=10):
-        press_keys('left', 'right')
+    autoit.mouse_move(1190, 611, 1)
     if not wait_for_pixel(1190, 611, layout_color):
         print("layout2 timeout")
         return False
-    time.sleep(.1)
-    press_keys('left', 'down', 'right')
-    check = pyautogui.pixel(1234, 454)
-    check2 = pyautogui.pixel(1256, 629)
-    if check == (255, 255, 255):
-        press_keys('down', 'left', 'right')
-    if check2 == (255, 255, 255):
-        press_keys('left', 'right')
-    press_keys('enter', '\\')
-    time.sleep(0.1)
+    autoit.mouse_move(1190, 612, 1)
+    autoit.mouse_click("left", 1190, 612, 1, 1)
     press_keys('m', '\\', 'down')
     loaded = True
     onRBbutton = True
@@ -131,36 +118,23 @@ def failsafe_load():
     load_timer = None
     print("timed out")
     press_keys('l')
-    press_keys('\\')
     try:
+        autoit.mouse_move(1209, 445, 1)
         while pyautogui.pixelMatchesColor(
                 20, 1004, (22, 50, 26), tolerance=10
         ):
             if paused:
                 time.sleep(0.1)
                 continue
-        if not wait_for_pixel(1209, 445, layout_color):
-            print("layout timeout")
-            return False
-        press_keys('enter')
+                autoit.mouse_move(1209, 446, 1)
+        autoit.mouse_click("left", 1209, 446, 1, 1)
         time.sleep(.1)
-        if pyautogui.pixelMatchesColor(1235, 455, target_color4, tolerance=10):
-            press_keys('down', 'left', 'right', 'right')
-        if pyautogui.pixelMatchesColor(1256, 629, target_color4, tolerance=10):
-            press_keys('left', 'right')
+        autoit.mouse_move(1190, 611, 1)
         if not wait_for_pixel(1190, 611, layout_color):
             print("layout2 timeout")
             return False
-        time.sleep(.1)
-        press_keys('left', 'down', 'right')
-        check = pyautogui.pixel(1234, 454)
-        check2 = pyautogui.pixel(1256, 629)
-        if check == (255, 255, 255):
-            press_keys('down', 'left', 'right')
-        if check2 == (255, 255, 255):
-            press_keys('left', 'right')
-        press_keys('enter', '\\')
-        time.sleep(0.1)
+        autoit.mouse_move(1190, 612, 1)
+        autoit.mouse_click("left", 1190, 612, 1, 1)
         press_keys('m', '\\', 'down')
         loaded = True
         onRBbutton = True
@@ -229,9 +203,7 @@ while True:
         if onRBbutton:
             # Stop watchdog while rebirthing
             load_timer = None
-            pydirectinput.PAUSE = 0.05
             press_keys('enter', 'left', 'enter', 'enter', '\\')
-            pydirectinput.PAUSE = 0.03
             loaded = False
             onRBbutton = False
             time.sleep(.1)
